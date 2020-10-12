@@ -1,0 +1,45 @@
+.planet {
+    fill-opacity: 0.4;
+    stroke: #fff;
+    stroke-width: 0.5;
+    stroke-opacity: 0.6;
+}
+
+body {
+    font-family: "Open Sans";
+    margin: 0;
+    background-color: #000;
+}
+
+#main {
+    margin: 0;
+}
+
+.regular-ellipse {
+    stroke: rgba(255, 255, 255, 0.7);
+    /* opacity: 0.4; */
+    stroke-width: 0.1;
+    fill: none;
+}
+
+.axis text {
+    fill: #fff;
+}
+
+.axis path,
+.axis line {
+    stroke: #fff;
+}
+
+text.label {
+    text-anchor: middle;
+    font-size: 10px;
+    fill: #fff;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+g text {
+    font-size: 10px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    fill: #fff;
+}
