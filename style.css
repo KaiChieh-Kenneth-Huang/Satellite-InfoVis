@@ -1,24 +1,29 @@
-.planet {
-    fill-opacity: 0.4;
-    stroke: #fff;
-    stroke-width: 0.5;
-    stroke-opacity: 0.6;
-}
 
 body {
     font-family: "Open Sans";
     margin: 0;
     background-color: #000;
+    color: #fff;
 }
 
 #main {
     margin: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+#main-vis {
+    position: absolute;
+    left: 20%;
+    width: 80%;
+    height: 100%;
+    z-index: -1;
 }
 
 .regular-ellipse {
     stroke: rgba(255, 255, 255, 0.7);
     /* opacity: 0.4; */
-    stroke-width: 0.1;
+    stroke-width: 1;
     fill: none;
 }
 
