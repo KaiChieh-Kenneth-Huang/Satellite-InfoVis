@@ -4,7 +4,14 @@ const SATELLITE_SIZE = 2;
 const ZOOM_OVERVIEW = 1000;
 
 const mainVis = document.getElementById('main-vis');
+const canvasLeftPadding = 40;
+const canvasBottomPadding = 40;
+const leftControlsWidth = 200;
+const mainVisLeftPadding = 40;
 const mainVisRightPadding = 10;
+const axisWidth = 0.3 * mainVis.clientWidth;
+
+const graphLeftPadding = canvasLeftPadding + leftControlsWidth + mainVisLeftPadding;
 
 // Refine By dropdowns
 const refineByCountry = document.querySelector('#refineByCountry');
@@ -151,18 +158,17 @@ d3.csv('./UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
         return +d['Perigee (km)'] + EARTH_DIAMETER;
     });
 
-    var kmToWidth = (mainVis.clientWidth - mainVisRightPadding) / (maxApogee + maxPerigee);
+    var kmToWidth = (mainVis.clientWidth - graphLeftPadding - mainVisRightPadding) / (maxApogee + maxPerigee);
 
-    earthCenter = [kmToWidth * maxPerigee, mainVis.clientHeight / 2];
+    earthCenter = [kmToWidth * maxPerigee + graphLeftPadding, mainVis.clientHeight / 2];
 
     scale = d3.scaleLinear()
         .domain([0, maxApogee])
-        .range([0,kmToWidth * 10 * maxApogee]);
+        .range([0,kmToWidth * maxApogee]);
 
-    const axisLenRelativeToFullWidth = 0.3;
     var axisScale = d3.scaleLinear()
-        .domain([0, mainVis.clientWidth * axisLenRelativeToFullWidth / kmToWidth])
-        .range([0, mainVis.clientWidth * axisLenRelativeToFullWidth]);
+        .domain([0, axisWidth / kmToWidth])
+        .range([0, axisWidth]);
 
     // plot orbits
     var orbit = d3.select('svg').selectAll('ellipse')
@@ -194,19 +200,22 @@ d3.csv('./UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
     
 
     // axes
-    var xAxisBot = d3.axisBottom(axisScale).ticks(4);
+    var xAxisBot = d3.axisBottom(axisScale).ticks(5);
 
     // Append a new <g> element that we will populate the axis with
     var svg = d3.select('svg');
-	svg.append('g')
+    var axisGroug = svg.append('g')
+        .attr('transform', 'translate(' + [canvasLeftPadding, mainVis.clientHeight - canvasBottomPadding] + ')');
+    
+    axisGroug.append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate(30,730)')
+        .attr('transform', 'translate(' + [0, -40] + ')')
         .call(xAxisBot);
 
     // // labels
-    svg.append('text')
+    axisGroug.append('text')
         .attr('class', 'x label')
-        .attr('transform', 'translate(170,770)')
+        .attr('transform', 'translate(' + [axisWidth / 2, 0] + ')')
         .text('Distance in KM');
 });
 

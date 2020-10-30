@@ -21,55 +21,57 @@
     <div id="main">
         <svg id="main-vis">
         </svg>
-        <div id="left-panel">
-            <h1>Satellites Since 1974 to Today</h1>
-            <section class="options">
-                <h2>Refine by</h2>
-                <h3>Country</h3>
-                <select class="custom-select" id="refineByCountry"></select>
-                <h3>Owner</h3>
-                <select class="custom-select" id="refineByOwner"></select>
-                <h3>Purpose</h3>
-                <select class="custom-select" id="refineByPurpose"></select>
-            </section>
-            <section class="options">
-                <h2>More Options</h2>
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="showOrbits">
-                    <label class="custom-control-label" for="showOrbits">Show Orbits</label>
-                </div>
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="showOrbitMotion">
-                    <label class="custom-control-label" for="showOrbitMotion">Show Orbit Motion</label>
-                </div>
-            </section>
-            <section class="options">
-                <h2>Zoom Level</h2>
-                <div class="custom-control custom-radio">
-                    <input type="radio" class="custom-control-input" id="radioLEO" name="LEO">
-                    <label class="custom-control-label" for="radioLEO">LEO</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input type="radio" class="custom-control-input" id="radioGEO" name="GEO" checked>
-                    <label class="custom-control-label" for="radioGEO">GEO</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input type="radio" class="custom-control-input" id="radioOverview" name="Overview">
-                    <label class="custom-control-label" for="radioOverview">Overview</label>
-                </div>
-            </section>
-        </div>
-        <div id="right-panel">
-            <section class="options">
-                <div class="custom-control custom-radio">
-                    <input type="radio" class="custom-control-input" id="radioRealistic" name="realisticView" checked>
-                    <label class="custom-control-label" for="radioRealistic">Realistic View</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input type="radio" class="custom-control-input" id="radioStatistical" name="statisticalView">
-                    <label class="custom-control-label" for="radioStatistical">Statistical View</label>
-                </div>
-            </section>
+        <div class="main-display">
+            <div id="left-panel">
+                <h1>Satellites Since 1974 to Today</h1>
+                <section class="options">
+                    <h2>Refine by</h2>
+                    <h3>Country</h3>
+                    <select class="custom-select" id="refineByCountry"></select>
+                    <h3>Owner</h3>
+                    <select class="custom-select" id="refineByOwner"></select>
+                    <h3>Purpose</h3>
+                    <select class="custom-select" id="refineByPurpose"></select>
+                </section>
+                <section class="options">
+                    <h2>More Options</h2>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="showOrbits">
+                        <label class="custom-control-label" for="showOrbits">Show Orbits</label>
+                    </div>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="showOrbitMotion">
+                        <label class="custom-control-label" for="showOrbitMotion">Show Orbit Motion</label>
+                    </div>
+                </section>
+                <section class="options">
+                    <h2>Zoom Level</h2>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="radioLEO" name="LEO">
+                        <label class="custom-control-label" for="radioLEO">LEO</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="radioGEO" name="GEO" checked>
+                        <label class="custom-control-label" for="radioGEO">GEO</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="radioOverview" name="Overview">
+                        <label class="custom-control-label" for="radioOverview">Overview</label>
+                    </div>
+                </section>
+            </div>
+            <div id="right-panel">
+                <section class="options">
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="radioRealistic" name="realisticView" checked>
+                        <label class="custom-control-label" for="radioRealistic">Realistic View</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="radioStatistical" name="statisticalView">
+                        <label class="custom-control-label" for="radioStatistical">Statistical View</label>
+                    </div>
+                </section>
+            </div>
         </div>
     </div>
 
