@@ -157,7 +157,7 @@ d3.csv('./UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
 
     scale = d3.scaleLinear()
         .domain([0, maxApogee])
-        .range([0,kmToWidth * maxApogee]);
+        .range([0,kmToWidth * 10 * maxApogee]);
 
     const axisLenRelativeToFullWidth = 0.3;
     var axisScale = d3.scaleLinear()
@@ -200,13 +200,13 @@ d3.csv('./UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
     var svg = d3.select('svg');
 	svg.append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate(30,780)')
+        .attr('transform', 'translate(30,730)')
         .call(xAxisBot);
 
     // // labels
     svg.append('text')
         .attr('class', 'x label')
-        .attr('transform', 'translate(200,820)')
+        .attr('transform', 'translate(170,770)')
         .text('Distance in KM');
 });
 
