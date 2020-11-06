@@ -1,7 +1,7 @@
 const EARTH_DIAMETER = 6378;
 
 const SATELLITE_SIZE = 2;
-const ZOOM_OVERVIEW = 1000;
+// const ZOOM_OVERVIEW = 1000;
 
 const mainVis = document.getElementById('main-vis');
 const canvasLeftPadding = 40;
@@ -220,6 +220,7 @@ d3.csv('./UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
 });
 
 // Filter By Listeners
+// Drop downs
 document.querySelector('#refineByCountry').addEventListener('change', (event) => {
     refineByParams[FN_COUNTRY] = event.target.value;
     updateChart(refineByParams);
