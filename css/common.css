@@ -1,0 +1,77 @@
+
+body {
+    font-family: 'Rajdhani', sans-serif;
+    margin: 0;
+    background-color: #000;
+    color: #fff;
+}
+
+#main {
+    position: relative;
+    margin: 0;
+}
+
+#main-vis-switch{
+    position: absolute;
+    top: 40px;
+    right: 40px;
+}
+
+.main-display {
+    display: grid;
+    padding: 40px;
+}
+
+.left-panel {
+    grid-column: span 2;
+    grid-row: 1;
+}
+
+.left-panel h3 {
+    font-weight: 300;
+    margin-top: 20px;
+}
+
+.left-panel > section {
+    margin: 40px 0;
+}
+
+.right-panel {
+    grid-column: span 1;
+    grid-row: 1;
+}
+
+.right-panel > section {
+    margin: 40px 0;
+    float: right;
+}
+
+.main-vis {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* D3 */
+.axis text {
+    fill: #fff;
+}
+
+.axis path,
+.axis line {
+    stroke: #fff;
+}
+
+text.label {
+    text-anchor: middle;
+    font-size: 10px;
+    fill: #fff;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+g text {
+    font-size: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    fill: #fff;
+}

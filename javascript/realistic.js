@@ -1,9 +1,12 @@
+/***
+ * code for realistic mode
+***/
 const EARTH_DIAMETER = 6378;
 
 const SATELLITE_SIZE = 2;
 // const ZOOM_OVERVIEW = 1000;
 
-const mainVis = document.getElementById('main-vis');
+const mainVis = document.getElementById('realistic-main-vis');
 const canvasLeftPadding = 40;
 const canvasBottomPadding = 40;
 const leftControlsWidth = 200;
@@ -111,8 +114,8 @@ function updateChart(refineParam) {
     satellites.exit().remove();
 }
 
-// **** Your JavaScript code goes here ****
-d3.csv('./UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
+// **** Load data ****
+d3.csv('../data/UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
     satelliteData = dataset;
     
     // acquire options for refine by dropdowns

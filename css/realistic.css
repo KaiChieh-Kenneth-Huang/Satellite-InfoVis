@@ -1,0 +1,16 @@
+/* layout */
+.main-display.realistic {
+    padding: 40px 40px 80px 40px;
+}
+
+.left-panel.realistic > .options {
+    width: 200px;
+}
+
+/* D3 */
+.regular-ellipse {
+    stroke: rgba(255, 255, 255, 0.7);
+    /* opacity: 0.4; */
+    stroke-width: 1;
+    fill: none;
+}
