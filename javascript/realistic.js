@@ -4,7 +4,9 @@
 const EARTH_DIAMETER = 6378;
 
 const SATELLITE_SIZE = 2;
-// const ZOOM_OVERVIEW = 1000;
+const ZOOM_OVERVIEW = { mag: 1, center: false};
+const ZOOM_GEO = { mag: 2.7, center: true};
+const ZOOM_LEO = { mag: 13, center: true};
 
 const mainVis = document.getElementById('realistic-main-vis');
 const canvasLeftPadding = 40;
@@ -163,10 +165,14 @@ d3.csv('../data/UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
 
     var kmToWidth = (mainVis.clientWidth - graphLeftPadding - mainVisRightPadding) / (maxApogee + maxPerigee);
 
-    earthCenter = [kmToWidth * maxPerigee + graphLeftPadding, mainVis.clientHeight / 2];
+    var zoom = ZOOM_GEO;
+    const earthCenterX = zoom.center
+        ? (mainVis.clientWidth + graphLeftPadding - mainVisRightPadding) / 2
+        : kmToWidth * maxPerigee + graphLeftPadding;
+    earthCenter = [earthCenterX, mainVis.clientHeight / 2];
 
     scale = d3.scaleLinear()
-        .domain([0, maxApogee])
+        .domain([0, maxApogee / zoom.mag])
         .range([0,kmToWidth * maxApogee]);
 
     var axisScale = d3.scaleLinear()
