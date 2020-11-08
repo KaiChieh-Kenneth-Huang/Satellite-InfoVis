@@ -176,7 +176,7 @@ d3.csv('../data/UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
         .range([0,kmToWidth * maxApogee]);
 
     var axisScale = d3.scaleLinear()
-        .domain([0, axisWidth / kmToWidth])
+        .domain([0, axisWidth / kmToWidth / zoom.mag])
         .range([0, axisWidth]);
 
     // plot orbits
