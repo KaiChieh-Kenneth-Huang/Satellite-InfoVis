@@ -29,13 +29,13 @@ body {
 body::after {
     content: "";
     background-image:url('../data/Background.png');
-    opacity: 0.65;
+    opacity: 0.3;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
     position: absolute;
-    z-index: -100;   
+    z-index: -100;
 }
 
 h3 {
