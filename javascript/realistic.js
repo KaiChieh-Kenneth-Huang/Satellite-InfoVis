@@ -378,14 +378,26 @@ let orbit_checkBox =  document.getElementById("showOrbits");
 orbit_checkBox.addEventListener('change', function() {
     if(this.checked) {
         d3.select('#realistic-main-vis').selectAll('ellipse')
-        .style("visibility",d => {
-            return "visible";
-        })
+            .style("visibility",d => {
+                return "visible";
+            }
+        );
+        d3.select('#realistic-main-vis').selectAll('.orbitLabels')
+            .style("visibility",d => {
+                return "visible";
+            }
+        )
     }else{
         d3.select('#realistic-main-vis').selectAll('ellipse')
             .style("visibility",d => {
                 return "hidden";
-            })
+            }
+        )
+        d3.select('#realistic-main-vis').selectAll('.orbitLabels')
+            .style("visibility",d => {
+                return "hidden";
+            }
+        )
         }
 });
 
