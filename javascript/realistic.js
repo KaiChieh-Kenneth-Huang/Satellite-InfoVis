@@ -3,11 +3,14 @@
 ***/
 const EARTH_RADIUS = 6378;
 
-const ZOOM_OVERVIEW = { mag: 1, center: false, orbitOpacity: 0.35, satelliteSize: 1};
+const ZOOM_OVERVIEW = { mag: 1.6, center: false, orbitOpacity: 0.35, satelliteSize: 1};
 const ZOOM_GEO = { mag: 2.7, center: true, orbitOpacity: 0.25, satelliteSize: 2};
 const ZOOM_LEO = { mag: 14, center: true, orbitOpacity: 0.15, satelliteSize: 3};
-var zoom = ZOOM_GEO;
+var zoom = ZOOM_OVERVIEW;
 
+var maxLEOApogee, maxMEOApogee, maxHEOApogee;
+
+// Legend on the left
 const colorOfCountry = {
     china: '#E12200',
     russia: '#9B56BB',
@@ -24,6 +27,7 @@ const opacityOfPeriod = {
     'before 1990': satelliteOpacity * 0.25
 }
 
+// Width, padding of canvas
 const mainVis = document.getElementById('realistic-main-vis');
 const canvasLeftPadding = 40;
 const canvasBottomPadding = 40;
@@ -52,27 +56,10 @@ var earthCenter;
 var scale;
 var kmToWidth;
 
+// Functions to style satellite points
+
 // TODO: sizing code needs to be inside resize listener
 console.log('client', mainVis.clientWidth + 'x' + mainVis.clientHeight);
-
-// Upload the background PNG
-var background = d3.select('svg').selectAll('.background')
-    .data([0])
-    .enter()
-    .append('image')
-    .attr('class', '.background')
-    .attr('href', '../data/Background.png')
-    .attr('width', function(){
-        if (mainVis.clientWidth/mainVis.clientHeight >= 5760/3600){
-            return mainVis.clientWidth;
-        }
-    })
-    .attr('height', function(){
-        if (mainVis.clientWidth/mainVis.clientHeight < 5760/3600){
-            return mainVis.clientHeight;
-        }
-    })
-    .style('opacity', 0.65)
 
 // Create a function to update chart
 function updateChart(refineParam) {
@@ -100,11 +87,11 @@ function updateChart(refineParam) {
     }
 
    // Upload the earth PNG
-   var earth = d3.select('svg').selectAll('.earth')
+   var earth = d3.select('#realistic-main-vis').selectAll('.earth')
         .data([0])
         .enter()
         .append('image')
-        .attr('class', '.earth')
+        .attr('class', 'earth')
         .attr('href', '../data/Flat Earth Map.png')
         .attr('width', scale(EARTH_RADIUS)*2).attr('height', scale(EARTH_RADIUS)*2)
         .attr('x', earthCenter[0] - scale(EARTH_RADIUS))
@@ -115,7 +102,7 @@ function updateChart(refineParam) {
 
 
     // plot orbits
-    var orbit = d3.select('svg').selectAll('ellipse')
+    var orbit = d3.select('#realistic-main-vis').selectAll('ellipse')
         .data(filteredSatellites, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         })
@@ -149,14 +136,14 @@ function updateChart(refineParam) {
 
 
     // plot satellites
-    var satellites = d3.select('svg').selectAll('circle')
+    var satellites = d3.select('#realistic-main-vis').selectAll('circle')
         .data(filteredSatellites, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var satellitesEnter = satellites.enter()
         .append('circle')
-        .attr('class', 'regular-circle')
+        .attr('class', 'civil')
         .attr('cx', d => {
             return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).x;
         })
@@ -212,7 +199,7 @@ function updateChart(refineParam) {
     var xAxisBot = d3.axisBottom(axisScale).ticks(5);
 
     // Append a new <g> element that we will populate the axis with
-    var svg = d3.select('svg');
+    var svg = d3.select('#realistic-main-vis');
     var axisGroug = svg.append('g')
         .attr('transform', 'translate(' + [canvasLeftPadding, mainVis.clientHeight - canvasBottomPadding] + ')');
     
@@ -227,6 +214,38 @@ function updateChart(refineParam) {
         .attr('transform', 'translate(' + [axisWidth / 2, 0] + ')')
         .text('Distance in KM');
 
+    // orbit labels
+    var orbitLabels = svg.append('g')
+    .attr('class', 'orbitLabels')
+    .attr('transform', 'translate(' + [earthCenter[0], earthCenter[1]] + ')')
+    
+    orbitLabels.append('text')
+    .attr('class', 'LEO label')
+    .attr('y', function(d) {
+        if (zoom == 'ZOOM_LEO'){
+            console.log ('I am LEO')
+           return -scale(maxLEOApogee) - 20;
+        } else {
+            console.log ('I am not LEO')
+            return -scale(maxLEOApogee) - 6;
+        }
+    })
+    .text('LEO')
+    
+    orbitLabels.append('text')
+    .attr('class', 'MEO label')
+    .attr('y', -scale(maxMEOApogee) - 6)
+    .text('MEO')
+
+    orbitLabels.append('text')
+    .attr('class', 'HEO label')
+    .attr('y', -scale(maxHEOApogee) - 12)
+    .text('HEO')
+    
+    orbitLabels.append('text')
+    .attr('class', 'elliptical label')
+    .attr('x', scale(EARTH_RADIUS) * 7.8)
+    .text('Elliptical')
 
     // Create an UPDATE + ENTER selection
     // Selects all data-bound elements that are in SVG or just added to SVG
@@ -285,11 +304,29 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         return +d['Perigee (km)'] + EARTH_RADIUS;
     });
 
+    maxLEOApogee = d3.max(dataset, function(d){
+        if (d['Class of Orbit'] == 'LEO') {
+            return +d['Apogee (km)'] + EARTH_RADIUS;
+        }
+    });
+
+    maxMEOApogee = d3.max(dataset, function(d){
+        if (d['Class of Orbit'] == 'MEO') {
+            return +d['Apogee (km)'] + EARTH_RADIUS;
+        }
+    });
+
+    maxHEOApogee = d3.min(dataset, function(d){
+        if (d['Class of Orbit'] == 'GEO') {
+            return +d['Apogee (km)'] + EARTH_RADIUS;
+        }
+    });
+
     kmToWidth = (mainVis.clientWidth - graphLeftPadding - mainVisRightPadding) / (maxApogee + maxPerigee);
 
     const earthCenterX = zoom.center
         ? (mainVis.clientWidth + graphLeftPadding/5 - mainVisRightPadding) / 2
-        : kmToWidth * maxPerigee + graphLeftPadding;
+        : kmToWidth * maxPerigee + graphLeftPadding * 1.4;
 
     earthCenter = [earthCenterX, mainVis.clientHeight / 2];
 
@@ -316,4 +353,46 @@ document.querySelector('#refineByOwner').addEventListener('change', (event) => {
 document.querySelector('#refineByPurpose').addEventListener('change', (event) => {
     refineByParams[FN_PURPOSE] = event.target.value;
     updateChart(refineByParams);
+});
+
+let orbit_checkBox =  document.getElementById("showOrbits");
+orbit_checkBox.addEventListener('change', function() {
+    if(this.checked) {
+        d3.select('#realistic-main-vis').selectAll('ellipse')
+            .style("visibility",d => {
+                return "visible";
+            }
+        );
+        d3.select('#realistic-main-vis').selectAll('.orbitLabels')
+            .style("visibility",d => {
+                return "visible";
+            }
+        )
+    }else{
+        d3.select('#realistic-main-vis').selectAll('ellipse')
+            .style("visibility",d => {
+                return "hidden";
+            }
+        )
+        d3.select('#realistic-main-vis').selectAll('.orbitLabels')
+            .style("visibility",d => {
+                return "hidden";
+            }
+        )
+        }
+});
+
+let satellite_checkBox =  document.getElementById("showSatellites");
+satellite_checkBox.addEventListener('change', function(){
+    if(this.checked) {
+        d3.select('#realistic-main-vis').selectAll('circle')
+        .style("visibility",d => {
+            return "visible";
+        })
+    }else{
+        d3.select('#realistic-main-vis').selectAll('circle')
+            .style("visibility",d => {
+                return "hidden";
+            })
+        }
 });
