@@ -1,6 +1,45 @@
 <div class="left-panel statistical">
-    <p style="color: white">hello world!</p>
+    <h2>Satellites Statistics in the Year of</h2>
+    <select class="custom-select" id="sta_refineByYear"></select>
+    <section class="options">
+        <h2>Refine by</h2>
+        <h3>Country</h3>
+        <select class="custom-select" id="sta_refineByCountry"></select>
+        <!-- <h3>Owner</h3>
+        <select class="custom-select" id="refineByOwner"></select> -->
+        <h3>Purpose</h3>
+        <select class="custom-select" id="sta_refineByPurpose"></select>
+    </section>
+    <section class="options">
+        <h2>Sort by</h2>
+        <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="radioCountry" name="groupOfDefaultRadios" checked>
+            <label class="custom-control-label" for="radioCountry">Country</label>
+          </div>
+          
+          <!-- Group of default radios - option 2 -->
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="radioPurpose" name="groupOfDefaultRadios" >
+            <label class="custom-control-label" for="radioPurpose">Purpose</label>
+          </div>
+          
+          <!-- Group of default radios - option 3 -->
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="radioPeriod" name="groupOfDefaultRadios">
+            <label class="custom-control-label" for="radioPeriod">Period</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="radioMass" name="groupOfDefaultRadios">
+            <label class="custom-control-label" for="radioMass">Mass</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="radioDis" name="groupOfDefaultRadios">
+            <label class="custom-control-label" for="radioDis">Avg Distance to Earth</label>
+          </div>
+    </section>
 </div>
 <div class="right-panel statistical">
-
 </div>
+
+
+<!-- <script src="./orbit.js"></script> -->
