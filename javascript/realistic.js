@@ -207,6 +207,15 @@ d3.csv('../data/UCS-Satellite-Database-4-1-2020.csv').then(function(dataset) {
 
     updateChart(refineByParams);
     
+    var svg = d3.select("#zoom")
+        .append("svg")
+        .attr("width", "800")
+        .attr("height", "800")
+        .call(d3.zoom().on("zoom", function () {
+            svg.attr("transform", d3.event.transform)
+            //svg.attr("transform","translate(0,0)scale(3,3)")
+        }))
+        .append("g")
 
     // axes
     var xAxisBot = d3.axisBottom(axisScale).ticks(5);
@@ -243,4 +252,34 @@ document.querySelector('#refineByOwner').addEventListener('change', (event) => {
 document.querySelector('#refineByPurpose').addEventListener('change', (event) => {
     refineByParams[FN_PURPOSE] = event.target.value;
     updateChart(refineByParams);
+});
+
+let orbit_checkBox =  document.getElementById("showOrbits");
+orbit_checkBox.addEventListener('change', function() {
+    if(this.checked) {
+        d3.select('svg').selectAll('ellipse')
+        .style("visibility",d => {
+            return "visible";
+        })
+    }else{
+        d3.select('svg').selectAll('ellipse')
+            .style("visibility",d => {
+                return "hidden";
+            })
+        }
+});
+
+let satellite_checkBox =  document.getElementById("showSatellites");
+satellite_checkBox.addEventListener('change', function(){
+    if(this.checked) {
+        d3.select('svg').selectAll('circle')
+        .style("visibility",d => {
+            return "visible";
+        })
+    }else{
+        d3.select('svg').selectAll('circle')
+            .style("visibility",d => {
+                return "hidden";
+            })
+        }
 });
