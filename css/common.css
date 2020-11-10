@@ -1,11 +1,34 @@
 
+@font-face {
+    font-family: Metropolis_Light;
+    src: url("../font/Metropolis-Light.otf") format("opentype");
+}
+
+@font-face {
+    font-family: Metropolis;
+    src: url("../font/Metropolis-Regular.otf") format("opentype");
+}
+
+@font-face {
+    font-family: Metropolis_Medium;
+    src: url("../font/Metropolis-Medium.otf") format("opentype");
+}
+
+@font-face {
+    font-family: Metropolis_SemiBold;
+    src: url("../font/Metropolis-SemiBold.otf") format("opentype");
+}
+
 body {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: Metropolis_Light, sans-serif;
     margin: 0;
     background-color: #000;
     color: #fff;
 }
 
+h3 {
+    font-family: Metropolis, sans-serif;
+}
 #main {
     position: relative;
     margin: 0;
