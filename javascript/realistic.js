@@ -61,25 +61,6 @@ var kmToWidth;
 // TODO: sizing code needs to be inside resize listener
 console.log('client', mainVis.clientWidth + 'x' + mainVis.clientHeight);
 
-// Upload the background PNG
-var background = d3.select('#realistic-main-vis').selectAll('.background')
-    .data([0])
-    .enter()
-    .append('image')
-    .attr('class', 'background')
-    .attr('href', '../data/Background.png')
-    .attr('width', function(){
-        if (mainVis.clientWidth/mainVis.clientHeight >= 5760/3600){
-            return mainVis.clientWidth;
-        }
-    })
-    .attr('height', function(){
-        if (mainVis.clientWidth/mainVis.clientHeight < 5760/3600){
-            return mainVis.clientHeight;
-        }
-    })
-    .style('opacity', 0.65)
-
 // Create a function to update chart
 function updateChart(refineParam) {
     var filteredSatellites = satelliteData.filter(function(d){
