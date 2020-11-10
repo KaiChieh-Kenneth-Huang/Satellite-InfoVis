@@ -21,11 +21,10 @@ h3{
 }
 
 .right-panel.realistic{
-    position: fixed;
+    position: absolute;
     top: 86px;
     right:48px;
 }
-
 
 .legend { 
     list-style: none; 
