@@ -32,7 +32,15 @@ h3 {
     font-size: 14px;
 }
 
-.axis, .label{
+text.label {
+    text-anchor: middle;
+    font-size: 12px;
+    fill: #fff;
     font-family: Metropolis, sans-serif;
-    font-size: 14px;
 }
+
+g text {
+    font-size: 10px;
+    font-family: Metropolis, sans-serif;
+    fill: #fff;
+} 

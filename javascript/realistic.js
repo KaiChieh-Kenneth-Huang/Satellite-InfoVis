@@ -6,7 +6,7 @@ const EARTH_RADIUS = 6378;
 const ZOOM_OVERVIEW = { mag: 1.6, center: false, orbitOpacity: 0.35, satelliteSize: 1};
 const ZOOM_GEO = { mag: 2.7, center: true, orbitOpacity: 0.25, satelliteSize: 2};
 const ZOOM_LEO = { mag: 14, center: true, orbitOpacity: 0.15, satelliteSize: 3};
-var zoom = ZOOM_OVERVIEW;
+var zoom = ZOOM_GEO;
 
 var maxLEOApogee, maxMEOApogee, maxHEOApogee;
 
@@ -241,9 +241,9 @@ function updateChart(refineParam) {
     orbitLabels.append('text')
     .attr('class', 'LEO label')
     .attr('y', function(d) {
-        if (zoom == 'ZOOM_LEO'){
+        if (zoom.mag == 14){
             console.log ('I am LEO')
-           return -scale(maxLEOApogee) - 20;
+           return -scale(maxLEOApogee) - 12;
         } else {
             console.log ('I am not LEO')
             return -scale(maxLEOApogee) - 6;

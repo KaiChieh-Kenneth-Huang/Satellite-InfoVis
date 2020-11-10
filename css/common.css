@@ -84,16 +84,3 @@ h3 {
 .axis line {
     stroke: #fff;
 }
-
-text.label {
-    text-anchor: middle;
-    font-size: 10px;
-    fill: #fff;
-    font-family: 'Rajdhani', sans-serif;
-}
-
-g text {
-    font-size: 10px;
-    font-family: 'Rajdhani', sans-serif;
-    fill: #fff;
-}
