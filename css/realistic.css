@@ -109,3 +109,20 @@ h3{
     stroke-width: 1;
     fill: none;
 }
+
+/* font for all texts */
+h1 {
+    font-size: 28px;
+}
+
+h2 {
+    font-size: 18px;
+}
+
+h3 {
+    font-size: 14px;
+}
+
+.custom-control-label{
+    font-size: 14px;
+}
