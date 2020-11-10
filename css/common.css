@@ -27,7 +27,7 @@ body {
 }
 
 h3 {
-    font-family: Metropolis, sans-serif;
+    font-family: Metropolis_Medium, sans-serif;
 }
 #main {
     position: relative;
@@ -51,7 +51,6 @@ h3 {
 }
 
 .left-panel h3 {
-    font-weight: 300;
     margin-top: 20px;
 }
 

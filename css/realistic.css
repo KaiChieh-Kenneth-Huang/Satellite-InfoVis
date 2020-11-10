@@ -25,9 +25,14 @@ h2 {
 }
 
 h3 {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .custom-control-label{
+    font-size: 14px;
+}
+
+.axis, .label{
+    font-family: Metropolis, sans-serif;
     font-size: 14px;
 }
