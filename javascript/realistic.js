@@ -62,7 +62,7 @@ var kmToWidth;
 console.log('client', mainVis.clientWidth + 'x' + mainVis.clientHeight);
 
 // Upload the background PNG
-var background = d3.select('svg').selectAll('.background')
+var background = d3.select('#realistic-main-vis').selectAll('.background')
     .data([0])
     .enter()
     .append('image')
@@ -106,7 +106,7 @@ function updateChart(refineParam) {
     }
 
    // Upload the earth PNG
-   var earth = d3.select('svg').selectAll('.earth')
+   var earth = d3.select('#realistic-main-vis').selectAll('.earth')
         .data([0])
         .enter()
         .append('image')
@@ -121,7 +121,7 @@ function updateChart(refineParam) {
 
 
     // plot orbits
-    var orbit = d3.select('svg').selectAll('ellipse')
+    var orbit = d3.select('#realistic-main-vis').selectAll('ellipse')
         .data(filteredSatellites, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         })
@@ -155,7 +155,7 @@ function updateChart(refineParam) {
 
 
     // plot satellites
-    var satellites = d3.select('svg').selectAll('circle')
+    var satellites = d3.select('#realistic-main-vis').selectAll('circle')
         .data(filteredSatellites, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
@@ -218,7 +218,7 @@ function updateChart(refineParam) {
     var xAxisBot = d3.axisBottom(axisScale).ticks(5);
 
     // Append a new <g> element that we will populate the axis with
-    var svg = d3.select('svg');
+    var svg = d3.select('#realistic-main-vis');
     var axisGroug = svg.append('g')
         .attr('transform', 'translate(' + [canvasLeftPadding, mainVis.clientHeight - canvasBottomPadding] + ')');
     
@@ -377,12 +377,12 @@ document.querySelector('#refineByPurpose').addEventListener('change', (event) =>
 let orbit_checkBox =  document.getElementById("showOrbits");
 orbit_checkBox.addEventListener('change', function() {
     if(this.checked) {
-        d3.select('svg').selectAll('ellipse')
+        d3.select('#realistic-main-vis').selectAll('ellipse')
         .style("visibility",d => {
             return "visible";
         })
     }else{
-        d3.select('svg').selectAll('ellipse')
+        d3.select('#realistic-main-vis').selectAll('ellipse')
             .style("visibility",d => {
                 return "hidden";
             })
@@ -392,12 +392,12 @@ orbit_checkBox.addEventListener('change', function() {
 let satellite_checkBox =  document.getElementById("showSatellites");
 satellite_checkBox.addEventListener('change', function(){
     if(this.checked) {
-        d3.select('svg').selectAll('circle')
+        d3.select('#realistic-main-vis').selectAll('circle')
         .style("visibility",d => {
             return "visible";
         })
     }else{
-        d3.select('svg').selectAll('circle')
+        d3.select('#realistic-main-vis').selectAll('circle')
             .style("visibility",d => {
                 return "hidden";
             })
