@@ -2,20 +2,7 @@
  * code for statistical mode
 ***/
 
-const EARTH_DIAMETER = 6378;
-
-const SATELLITE_SIZE = 2;
-// const ZOOM_OVERVIEW = 1000;
-
 const sta_mainVis = document.getElementById('statistical-main-vis');
-// const canvasLeftPadding = 40;
-// const canvasBottomPadding = 40;
-// const leftControlsWidth = 200;
-// const mainVisLeftPadding = 40;
-// const mainVisRightPadding = 10;
-// const axisWidth = 0.3 * mainVis.clientWidth;
-
-// const graphLeftPadding = canvasLeftPadding + leftControlsWidth + mainVisLeftPadding;
 const radius_range = 1.8 * Math.PI;
 
 var width = sta_mainVis.clientWidth;
@@ -39,11 +26,6 @@ var outerRadius_Country = 170;
 var padAngle = 0.003;
 
 // Refine By dropdowns
-// const sta_refineByCountry = document.querySelector('#sta_refineByCountry');
-// const refineByPurpose = document.querySelector('#refineByPurpose');
-// const sta_refineByOwner = document.querySelector('#sta_refineByOwner');
-// const sta_refineByAttribute = document.querySelector('#sta_refineByAttribute');
-// const sta_refineByYear = document.querySelector('#sta_refineByYear');
 sta_refineByCountry = document.querySelector('#sta_refineByCountry');
 sta_refineByPurpose = document.querySelector('#sta_refineByPurpose');
 sta_refineByOwner = document.querySelector('#sta_refineByOwner');
@@ -51,11 +33,6 @@ sta_refineByAttribute = document.querySelector('#sta_refineByAttribute');
 sta_refineByYear = document.querySelector('#sta_refineByYear');
 
 // field names
-// const STA_FN_COUNTRY = 'new_country';
-// const STA_FN_OWNER = 'Operator/Owner';
-// const STA_FN_PURPOSE = 'new_purpose';
-// const STA_FN_YEAR = 'new_year';
-
 STA_FN_COUNTRY = 'new_country';
 STA_FN_OWNER = 'Operator/Owner';
 STA_FN_PURPOSE = 'new_purpose';
@@ -111,8 +88,6 @@ function sta_updateChart(refineParam,radioValue) {
     var maxPeriod = d3.max(sta_dataset, function(d){
         return +d['Period (minutes)'];
     });
-    console.log(maxPeriod);
-    console.log('???');
 
     var maxMass = d3.max(sta_dataset,function(d){
         return +d['Launch Mass (kg.)'];
@@ -126,10 +101,6 @@ function sta_updateChart(refineParam,radioValue) {
         .range([0, radius_range])    // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
         .align(0)                  // This does nothing ?
         .domain( sta_dataset.map(function(d) { return d['Name of Satellite  Alternate Names']; }) ); // The domain of the X axis is the list of states.
-
-    // var y = d3.scaleLinear()
-    //     .range([innerRadius,outerRadius])
-    //     .domain([0,maxPeriod]);
     var y_period = d3.scaleRadial()
     .range([outerRadius_Period,innerRadius_Period])
     .domain([0,maxPeriod]);
@@ -186,7 +157,7 @@ function sta_updateChart(refineParam,radioValue) {
             .padRadius(outerRadius_Period)
         );
 
-        var massBar_background = svg.append('g')
+    var massBar_background = svg.append('g')
         .selectAll('path')
         .data(sta_dataset)
         .enter()
@@ -202,7 +173,7 @@ function sta_updateChart(refineParam,radioValue) {
             .padRadius(outerRadius_Mass)
         );
 
-        var massBar = svg.append('g')
+    var massBar = svg.append('g')
         .selectAll('path')
         .data(sta_dataset)
         .enter()
@@ -218,7 +189,7 @@ function sta_updateChart(refineParam,radioValue) {
         );
 
 
-        var disBar_background = svg.append('g')
+    var disBar_background = svg.append('g')
         .selectAll('path')
         .data(sta_dataset)
         .enter()
@@ -234,7 +205,7 @@ function sta_updateChart(refineParam,radioValue) {
             .padRadius(outerRadius_Dis)
         );
 
-        var disBar = svg.append('g')
+    var disBar = svg.append('g')
         .selectAll('path')
         .data(sta_dataset)
         .enter()
@@ -249,51 +220,50 @@ function sta_updateChart(refineParam,radioValue) {
             .padRadius(outerRadius_Dis)
         );
 
-        var Civil = 0;
-        var Commercial = 0;
-        var Military = 0;
-        var Governmental = 0;
-        var Multi_purpose = 0;
-        for (var i = 0; i < sta_dataset.length; i++) {
-            if (sta_dataset[i]['new_purpose'] == 'Civil'){
-                Civil++;
-            }
-            else if (sta_dataset[i]['new_purpose'] == 'Commercial'){
-                Commercial++;
-            }
-            else if (sta_dataset[i]['new_purpose'] == 'Military'){
-                Military++;
-            }
-            else if (sta_dataset[i]['new_purpose'] == 'Governmental'){
-                Governmental++;
-            }
-            else if (sta_dataset[i]['new_purpose'] == 'Multi-purpose'){
-                Multi_purpose++;
-            }
-            //Do something
+    var Civil = 0;
+    var Commercial = 0;
+    var Military = 0;
+    var Governmental = 0;
+    var Multi_purpose = 0;
+    for (var i = 0; i < sta_dataset.length; i++) {
+        if (sta_dataset[i]['new_purpose'] == 'Civil'){
+            Civil++;
         }
-        var all = Civil + Commercial + Military + Governmental + Multi_purpose;
-        var Civil_p = Civil / all * radius_range;
-        var Commercial_p = Commercial / all * radius_range;
-        var Military_p = Military / all * radius_range;
-        var Governmental_p = Governmental / all * radius_range;
-        var Multi_purpose_p = Multi_purpose / all * radius_range;
+        else if (sta_dataset[i]['new_purpose'] == 'Commercial'){
+            Commercial++;
+        }
+        else if (sta_dataset[i]['new_purpose'] == 'Military'){
+            Military++;
+        }
+        else if (sta_dataset[i]['new_purpose'] == 'Governmental'){
+            Governmental++;
+        }
+        else if (sta_dataset[i]['new_purpose'] == 'Multi-purpose'){
+            Multi_purpose++;
+        }
+    }
+    var all = Civil + Commercial + Military + Governmental + Multi_purpose;
+    var Civil_p = Civil / all * radius_range;
+    var Commercial_p = Commercial / all * radius_range;
+    var Military_p = Military / all * radius_range;
+    var Governmental_p = Governmental / all * radius_range;
+    var Multi_purpose_p = Multi_purpose / all * radius_range;
     
-        var purpose = [
-            { purpose: 'Civil', start_angle : 0, angle : Civil_p },
-            { purpose: 'Commercial', start_angle : Civil_p, angle : Commercial_p },
-            { purpose: 'Military', start_angle : Commercial_p + Civil_p, angle : Military_p },
-            { purpose: 'Governmental', start_angle : Commercial_p + Civil_p + Military_p, angle : Governmental_p },
-            { purpose: 'Multi_purpose', start_angle : Commercial_p + Civil_p + Military_p + Governmental_p, angle : Multi_purpose_p }
-        ]
+    var purpose = [
+        { purpose: 'Civil', start_angle : 0, angle : Civil_p },
+        { purpose: 'Commercial', start_angle : Civil_p, angle : Commercial_p },
+        { purpose: 'Military', start_angle : Commercial_p + Civil_p, angle : Military_p },
+        { purpose: 'Governmental', start_angle : Commercial_p + Civil_p + Military_p, angle : Governmental_p },
+        { purpose: 'Multi_purpose', start_angle : Commercial_p + Civil_p + Military_p + Governmental_p, angle : Multi_purpose_p }
+    ]
 
-        var purpose_statistical = [
-            { purpose: 'Civil', count : Civil},
-            { purpose: 'Commercial', count : Commercial},
-            { purpose: 'Military', count : Military },
-            { purpose: 'Governmental', count : Governmental},
-            { purpose: 'Multi_purpose', count : Multi_purpose }
-        ]
+    var purpose_statistical = [
+        { purpose: 'Civil', count : Civil},
+        { purpose: 'Commercial', count : Commercial},
+        { purpose: 'Military', count : Military },
+        { purpose: 'Governmental', count : Governmental},
+        { purpose: 'Multi_purpose', count : Multi_purpose }
+    ]
 
     var USA = 0;
     var China = 0;
@@ -320,7 +290,6 @@ function sta_updateChart(refineParam,radioValue) {
         else if (sta_dataset[i]['new_country'] == 'Multinational'){
             Multinational++;
         }
-        //Do something
     }
     var all = USA + UK + China + Russia + Others + Multinational;
     var USA_p = USA / all * radius_range;
@@ -347,9 +316,8 @@ function sta_updateChart(refineParam,radioValue) {
         { country: 'Others', count : Others },
         { country: 'Multinational', count : Multinational }
     ]
+
     if(radioValue == 'Purpose'){
-        
-        console.log(purpose);
         var purposeBar = svg.append('g')
         .selectAll('path')
         .data(purpose)
@@ -378,8 +346,6 @@ function sta_updateChart(refineParam,radioValue) {
         .attr('d',d3.arc()
         .innerRadius( function(d) { return y_purpose(0) })
         .outerRadius(function(d){return y_purpose(1);})
-        // .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
-        // .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth()+0.005;})
         .startAngle(function(d){return d['start_angle'];})
         .endAngle(function(d){return d['start_angle'] + d['angle'];})
         .padAngle(0)
@@ -431,50 +397,6 @@ function sta_updateChart(refineParam,radioValue) {
 }
 
 if(radioValue == 'Country'){
-    // var USA = 0;
-    // var China = 0;
-    // var UK = 0;
-    // var Russia = 0;
-    // var Others = 0;
-    // var Multinational = 0;
-    // for (var i = 0; i < sta_dataset.length; i++) {
-    //     if (sta_dataset[i]['new_country'] == 'USA'){
-    //         USA++;
-    //     }
-    //     else if (sta_dataset[i]['new_country'] == 'UK'){
-    //         UK++;
-    //     }
-    //     else if (sta_dataset[i]['new_country'] == 'China'){
-    //         China++;
-    //     }
-    //     else if (sta_dataset[i]['new_country'] == 'Russia'){
-    //         Russia++;
-    //     }
-    //     else if (sta_dataset[i]['new_country'] == 'Others'){
-    //         Others++;
-    //     }
-    //     else if (sta_dataset[i]['new_country'] == 'Multinational'){
-    //         Multinational++;
-    //     }
-    //     //Do something
-    // }
-    // var all = USA + UK + China + Russia + Others + Multinational;
-    // var USA_p = USA / all * radius_range;
-    // var China_p = China / all * radius_range;
-    // var Russia_p = Russia / all * radius_range;
-    // var UK_p = UK / all * radius_range;
-    // var Others_p = Others / all * radius_range;
-    // var Multinational_p = Multinational / all * radius_range;
-
-    // var country = [
-    //     { country: 'USA', start_angle : 0, angle : USA_p },
-    //     { country: 'China', start_angle : USA_p, angle : China_p },
-    //     { country: 'UK', start_angle : China_p + USA_p, angle : UK_p },
-    //     { country: 'Russia', start_angle : China_p + USA_p + UK_p, angle : Russia_p },
-    //     { country: 'Others', start_angle : China_p + USA_p + UK_p + Russia_p, angle : Others_p },
-    //     { country: 'Multinational', start_angle : China_p + USA_p + UK_p + Russia_p + Others_p, angle : Multinational_p}
-    // ]
-    // console.log(country);
     var CountryBar = svg.append('g')
     .selectAll('path')
     .data(country)
@@ -594,10 +516,10 @@ else{
     .enter()
     .append("rect")
     .attr("x", 1)
-      .attr("transform", function(d) { return "translate("  + x_dis(d.x0) + ","  + y_dis(d.length) + ")"; })
-      .attr("width", function(d) { return x_dis(d.x1) - x_dis(d.x0) -1 ; })
-      .attr("height", function(d) { return barchart_height - y_dis(d.length); })
-      .style("fill", "#69b3a2");
+    .attr("transform", function(d) { return "translate("  + x_dis(d.x0) + ","  + y_dis(d.length) + ")"; })
+    .attr("width", function(d) { return x_dis(d.x1) - x_dis(d.x0) -1 ; })
+    .attr("height", function(d) { return barchart_height - y_dis(d.length); })
+    .style("fill", "#69b3a2");
 
     //period array
     var period_barchart = main_svg.append('g')
@@ -635,10 +557,10 @@ else{
     .enter()
     .append("rect")
     .attr("x", 1)
-      .attr("transform", function(d) { return "translate("  + x_period(d.x0) + ","  + y_period(d.length) + ")"; })
-      .attr("width", function(d) { return x_period(d.x1) - x_period(d.x0) -1 ; })
-      .attr("height", function(d) { return barchart_height - y_period(d.length); })
-      .style("fill", "#69b3a2");
+    .attr("transform", function(d) { return "translate("  + x_period(d.x0) + ","  + y_period(d.length) + ")"; })
+    .attr("width", function(d) { return x_period(d.x1) - x_period(d.x0) -1 ; })
+    .attr("height", function(d) { return barchart_height - y_period(d.length); })
+    .style("fill", "#69b3a2");
 
     //mass array
     var mass_barchart = main_svg.append('g')
@@ -677,10 +599,10 @@ else{
     .enter()
     .append("rect")
     .attr("x", 1)
-      .attr("transform", function(d) { return "translate("  + x_mass(d.x0) + ","  + y_mass(d.length) + ")"; })
-      .attr("width", function(d) { return x_mass(d.x1) - x_mass(d.x0) -1 ; })
-      .attr("height", function(d) { return barchart_height - y_mass(d.length); })
-      .style("fill", "#69b3a2");
+    .attr("transform", function(d) { return "translate("  + x_mass(d.x0) + ","  + y_mass(d.length) + ")"; })
+    .attr("width", function(d) { return x_mass(d.x1) - x_mass(d.x0) -1 ; })
+    .attr("height", function(d) { return barchart_height - y_mass(d.length); })
+    .style("fill", "#69b3a2");
 
 
     //purpose barchart
@@ -719,8 +641,10 @@ else{
                     .range([0, barchart_width])
                     .padding(0.3);
     var y_country = d3.scaleLinear().range([barchart_height, 0]);
+
     x_country.domain(country_statistical.map(function(d) { return d['country']; }));
     y_country.domain([0, d3.max(country_statistical, function(d) { return d['count']; })]);
+
     country_barchart.selectAll("rect")
     .data(country_statistical)
     .enter().append("rect")
@@ -743,10 +667,7 @@ else{
 
 }
 
-
-// **** Your JavaScript code goes here ****
-
-// **** Your JavaScript code goes here ****
+// load CSV
 d3.csv('../data/new_data_with_date.csv').then(function(sta_dataset) {
 sta_satelliteData = sta_dataset;
 let countries = Object.keys(sta_dataset.reduce((options, d) => {
@@ -810,35 +731,20 @@ document.querySelector('#sta_refineByYear').addEventListener('change', (event) =
 document.querySelector('#radioCountry').addEventListener('change', (event) => {
     radioValue = 'Country';
     sta_updateChart(refineByParams,radioValue)
-    //console.log(event.target.value);
-    // refineByParams[STA_FN_YEAR] = event.target.value;
-    // sta_updateChart(refineByParams);
 });
 document.querySelector('#radioPurpose').addEventListener('change', (event) => {
     radioValue = 'Purpose';
     sta_updateChart(refineByParams,radioValue)
-    //console.log(event.target.value);
-    // refineByParams[STA_FN_YEAR] = event.target.value;
-    // sta_updateChart(refineByParams);
 });
 document.querySelector('#radioPeriod').addEventListener('change', (event) => {
     radioValue = 'Period';
     sta_updateChart(refineByParams,radioValue)
-    //console.log(event.target.value);
-    // refineByParams[STA_FN_YEAR] = event.target.value;
-    // sta_updateChar(refineByParams);
 });
 document.querySelector('#radioMass').addEventListener('change', (event) => {
     radioValue = 'Mass';
     sta_updateChar(refineByParams,radioValue)
-    //console.log(event.target.value);
-    // refineByParams[STA_FN_YEAR] = event.target.value;
-    // sta_updateChar(refineByParams);
 });
 document.querySelector('#radioDis').addEventListener('change', (event) => {
     radioValue = 'Dis';
     sta_updateChar(refineByParams,radioValue)
-    //console.log(event.target.value);
-    // refineByParams[STA_FN_YEAR] = event.target.value;
-    // sta_updateChar(refineByParams);
 });
