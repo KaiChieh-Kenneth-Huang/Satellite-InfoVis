@@ -63,6 +63,7 @@ function sta_updateChart(refineParam,radioValue) {
         }
         return match;
     });
+    console.log(radioValue);
     sta_dataset = sta_filteredSatellites;
     d3.select('#statistical-main-vis').selectAll('g').remove();
     //Sort
@@ -126,99 +127,7 @@ function sta_updateChart(refineParam,radioValue) {
     .attr("transform", "translate(" + (width/2+30) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
 
-    var periodBar_background = svg.append('g')
-    .selectAll('path')
-    .data(sta_dataset)
-    .enter()
-    .append('path')
-    .attr("fill-opacity","1")
-    .attr('fill','#28333c')
-    .attr('d',d3.arc()
-        .innerRadius( function(d) { return y_period(0) })
-        .outerRadius(function(d){return y_period(maxPeriod);})
-        .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
-        .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
-        .padAngle(padAngle)
-        .padRadius(outerRadius_Period)
-    );
-
-    var periodBar = svg.append('g')
-        .selectAll('path')
-        .data(sta_dataset)
-        .enter()
-        .append('path')
-        .attr('fill','#e35b4f')
-        .attr('d',d3.arc()
-            .innerRadius( function(d) { return y_period(0) })
-            .outerRadius(function(d){return y_period(d['Period (minutes)']);})
-            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
-            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
-            .padAngle(padAngle)
-            .padRadius(outerRadius_Period)
-        );
-
-    var massBar_background = svg.append('g')
-        .selectAll('path')
-        .data(sta_dataset)
-        .enter()
-        .append('path')
-        .attr("fill-opacity","1")
-        .attr('fill','#28333c')
-        .attr('d',d3.arc()
-            .innerRadius( function(d) { return y_mass(0) })
-            .outerRadius(function(d){return y_mass(maxMass);})
-            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
-            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
-            .padAngle(padAngle)
-            .padRadius(outerRadius_Mass)
-        );
-
-    var massBar = svg.append('g')
-        .selectAll('path')
-        .data(sta_dataset)
-        .enter()
-        .append('path')
-        .attr('fill','#f08934')
-        .attr('d',d3.arc()
-            .innerRadius( function(d) { return y_mass(0) })
-            .outerRadius(function(d){return y_mass(d['Launch Mass (kg.)']);})
-            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
-            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
-            .padAngle(padAngle)
-            .padRadius(outerRadius_Mass)
-        );
-
-
-    var disBar_background = svg.append('g')
-        .selectAll('path')
-        .data(sta_dataset)
-        .enter()
-        .append('path')
-        .attr("fill-opacity","1")
-        .attr('fill','#28333c')
-        .attr('d',d3.arc()
-            .innerRadius( function(d) { return y_dis(0) })
-            .outerRadius(function(d){return y_dis(maxDis);})
-            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
-            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
-            .padAngle(padAngle)
-            .padRadius(outerRadius_Dis)
-        );
-
-    var disBar = svg.append('g')
-        .selectAll('path')
-        .data(sta_dataset)
-        .enter()
-        .append('path')
-        .attr('fill','#ee7137')
-        .attr('d',d3.arc()
-            .innerRadius( function(d) { return y_dis(0) })
-            .outerRadius(function(d){return y_dis(d['Perigee (km)']);})
-            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
-            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
-            .padAngle(padAngle)
-            .padRadius(outerRadius_Dis)
-        );
+    
 
     var Civil = 0;
     var Commercial = 0;
@@ -468,6 +377,102 @@ else{
     .padRadius(outerRadius_Country)
     );
     }
+
+    var periodBar_background = svg.append('g')
+    .selectAll('path')
+    .data(sta_dataset)
+    .enter()
+    .append('path')
+    .attr("fill-opacity","1")
+    .attr('fill','#28333c')
+    .attr('d',d3.arc()
+        .innerRadius( function(d) { return y_period(0) })
+        .outerRadius(function(d){return y_period(maxPeriod);})
+        .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
+        .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
+        .padAngle(padAngle)
+        .padRadius(outerRadius_Period)
+    );
+
+    var periodBar = svg.append('g')
+        .selectAll('path')
+        .data(sta_dataset)
+        .enter()
+        .append('path')
+        .attr('fill','#e35b4f')
+        .attr('d',d3.arc()
+            .innerRadius( function(d) { return y_period(0) })
+            .outerRadius(function(d){return y_period(d['Period (minutes)']);})
+            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
+            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
+            .padAngle(padAngle)
+            .padRadius(outerRadius_Period)
+        );
+
+    var massBar_background = svg.append('g')
+        .selectAll('path')
+        .data(sta_dataset)
+        .enter()
+        .append('path')
+        .attr("fill-opacity","1")
+        .attr('fill','#28333c')
+        .attr('d',d3.arc()
+            .innerRadius( function(d) { return y_mass(0) })
+            .outerRadius(function(d){return y_mass(maxMass);})
+            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
+            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
+            .padAngle(padAngle)
+            .padRadius(outerRadius_Mass)
+        );
+
+    var massBar = svg.append('g')
+        .selectAll('path')
+        .data(sta_dataset)
+        .enter()
+        .append('path')
+        .attr('fill','#f08934')
+        .attr('d',d3.arc()
+            .innerRadius( function(d) { return y_mass(0) })
+            .outerRadius(function(d){return y_mass(d['Launch Mass (kg.)']);})
+            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
+            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
+            .padAngle(padAngle)
+            .padRadius(outerRadius_Mass)
+        );
+
+
+    var disBar_background = svg.append('g')
+        .selectAll('path')
+        .data(sta_dataset)
+        .enter()
+        .append('path')
+        .attr("fill-opacity","1")
+        .attr('fill','#28333c')
+        .attr('d',d3.arc()
+            .innerRadius( function(d) { return y_dis(0) })
+            .outerRadius(function(d){return y_dis(maxDis);})
+            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
+            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
+            .padAngle(padAngle)
+            .padRadius(outerRadius_Dis)
+        );
+
+    var disBar = svg.append('g')
+        .selectAll('path')
+        .data(sta_dataset)
+        .enter()
+        .append('path')
+        .attr('fill','#ee7137')
+        .attr('d',d3.arc()
+            .innerRadius( function(d) { return y_dis(0) })
+            .outerRadius(function(d){return y_dis(d['Perigee (km)']);})
+            .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
+            .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
+            .padAngle(padAngle)
+            .padRadius(outerRadius_Dis)
+        );
+
+
 
     // bar charts begin
     var main_svg = d3.select('#statistical-main-vis');
@@ -742,9 +747,9 @@ document.querySelector('#radioPeriod').addEventListener('change', (event) => {
 });
 document.querySelector('#radioMass').addEventListener('change', (event) => {
     radioValue = 'Mass';
-    sta_updateChar(refineByParams,radioValue)
+    sta_updateChart(refineByParams,radioValue)
 });
 document.querySelector('#radioDis').addEventListener('change', (event) => {
     radioValue = 'Dis';
-    sta_updateChar(refineByParams,radioValue)
+    sta_updateChart(refineByParams,radioValue)
 });
