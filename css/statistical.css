@@ -34,3 +34,7 @@ h3 {
 .custom-control-label{
     font-size: 14px;
 }
+
+.arc{
+    pointer-events: all;
+}

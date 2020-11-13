@@ -115,6 +115,7 @@ h3 {
     min-width: 600px;
     min-height: 400px;
     z-index: -1;
+    pointer-events: all;
 }
 
 /* D3 */

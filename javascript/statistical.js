@@ -63,7 +63,7 @@ function sta_updateChart(refineParam,radioValue) {
         }
         return match;
     });
-    console.log(radioValue);
+    //console.log(radioValue);
     sta_dataset = sta_filteredSatellites;
     d3.select('#statistical-main-vis').selectAll('g').remove();
     //Sort
@@ -127,6 +127,36 @@ function sta_updateChart(refineParam,radioValue) {
     .attr("transform", "translate(" + (width/2+30) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
 
+    var Tooltip = d3.select("#statistical-main-vis")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+
+    var mouseover = function(d) {
+        Tooltip
+          .style("opacity", 1)
+        d3.select(this)
+          .style("stroke", "black")
+          .style("opacity", 1)
+      }
+      var mousemove = function(d) {
+        Tooltip
+          .html("The country is: " + d['new_country'])
+          .style("left", (d3.mouse(this)[0]+70) + "px")
+          .style("top", (d3.mouse(this)[1]) + "px")
+      }
+      var mouseleave = function(d) {
+        Tooltip
+          .style("opacity", 0)
+        d3.select(this)
+          .style("stroke", "none")
+          .style("opacity", 0.8)
+      }
     
 
     var Civil = 0;
@@ -400,14 +430,18 @@ else{
         .enter()
         .append('path')
         .attr('fill','#e35b4f')
+        .attr('class','arc')
         .attr('d',d3.arc()
-            .innerRadius( function(d) { return y_period(0) })
+            .innerRadius( function(d) { return y_period(0); })
             .outerRadius(function(d){return y_period(d['Period (minutes)']);})
             .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
             .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
             .padAngle(padAngle)
             .padRadius(outerRadius_Period)
-        );
+        )
+        .on('mouseover', function(d){console.log(d['new_country']);})
+        .on('mousemove', function(d){console.log(d['new_country']);})
+        .on('mouseout', function(d){console.log(d['new_country']);});
 
     var massBar_background = svg.append('g')
         .selectAll('path')
@@ -505,25 +539,49 @@ else{
     
     var bins = dis_histogram(disArray);
 
-    var y_dis = d3.scaleLinear()
-    .range([barchart_height, 0]);
+    // var y_dis = d3.scaleLinear()
+    // .range([barchart_height, 0]);
+
+    var y_dis = d3.scaleLog()
+    .range([0, barchart_height]);
 
     console.log(bins);
 
-    y_dis.domain([0, d3.max(bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
-    
+    //y_dis.domain([0, d3.max(bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
+    y_dis.domain([1000, 1]);
+
+
+
     dis_barchart.append("g")
     .attr('class','axis')
-    .call(d3.axisLeft(y_dis));
+    .call(d3.axisLeft(y_dis).ticks(5));
+
+    // console.log(y_dis(10000));
+    // console.log(y_dis(0));
 
     dis_barchart.selectAll("rect")
     .data(bins)
     .enter()
     .append("rect")
     .attr("x", 1)
-    .attr("transform", function(d) { return "translate("  + x_dis(d.x0) + ","  + y_dis(d.length) + ")"; })
+    .attr("transform", function(d) { 
+        if (d.length == 0){
+            return "translate("  + x_dis(d.x0) + ","  + (barchart_height) + ")";
+        }
+        else{
+            return "translate("  + x_dis(d.x0) + ","  + (y_dis(d.length)) + ")"; 
+        }
+    })
+
     .attr("width", function(d) { return x_dis(d.x1) - x_dis(d.x0) -1 ; })
-    .attr("height", function(d) { return barchart_height - y_dis(d.length); })
+    .attr("height", function(d) { 
+        if(d.length ==0){
+            return 0;
+        }
+        else{
+            return  barchart_height - y_dis(d.length);
+        }
+        })
     .style("fill", "#69b3a2");
 
     //period array
