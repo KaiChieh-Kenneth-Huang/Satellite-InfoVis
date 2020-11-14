@@ -1,6 +1,6 @@
 /* layout */
 .main-display.realistic {
-    padding: 40px 40px 80px 40px;
+    padding: 50px 40px 80px 40px;
 }
 
 .left-panel.realistic > .options {
@@ -9,16 +9,15 @@
 
 .right-panel.realistic{
     position: absolute;
-    top: 86px;
-    right:48px;
+    bottom: -50px;
+    right:40px;
 }
 
 /* Legend */
 .legend { 
     list-style: none; 
     opacity: 0.8;
-    margin-top: 40px;
-    margin-right: 10px;
+    margin-bottom: 40px;
 }
 
 .legend li{ 
@@ -34,6 +33,10 @@
     margin: 5px 6px 6px 0; 
     background-color: #ffffff;
     opacity: 0.9;
+}
+
+.legend .number{
+    display: inline-block;
 }
 
 .legend .China { background-color: #E12200; opacity: 0.75}

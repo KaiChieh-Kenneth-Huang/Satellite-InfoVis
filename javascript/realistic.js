@@ -207,11 +207,12 @@ function updateChart(refineParam) {
         })
         .style('opacity', 0.7);
 
-        
     // Put all data points into different groups based on purpose
     var civilPurpose = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Civil';
     });
+
+    
 
     var commercialPurpose = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Commercial';
@@ -513,7 +514,7 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
-    countries.push('All');
+    countries.push('All (6)');
     countries.sort();
 
     let purposes = Object.keys(satelliteData.reduce((options, d) => {
@@ -523,7 +524,7 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
-    purposes.push('All');
+    purposes.push('All (5)');
     purposes.sort();
 
     let periods = Object.keys(satelliteData.reduce((options, d) => {
@@ -535,7 +536,7 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
     }, {})).sort((a, b) => {
         return parseInt(b.substr(6)) - parseInt(a.substr(6));
     });
-    periods.unshift('All');
+    periods.unshift('All (4)');
     //periods.sort();
 
     // population refine by options
@@ -579,7 +580,6 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
     updateChart(refineByParamsRealistic);
     
 });
-
 
 // *** Filter By Listeners ***
 // Drop downs
