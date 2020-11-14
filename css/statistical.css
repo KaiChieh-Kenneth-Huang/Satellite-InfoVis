@@ -3,13 +3,59 @@
 /* D3 */
 /* layout */
 .main-display.statistical {
-    padding: 40px 40px 80px 40px;
+    padding: 40px 40px 40px 40px;
 }
 
-.left-panel.statistical > .options {
-    width: 200px;
+#statistical-main-vis{
+    margin-top: 40px;
 }
 
+.left-panel.statistical  {
+    width: 180px;
+}
+
+.custom-select{
+    border-radius:10px;
+    width: 180px;
+    font-size: 13px;
+}
+
+.stat-title{
+    width: 600px;
+}
+
+.stat-title h1{
+    padding-top: 10px;
+}
+
+#sta_refineByYear{
+    position: relative;
+    font-size: 26px;
+    color:white;
+    width: 120px;
+    height: 40px;
+    margin-left: 10px;
+    padding:0 0 0 10px;
+    background:url('../data/arrow.png') no-repeat;
+    background-position:100% center;
+    background-size: 20%;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid white;
+}
+
+
+.options{
+    opacity: 0.7;
+    width:200px;
+}
+
+
+.legend .s_Civil { background-color: #f54f47;}
+.legend .s_Commercial { background-color: #f57600; }
+.legend .s_Government { background-color: #f1428a; }
+.legend .s_Millitary { background-color: #edb200; }
+.legend .s_Multi-purpose { background-color: #ad73c8; }
 
 /* D3 */
 .regular-ellipse {
@@ -20,19 +66,20 @@
 }
 
 /* font for all texts */
-h1 {
-    font-size: 28px;
+h1{
+    font-size:26px;
 }
 
-h2 {
-    font-size: 18px;
+h2{
+    font-size:18px;
 }
 
 h3 {
-    font-size: 14px;
+    font-size:13px;
 }
 
 .custom-control-label{
+    padding-top: 2px;
     font-size: 14px;
 }
 
@@ -43,3 +90,13 @@ h3 {
 .g_main {
     pointer-events: all;
   }
+
+.bar_label{
+    font-family: Metropolis, sans-serif;
+    font-size: 12px;
+}
+
+.axis text{
+    font-family: Metropolis, sans-serif;
+    font-size: 7px;
+}
