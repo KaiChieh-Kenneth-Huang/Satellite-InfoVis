@@ -55,7 +55,7 @@ function sta_updateChart(refineParam,radioValue) {
     var sta_filteredSatellites = sta_satelliteData.filter(function(d){
         let match = true;
         for (let key in refineParam) {
-            if (refineParam[key] == 'All'){
+            if (refineParam[key] == 'All (5)'){
                 continue;
             }
             else if (d[key] !== refineParam[key]) {
@@ -819,9 +819,9 @@ const sta_populateRefineBy = (selectEle, options) => {
 sta_populateRefineBy(sta_refineByCountry, countries);
 sta_populateRefineBy(sta_refineByPurpose, purposes);
 sta_populateRefineBy(sta_refineByYear, years);
-refineByParams[STA_FN_COUNTRY] = 'All';
+refineByParams[STA_FN_COUNTRY] = 'All (5)';
 refineByParams[STA_FN_YEAR] = '2020';
-refineByParams[STA_FN_PURPOSE] = 'All';
+refineByParams[STA_FN_PURPOSE] = 'All (5)';
 sta_updateChart(refineByParams,radioValue);
 });
 
