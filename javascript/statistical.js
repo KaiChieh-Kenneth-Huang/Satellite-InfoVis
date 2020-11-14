@@ -137,7 +137,7 @@ function sta_updateChart(refineParam,radioValue) {
     // .attr("height", 100)
     // .attr('fill', 'red');
 
-    var Tooltip = d3.select("#statistical-main-vis")
+    var Tooltip = d3.select("#div_template")
     .append("div")
     .style("opacity", 0)
     .attr("class", "tooltip")
@@ -240,6 +240,8 @@ function sta_updateChart(refineParam,radioValue) {
             Multinational++;
         }
     }
+
+    //UK, USA, Russia, Others, Multinational, China
     var all = USA + UK + China + Russia + Others + Multinational;
     var USA_p = USA / all * radius_range;
     var China_p = China / all * radius_range;
@@ -249,12 +251,12 @@ function sta_updateChart(refineParam,radioValue) {
     var Multinational_p = Multinational / all * radius_range;
 
     var country = [
-        { country: 'USA', start_angle : 0, angle : USA_p },
-        { country: 'China', start_angle : USA_p, angle : China_p },
-        { country: 'UK', start_angle : China_p + USA_p, angle : UK_p },
-        { country: 'Russia', start_angle : China_p + USA_p + UK_p, angle : Russia_p },
-        { country: 'Others', start_angle : China_p + USA_p + UK_p + Russia_p, angle : Others_p },
-        { country: 'Multinational', start_angle : China_p + USA_p + UK_p + Russia_p + Others_p, angle : Multinational_p}
+        { country: 'USA', start_angle : UK_p, angle : USA_p },
+        { country: 'China', start_angle : USA_p + UK_p + Russia_p + Others_p + Multinational_p, angle : China_p },
+        { country: 'UK', start_angle : 0, angle : UK_p },
+        { country: 'Russia', start_angle : USA_p + UK_p, angle : Russia_p },
+        { country: 'Others', start_angle : USA_p + UK_p + Russia_p, angle : Others_p },
+        { country: 'Multinational', start_angle : USA_p + UK_p + Russia_p + Others_p, angle : Multinational_p}
     ]
 
     var country_statistical = [
