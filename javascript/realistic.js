@@ -506,8 +506,7 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
-    countries.push('All (6)');
-    countries.sort();
+    countries.unshift('All (6)');
 
     let purposes = Object.keys(satelliteData.reduce((options, d) => {
         const fieldName = FN_PURPOSE;
@@ -516,8 +515,7 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
-    purposes.push('All (5)');
-    purposes.sort();
+    purposes.unshift('All (5)');
 
     let periods = Object.keys(satelliteData.reduce((options, d) => {
         const fieldName = FN_PERIOD;
