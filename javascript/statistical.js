@@ -127,7 +127,7 @@ function sta_updateChart(refineParam,radioValue) {
     var svg = d3.select('#statistical-main-vis')
     .append("g")
     .attr("class", "g_main")
-    .attr("transform", "translate(" + (width/2) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
+    .attr("transform", "translate(" + (width/2-10) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
 
     var Tooltip = d3.select("#statistical-main-vis")
@@ -532,7 +532,7 @@ else{
 
     var svgWidth = mainVis.clientWidth;
     var svgHeight = mainVis.clientHeight;
-    var pad = {t: 140, r: 280, b: 40, l: 40};
+    var pad = {t: 100, r: 280, b: 40, l: 40};
     var bar_gap = 50;
 
     console.log('WIDTHHHH'+svgWidth);
