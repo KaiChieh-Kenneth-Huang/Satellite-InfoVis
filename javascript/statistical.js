@@ -430,7 +430,7 @@ else{
         .enter()
         .append('path')
         .attr('fill','#e35b4f')
-        .attr('class','arc')
+        //.attr('class','arc')
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_period(0); })
             .outerRadius(function(d){return y_period(d['Period (minutes)']);})
@@ -566,7 +566,7 @@ else{
     .attr("x", 1)
     .attr("transform", function(d) { 
         if (d.length == 0){
-            return "translate("  + x_dis(d.x0) + ","  + (barchart_height) + ")";
+            return "translate("  + x_dis(d.x0) + ","  + 0 + ")";
         }
         else{
             return "translate("  + x_dis(d.x0) + ","  + (y_dis(d.length)) + ")"; 

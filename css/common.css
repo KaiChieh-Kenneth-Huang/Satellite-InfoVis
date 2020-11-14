@@ -134,6 +134,9 @@ text.label {
     fill: #fff;
     font-family: 'Rajdhani', sans-serif;
 }
+g {
+    pointer-events: all;
+}
 
 g text {
     font-size: 10px;
