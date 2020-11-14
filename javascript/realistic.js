@@ -126,7 +126,7 @@ function updateChart(refineParam) {
     var filteredSatellites = satelliteData.filter(function(d){
         let match = true;
         for (let key in refineParam) {
-            if (refineParam[key].substr(0, 2) === 'All') {
+            if (refineParam[key].substr(0, 3) === 'All') {
                 continue;
             }
             if (d[key] !== refineParam[key]) {
