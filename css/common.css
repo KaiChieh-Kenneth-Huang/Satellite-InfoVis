@@ -38,36 +38,20 @@ body::after {
     z-index: -100;
 }
 
+#main-title {
+    text-align: center;
+    padding: 60px 0 30px 0;
+}
+#main-title h1 {
+    font-family: Metropolis_SemiBold;
+    font-size: 48px;
+}
+
 h3 {
     font-family: Metropolis_Medium, sans-serif;
 }
 
-/* scrolly telling */
-#scroll {
-    position: relative;
-}
-
-.scroll__graphic {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: auto;
-    width: 100%;
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-}
-
-.scroll__graphic.is-fixed {
-    position: fixed;
-}
-
-.scroll__graphic.is-bottom {
-    bottom: 0;
-    top: auto;
-}
-
-/*  */
+/* main vis */
 #main {
     position: relative;
     margin: 0;
