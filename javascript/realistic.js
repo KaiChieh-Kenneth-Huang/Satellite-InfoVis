@@ -47,7 +47,7 @@ const FN_COUNTRY = 'new_country';
 const FN_PURPOSE = 'new_purpose';
 const FN_PERIOD = 'new_period';
 
-var refineByParams = {};
+var refineByParamsRealistic = {};
 
 // svg variables
 var satelliteData; // holds the satellite data
@@ -104,7 +104,7 @@ function opacityStyle(d) { //Opacity
 
 // *** Create a function to update chart ***
 function updateChart(refineParam) {
-
+    console.log(refineParam);
     // Remove the remaining earth PNG, orbit labels, and scale from the last time
     d3.select('.orbitLabels').remove();
     d3.select('.earth').remove();
@@ -126,10 +126,10 @@ function updateChart(refineParam) {
     var filteredSatellites = satelliteData.filter(function(d){
         let match = true;
         for (let key in refineParam) {
-            if (refineParam[key] == 'All (4)' || 'All (5)' || 'All (6)'){
+            if (refineParam[key].substr(0, 2) === 'All') {
                 continue;
             }
-            else if (d[key] !== refineParam[key]) {
+            if (d[key] !== refineParam[key]) {
                 match = false;
                 break;
             }
@@ -577,25 +577,25 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
 
     kmToWidth = (mainVis.clientWidth - graphLeftPadding - mainVisRightPadding) / (maxApogee + maxPerigee);
 
-    updateChart(refineByParams);
+    updateChart(refineByParamsRealistic);
     
 });
 
 // *** Filter By Listeners ***
 // Drop downs
 document.querySelector('#refineByCountry').addEventListener('change', (event) => {
-    refineByParams[FN_COUNTRY] = event.target.value;
-    updateChart(refineByParams);
+    refineByParamsRealistic[FN_COUNTRY] = event.target.value;
+    updateChart(refineByParamsRealistic);
 });
 
 document.querySelector('#refineByPurpose').addEventListener('change', (event) => {
-    refineByParams[FN_PURPOSE] = event.target.value;
-    updateChart(refineByParams);
+    refineByParamsRealistic[FN_PURPOSE] = event.target.value;
+    updateChart(refineByParamsRealistic);
 });
 
 document.querySelector('#refineByPeriod').addEventListener('change', (event) => {
-    refineByParams[FN_PERIOD] = event.target.value;
-    updateChart(refineByParams);
+    refineByParamsRealistic[FN_PERIOD] = event.target.value;
+    updateChart(refineByParamsRealistic);
 });
 
 // Toggles for More Options
@@ -649,17 +649,17 @@ let zoomLevel_OVERVIEW = document.getElementById('radioOverview');
 zoomLevel_LEO.addEventListener('change', function(){
     zoom = ZOOM_LEO;
     //console.log('I am LEO');
-    updateChart();
+    updateChart(refineByParamsRealistic);
 });
 
 zoomLevel_GEO.addEventListener('change', function(){
     zoom = ZOOM_GEO;
     //console.log('I am GEO');
-    updateChart();
+    updateChart(refineByParamsRealistic);
 });
 
 zoomLevel_OVERVIEW.addEventListener('change', function(){
     zoom = ZOOM_OVERVIEW;
     //console.log('I am Overview');
-    updateChart();
+    updateChart(refineByParamsRealistic);
 });
