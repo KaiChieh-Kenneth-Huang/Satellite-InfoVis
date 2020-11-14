@@ -39,13 +39,13 @@ const graphLeftPadding = canvasLeftPadding + leftControlsWidth + mainVisLeftPadd
 
 // Refine By dropdowns
 const refineByCountry = document.querySelector('#refineByCountry');
-const refineByOwner = document.querySelector('#refineByOwner');
 const refineByPurpose = document.querySelector('#refineByPurpose');
+const refineByPeriod = document.querySelector('#refineByPeriod');
 
 // field names
-const FN_COUNTRY = 'Country of Operator/Owner';
-const FN_OWNER = 'Operator/Owner';
-const FN_PURPOSE = 'Purpose';
+const FN_COUNTRY = 'new_country';
+const FN_PURPOSE = 'new_purpose';
+const FN_PERIOD = 'new_period';
 
 var refineByParams = {};
 
@@ -511,16 +511,16 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         return options;
     }, {})).sort();
 
-    let owners = Object.keys(satelliteData.reduce((options, d) => {
-        const fieldName = FN_OWNER;
+    let purposes = Object.keys(satelliteData.reduce((options, d) => {
+        const fieldName = FN_PURPOSE;
         if (!options[d[fieldName]]) {
             options[d[fieldName]] = d[fieldName]; // can later make key, value pair different to display different things in dropdown options
         }
         return options;
     }, {})).sort();
 
-    let purposes = Object.keys(satelliteData.reduce((options, d) => {
-        const fieldName = FN_PURPOSE;
+    let periods = Object.keys(satelliteData.reduce((options, d) => {
+        const fieldName = FN_PERIOD;
         if (!options[d[fieldName]]) {
             options[d[fieldName]] = d[fieldName]; // can later make key, value pair different to display different things in dropdown options
         }
@@ -534,8 +534,8 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
     }
     populateRefineBy(refineByCountry, countries);
-    populateRefineBy(refineByOwner, owners);
     populateRefineBy(refineByPurpose, purposes);
+    populateRefineBy(refineByPeriod, periods);
 
     maxApogee = d3.max(dataset, function(d){
         return +d['Apogee (km)'] + EARTH_RADIUS;
@@ -577,13 +577,13 @@ document.querySelector('#refineByCountry').addEventListener('change', (event) =>
     updateChart(refineByParams);
 });
 
-document.querySelector('#refineByOwner').addEventListener('change', (event) => {
-    refineByParams[FN_OWNER] = event.target.value;
+document.querySelector('#refineByPurpose').addEventListener('change', (event) => {
+    refineByParams[FN_PURPOSE] = event.target.value;
     updateChart(refineByParams);
 });
 
-document.querySelector('#refineByPurpose').addEventListener('change', (event) => {
-    refineByParams[FN_PURPOSE] = event.target.value;
+document.querySelector('#refineByPeriod').addEventListener('change', (event) => {
+    refineByParams[FN_PERIOD] = event.target.value;
     updateChart(refineByParams);
 });
 

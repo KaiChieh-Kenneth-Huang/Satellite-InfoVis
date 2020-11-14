@@ -1,6 +1,8 @@
 <div class="left-panel statistical">
-    <h2>Satellites Statistics in the Year of</h2>
+  <div class="stat-title form-inline">
+    <h1>Satellites Statistics in the Year of:</h1>
     <select class="custom-select" id="sta_refineByYear"></select>
+  </div>
     <section class="options">
         <h2>Refine by</h2>
         <h3>Country</h3>
@@ -37,8 +39,18 @@
             <label class="custom-control-label" for="radioDis">Avg Distance to Earth</label>
           </div>
     </section>
+    <section class="legend">
+          <h2>Purpose</h2>
+          <li><span class="s_Civil"></span> Civil</li>
+          <li><span class="s_Commercial"></span> Commercial</li>
+          <li><span class="s_Government"></span> Government</li>
+          <li><span class="s_Millitary"></span> Millitary</li>
+          <li><span class="s_Multi-purpose"></span> Multi-purpose</li>
+  </section>
 </div>
 <div class="right-panel statistical">
+  <div id="div_template"></div>
+  <div id="my_dataviz"></div>
 </div>
 
 

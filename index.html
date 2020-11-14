@@ -13,37 +13,91 @@
         <!-- https://mdbootstrap.com/docs/jquery/forms/radio-button/ -->
         <!-- Custom CSS -->
         <link rel="stylesheet" href="css/common.css">
+        <link rel="stylesheet" href="css/scrolly.css">
         <link rel="stylesheet" href="css/realistic.css">
         <link rel="stylesheet" href="css/statistical.css">
 
         <title>Satelite InfoVis</title>
     </head>
     <body>
-        <section id='scroll'>
-            <!--  graphic container  -->
-            <div class='scroll__graphic'>
-                <!--   actual graphic/chart   -->
-                <div class='chart'>
-                    <p>0</p>
-                </div>
-            </div>
-        
-            <!--  step/text container  -->
-            <div class='scroll__text'>
-                <div class='step' data-step='1'>
-                    <p>STEP 1</p>
-                </div>
-                <div class='step' data-step='2'>
-                    <p>STEP 2</p>
-                </div>
-                <div class='step' data-step='3'>
-                    <p>STEP 3</p>
-                </div>
-                <div class='step' data-step='4'>
-                    <p>STEP 4</p>
-                </div>
-            </div>
+        <section id="main-title">
+            <h1>A Journey to the World of Artificial Satellites</h1>
+            <p>By Kai-Chieh Huang, Yunzhi Li, Yiming Lyu, Yian Zhao</p>
         </section>
+          
+        <section id='scrolly-side'>
+            <div class='scrolly'>
+                <!--  step text   -->
+                <article>
+                <div class='step' data-name='intro'>
+                    <div>
+                        <p>There are thousands of artificial satellites orbiting the Earth in space every day. However, most of them might be unknown to people. Today, let’s take a fantastic journey to explore the world of artifical satellites...</p>
+                    </div>
+                </div>
+                <div class='step' data-name='what-is-satellite'>
+                    <div>
+                        <h2>What is an Artificial Satellite?</h2>
+                        <p>In the context of spaceflight, an artificial satellite is an object that has been intentionally placed into orbit. These objects are called artificial satellites to distinguish them from natural satellites such as Earth's Moon.</p>
+                    </div>
+                </div>
+                <div class='step' data-name='first-satellite'>
+                    <div>
+                        <h2>The First Satellite was Launched in 1957</h2>
+                        <p>On 4 October 1957, the Soviet Union launched the world's first artificial satellite, Sputnik 1. It orbited for three weeks before its batteries died and then orbited silently for two months before it fell back into the atmosphere.</p>
+                    </div>
+                </div>
+                <div class='step' data-name='satellites-launched'>
+                    <div>
+                        <h2>Now, 8,900 Satellites have been Launched</h2>
+                        <p>Since then, about 8,900 satellites from more than 40 countries have been launched. According to a 2018 estimate, some 5,000 remain in orbit. Of those about 1,900 were operational, while the rest have lived out their useful lives and become space debris.</p>
+                    </div>
+                </div>
+                <div class='step' data-name='orbit-intro'>
+                    <div>
+                        <h2>How Do Satellites Orbit Earth?</h2>
+                        <p>Most satellites are launched into space on rockets. A satellite orbits Earth when its speed is balanced by the pull of Earth's gravity. There are essentially three types of orbit: low Earth orbit (LEO), medium Earth orbit (MEO), and high Earch orbit (HEO).</p>
+                    </div>
+                </div>
+                <div class='step' data-name='LEO'>
+                    <div>
+                        <h2>Low Earth Orbit (LEO)</h2>
+                        <p>A low Earth orbit (LEO) is an Earth-centred orbit with an altitude of 2,000 km (1,200 miles) or less (approximately one-third of the radius of Earth). Most of the manmade objects in outer space are in LEO.</p>
+                    </div>
+                </div>
+                <div class='step' data-name='MEO'>
+                    <div>
+                        <h2>Medium Earth Orbit (MEO)</h2>
+                        <p>Medium Earth orbit (MEO), sometimes called intermediate circular orbit (ICO), is the region of space around Earth above low Earth orbit (altitude of 2,000 km (1,243 miles) above sea level) and below geosynchronous orbit (altitude of 35,786 km (22,236 miles) above sea level).</p>
+                    </div>
+                </div>
+                <div class='step' data-name='HEO'>
+                    <div>
+                        <h2>High Earth Orbit (HEO)</h2>
+                        <p>A high Earth orbit is a geocentric orbit with an altitude entirely above that of a geosynchronous orbit (35,786 kilometres (22,236 miles)). The orbital periods of such orbits are greater than 24 hours, therefore satellites in such orbits have an apparent retrograde motion – that is, even if they are in a prograde orbit (90° > inclination ≥ 0°), their orbital velocity is lower than Earth's rotational speed, causing their ground track to move westward on Earth's surface.</p>
+                    </div>
+                </div>
+                <div class='step' data-name='your-turn'>
+                    <div>
+                        <p>Now, it is your turn to explore the world of artificial satellite by yourself! Let’s have FUN :)</p>
+                    </div>
+                </div>
+                </article>
+                <!--  sticky graphic   -->
+                <figure class='sticky'>
+                    <div class='bar-outer'>
+                        <div class='bar-inner'></div>
+                    </div>
+                </figure>
+            </div>
+            <div id="scroll-indicator">
+                <svg width="50" height="22" viewBox="0 0 50 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L25.2017 21L49 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Scroll
+            </div>
+            
+        </section>
+
         <!-- the 'main' wrapper ensures that the svg size changes with the length of the display contents -->
         <div id="main">
             <!-- Main Interactive InfoVis -->
@@ -68,6 +122,12 @@
         
         <script src="libraries/jquery-3.5.1.min.js"></script>
         <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="libraries/d3-scale-radial.js"></script>
+        <!-- Scrollama -->
+        <script src="https://unpkg.com/intersection-observer"></script>
+        <script src="https://unpkg.com/scrollama"></script>
+        <script src="https://unpkg.com/enter-view@1.0.0/enter-view.min.js"></script>
+        <script src="https://unpkg.com/stickyfilljs@2.0.5/dist/stickyfill.js"></script>
         <!-- Load HTML fragments and related js code -->
         <script>
             const _$ = $;
@@ -78,11 +138,12 @@
                 _$.getScript('javascript/statistical.js');
             });
         </script>
-        <script src="javascript/common.js"></script>
-        <!-- <script src="https://d3js.org/d3.v4.js"></script> -->
-        <script src="libraries/d3-scale-radial.js"></script>
+        
         <!-- Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    
+        <script src="javascript/common.js"></script>
+        <script src="javascript/scrolly.js"></script>
     </body>
 </html>
