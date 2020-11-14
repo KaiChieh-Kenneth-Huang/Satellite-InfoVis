@@ -529,9 +529,11 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
             options[d[fieldName]] = d[fieldName]; // can later make key, value pair different to display different things in dropdown options
         }
         return options;
-    }, {})).sort();
-    periods.push('All');
-    periods.sort();
+    }, {})).sort((a, b) => {
+        return parseInt(b.substr(6)) - parseInt(a.substr(6));
+    });
+    periods.unshift('All');
+    //periods.sort();
 
     // population refine by options
     const populateRefineBy = (selectEle, options) => {
