@@ -205,7 +205,14 @@ function updateChart(refineParam) {
             }
         })
         .style('opacity', 0.7);
-
+        
+    // How to use: element.innerText =  satCount['1990 - 1996'] ? satCount['1990 - 1996'] : 0;
+    let satCount = {};
+    for (const satellite of filteredSatellites) {
+        satCount[satellite[FN_COUNTRY]] = satCount[satellite[FN_COUNTRY]] ? satCount[satellite[FN_COUNTRY]] + 1 : 1;
+        satCount[satellite[FN_PURPOSE]] = satCount[satellite[FN_PURPOSE]] ? satCount[satellite[FN_PURPOSE]] + 1 : 1;
+        satCount[satellite[FN_PERIOD]] = satCount[satellite[FN_PERIOD]] ? satCount[satellite[FN_PERIOD]] + 1 : 1;
+    }
     // Put all data points into different groups based on purpose
     var chinaData = filteredSatellites.filter(function(d){
         return d['new_country'] == 'China';
