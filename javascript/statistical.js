@@ -432,14 +432,15 @@ else{
         .padRadius(outerRadius_Period)
     );
 
-    var periodBar = svg.append('g')
+    var periodBar = svg
+        .append('g')
         .attr("class", "g_main")
         .selectAll('path')
         .data(sta_dataset)
         .enter()
         .append('path')
         .attr('fill','#e35b4f')
-        //.attr('class','arc')
+        .attr('class','arc')
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_period(0); })
             .outerRadius(function(d){return y_period(d['Period (minutes)']);})
