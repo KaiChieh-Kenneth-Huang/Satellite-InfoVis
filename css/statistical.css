@@ -10,6 +10,7 @@
     width: 200px;
 }
 
+
 /* D3 */
 .regular-ellipse {
     stroke: rgba(255, 255, 255, 0.7);
@@ -34,3 +35,11 @@ h3 {
 .custom-control-label{
     font-size: 14px;
 }
+
+.arc{
+    pointer-events: all;
+}
+
+.g_main {
+    pointer-events: all;
+  }

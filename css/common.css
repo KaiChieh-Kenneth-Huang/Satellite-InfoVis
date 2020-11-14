@@ -90,6 +90,7 @@ h3 {
     min-width: 600px;
     min-height: 400px;
     z-index: -1;
+    pointer-events: all;
 }
 
 /* D3 */
@@ -107,6 +108,9 @@ text.label {
     font-size: 10px;
     fill: #fff;
     font-family: 'Rajdhani', sans-serif;
+}
+g {
+    pointer-events: all;
 }
 
 g text {
