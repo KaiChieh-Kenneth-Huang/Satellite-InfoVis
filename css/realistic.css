@@ -36,6 +36,10 @@
     opacity: 0.9;
 }
 
+.legend .number{
+    display: inline-block;
+}
+
 .legend .China { background-color: #E12200; opacity: 0.75}
 .legend .Russia { background-color: #9B56BB; opacity: 0.75}
 .legend .UK { background-color: #0079B8; opacity: 0.75}
