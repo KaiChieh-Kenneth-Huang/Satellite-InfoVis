@@ -8,20 +8,22 @@ const radius_range = 1.8 * Math.PI;
 var width = sta_mainVis.clientWidth;
 var height = sta_mainVis.clientHeight;
 
-var outerRadius_Mass = 95;
-var innerRadius_Mass = 65;
+var scaleup = 1.85;
 
-var outerRadius_Dis = 60;
-var innerRadius_Dis = 30;
+var outerRadius_Mass = 95*scaleup;
+var innerRadius_Mass = 65*scaleup;
 
-var outerRadius_Period = 130;
-var innerRadius_Period = 100;
+var outerRadius_Dis = 60*scaleup;
+var innerRadius_Dis = 30*scaleup;
 
-var outerRadius_Purpose = 150;
-var innerRadius_Purpose = 135;
+var outerRadius_Period = 130*scaleup;
+var innerRadius_Period = 100*scaleup;
 
-var innerRadius_Country = 155;
-var outerRadius_Country = 170;
+var outerRadius_Purpose = 150*scaleup;
+var innerRadius_Purpose = 135*scaleup;
+
+var innerRadius_Country = 155*scaleup;
+var outerRadius_Country = 170*scaleup;
 
 var padAngle = 0.003;
 
@@ -125,7 +127,7 @@ function sta_updateChart(refineParam,radioValue) {
     var svg = d3.select('#statistical-main-vis')
     .append("g")
     .attr("class", "g_main")
-    .attr("transform", "translate(" + (width/2+30) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
+    .attr("transform", "translate(" + (width/2) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
 
     var Tooltip = d3.select("#statistical-main-vis")
