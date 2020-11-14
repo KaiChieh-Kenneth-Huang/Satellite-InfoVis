@@ -77,7 +77,9 @@ h3 {
 #main-vis-switch{
     position: absolute;
     top: 40px;
-    right: 40px;
+    right: 10px;
+    padding: 0px;
+    margin: 0px;
 }
 
 .main-display {
@@ -162,11 +164,6 @@ g text {
 } 
 
 /* layout */
-#main-vis-switch {
-    padding: 0px;
-    margin: 0px;
-}
-
 .custom-control-top-right {
     display: inline-block;
     vertical-align: middle;
@@ -174,7 +171,7 @@ g text {
     padding-top: 10px;
 }
 
-.custom-control-label {
-    font-size: 24px; /* no effect */
-    padding-top: 2.5px;
+#main-vis-switch label {
+    font-size: 18px; /* no effect */
+    padding-top: 1px;
 }
