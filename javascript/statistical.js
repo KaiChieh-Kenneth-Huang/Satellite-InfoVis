@@ -790,7 +790,7 @@ let countries = Object.keys(sta_dataset.reduce((options, d) => {
     }
     return options;
 }, {})).sort();
-countries.push('All');
+countries.push('All (5)');
 countries.sort();
 
 let purposes = Object.keys(sta_dataset.reduce((options, d) => {
@@ -800,7 +800,7 @@ let purposes = Object.keys(sta_dataset.reduce((options, d) => {
     }
     return options;
 }, {})).sort();
-purposes.push('All');
+purposes.push('All (5)');
 purposes.sort();
 
 let years = Object.keys(sta_dataset.reduce((options, d) => {
