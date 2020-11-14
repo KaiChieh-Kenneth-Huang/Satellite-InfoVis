@@ -1,47 +1,58 @@
 /* scrolly telling */
-#scroll {
+#scroll-indicator {
+    position: sticky;
+    bottom: 100px;
+    text-align: center;
+    font-family: Metropolis_Light;
+    font-size: 22px;
+}
+#scroll-indicator svg{
+    margin: 10px;
+}
+#scrolly-side .scrolly {
+    display: flex;
+	margin: 0 40px;
+	padding: 1rem;
+}
+
+#scrolly-side .scrolly > * {
+    flex: 1;   
+}
+
+#scrolly-side .scrolly article {
+    padding-right: 1rem;
+	max-width: 30rem;
+}
+
+#scrolly-side .scrolly article .step {
     position: relative;
+    min-height: calc(100vh - 220px);
+    margin-bottom: 1rem;
+    opacity: 0.2;
+    transition: 1000ms ease-in-out;
 }
 
-.scroll__graphic {
+#scrolly-side .scrolly article .step > div {
     position: absolute;
-    top: 0;
-    left: 0;
-    bottom: auto;
-    width: 100%;
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-}
-
-.scroll__graphic.is-fixed {
-    position: fixed;
-}
-
-.scroll__graphic.is-bottom {
-    bottom: 0;
-    top: auto;
-}
-
-.scroll__graphic .chart {
-    position: absolute;
-    right: 1rem;
     top: 50%;
-    -moz-transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
     transform: translateY(-50%);
 }
 
-.scroll__text {
-    padding: 0 1rem;
-    max-width: 30rem;
+#scrolly-side .scrolly article .step > div > h2{
+    font-family: Metropolis_Medium;
+    font-size: 24px;
 }
 
-.step {
-    opacity: 0;
-    padding: 1rem;
-}
-
-.step.is-active {
+#scrolly-side .scrolly article .step.is-active {
     opacity: 1;
+}
+				
+#scrolly-side .scrolly figure.sticky{
+    position: sticky;
+    width: 100%;
+    height: 50vh;
+    background: #444444;
+    margin: 0;
+    top: 0vh;
+    left: 0;
 }

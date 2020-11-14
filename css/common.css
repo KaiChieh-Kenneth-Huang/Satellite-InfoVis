@@ -38,6 +38,15 @@ body::after {
     z-index: -100;
 }
 
+#main-title {
+    text-align: center;
+    padding: 60px 0 30px 0;
+}
+#main-title h1 {
+    font-family: Metropolis_SemiBold;
+    font-size: 48px;
+}
+
 h3 {
     font-family: Metropolis_Medium, sans-serif;
 }
