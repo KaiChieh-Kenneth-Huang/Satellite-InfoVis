@@ -205,35 +205,20 @@ function updateChart(refineParam) {
             }
         })
         .style('opacity', 0.7);
-        
-    // How to use: element.innerText =  satCount['1990 - 1996'] ? satCount['1990 - 1996'] : 0;
+
+    // Add numbers to the legend
     let satCount = {};
     for (const satellite of filteredSatellites) {
         satCount[satellite[FN_COUNTRY]] = satCount[satellite[FN_COUNTRY]] ? satCount[satellite[FN_COUNTRY]] + 1 : 1;
         satCount[satellite[FN_PURPOSE]] = satCount[satellite[FN_PURPOSE]] ? satCount[satellite[FN_PURPOSE]] + 1 : 1;
         satCount[satellite[FN_PERIOD]] = satCount[satellite[FN_PERIOD]] ? satCount[satellite[FN_PERIOD]] + 1 : 1;
     }
+
+    document.getElementById('NumOfChina').innerText =  satCount['China'] ? satCount['China'] : 0;
+    document.getElementById('NumOfRussia').innerText =  satCount['Russia'] ? satCount['Russia'] : 0;
+    document.getElementById('NumOfUSA').innerText =  satCount['USA'] ? satCount['USA'] : 0;
+
     // Put all data points into different groups based on purpose
-    var chinaData = filteredSatellites.filter(function(d){
-        return d['new_country'] == 'China';
-    });
-
-    var russiaData = filteredSatellites.filter(function(d){
-        return d['new_country'] == 'Russia';
-    });
-
-    var UKData = filteredSatellites.filter(function(d){
-        return d['new_country'] == 'UK';
-    });
-
-    var USAData = filteredSatellites.filter(function(d){
-        return d['new_country'] == 'USA';
-    });
-
-    var otherData = filteredSatellites.filter(function(d){
-        return d['new_country'] == 'Others';
-    });
-
     var civilData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Civil';
     });
@@ -252,22 +237,6 @@ function updateChart(refineParam) {
     
     var multiData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Multi-purpose';
-    });
-
-    var year2010sData = filteredSatellites.filter(function(d){
-        return d['new_country'] == '2010 - 2020';
-    });
-
-    var year2000sData = filteredSatellites.filter(function(d){
-        return d['new_country'] == '2000 - 2009';
-    });
-
-    var year1990sData = filteredSatellites.filter(function(d){
-        return d['new_country'] == '1990 - 1999';
-    });
-
-    var yearBefore1990Data = filteredSatellites.filter(function(d){
-        return d['new_country'] == 'Before 1990';
     });
 
     // Plot each type of satellites based on their purposes
