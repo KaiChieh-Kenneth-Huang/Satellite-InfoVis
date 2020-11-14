@@ -124,6 +124,7 @@ function sta_updateChart(refineParam,radioValue) {
 
     var svg = d3.select('#statistical-main-vis')
     .append("g")
+    .attr("class", "g_main")
     .attr("transform", "translate(" + (width/2+30) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
 
@@ -258,6 +259,7 @@ function sta_updateChart(refineParam,radioValue) {
 
     if(radioValue == 'Purpose'){
         var purposeBar = svg.append('g')
+        .attr("class", "g_main")
         .selectAll('path')
         .data(purpose)
         .enter()
@@ -293,6 +295,7 @@ function sta_updateChart(refineParam,radioValue) {
     }
     else{
     var purposeBar = svg.append('g')
+    .attr("class", "g_main")
     .selectAll('path')
     .data(sta_dataset)
     .enter()
@@ -337,6 +340,7 @@ function sta_updateChart(refineParam,radioValue) {
 
 if(radioValue == 'Country'){
     var CountryBar = svg.append('g')
+    .attr("class", "g_main")
     .selectAll('path')
     .data(country)
     .enter()
@@ -374,6 +378,7 @@ if(radioValue == 'Country'){
 }
 else{
     var CountryBar = svg.append('g')
+    .attr("class", "g_main")
     .selectAll('path')
     .data(sta_dataset)
     .enter()
@@ -409,6 +414,7 @@ else{
     }
 
     var periodBar_background = svg.append('g')
+    .attr("class", "g_main")
     .selectAll('path')
     .data(sta_dataset)
     .enter()
@@ -425,6 +431,7 @@ else{
     );
 
     var periodBar = svg.append('g')
+        .attr("class", "g_main")
         .selectAll('path')
         .data(sta_dataset)
         .enter()
@@ -444,6 +451,7 @@ else{
         .on('mouseout', function(d){console.log(d['new_country']);});
 
     var massBar_background = svg.append('g')
+    .attr("class", "g_main")
         .selectAll('path')
         .data(sta_dataset)
         .enter()
