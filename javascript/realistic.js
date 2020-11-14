@@ -104,7 +104,6 @@ function opacityStyle(d) { //Opacity
 
 // *** Create a function to update chart ***
 function updateChart(refineParam) {
-    console.log(refineParam);
     // Remove the remaining earth PNG, orbit labels, and scale from the last time
     d3.select('.orbitLabels').remove();
     d3.select('.earth').remove();
@@ -485,7 +484,7 @@ function updateChart(refineParam) {
         .transition();
 
     militarySatellites2.merge(militarySatellitesEnter2)
-    .transition();
+        .transition();
 
     multiSatellites.merge(multiSatellitesEnter)
         .transition();
