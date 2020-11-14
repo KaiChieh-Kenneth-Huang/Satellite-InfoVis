@@ -209,30 +209,66 @@ function updateChart(refineParam) {
 
         
     // Put all data points into different groups based on purpose
-    var civilPurpose = filteredSatellites.filter(function(d){
+    var chinaData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'China';
+    });
+
+    var russiaData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'Russia';
+    });
+
+    var UKData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'UK';
+    });
+
+    var USAData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'USA';
+    });
+
+    var otherData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'Others';
+    });
+
+    var civilData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Civil';
     });
 
-    var commercialPurpose = filteredSatellites.filter(function(d){
+    var commercialData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Commercial';
     });
 
-    var governPurpose = filteredSatellites.filter(function(d){
+    var governData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Government';
     });
 
-    var militaryPurpose = filteredSatellites.filter(function(d){
+    var militaryData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Military';
     });
     
-    var multiPurpose = filteredSatellites.filter(function(d){
+    var multiData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Multi-purpose';
+    });
+
+    var year2010sData = filteredSatellites.filter(function(d){
+        return d['new_country'] == '2010 - 2020';
+    });
+
+    var year2000sData = filteredSatellites.filter(function(d){
+        return d['new_country'] == '2000 - 2009';
+    });
+
+    var year1990sData = filteredSatellites.filter(function(d){
+        return d['new_country'] == '1990 - 1999';
+    });
+
+    var yearBefore1990Data = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'Before 1990';
     });
 
     // Plot each type of satellites based on their purposes
     // Civil
     var civilSatellites = d3.select('#realistic-main-vis').selectAll('.civil.satellites')
-        .data(civilPurpose, function(d){
+        .data(civilData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -260,7 +296,7 @@ function updateChart(refineParam) {
 
     // Commercial
     var commercialSatellites = d3.select('#realistic-main-vis').selectAll('.commercial.satellites')
-        .data(commercialPurpose, function(d){
+        .data(commercialData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -295,7 +331,7 @@ function updateChart(refineParam) {
 
     // Government
     var governSatellites = d3.select('#realistic-main-vis').selectAll('.govern.satellites')
-        .data(governPurpose, function(d){
+        .data(governData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -314,12 +350,12 @@ function updateChart(refineParam) {
 
     // Military
     var militarySatellites1 = d3.select('#realistic-main-vis').selectAll('.military1.satellites')
-        .data(militaryPurpose, function(d){
+        .data(militaryData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
 
     var militarySatellites2 = d3.select('#realistic-main-vis').selectAll('.military2.satellites')
-        .data(militaryPurpose, function(d){
+        .data(militaryData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -387,7 +423,7 @@ function updateChart(refineParam) {
 
     // Multi-purpose
     var multiSatellites = d3.select('#realistic-main-vis').selectAll('.multi.satellites')
-        .data(multiPurpose, function(d){
+        .data(multiData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
