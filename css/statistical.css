@@ -14,6 +14,10 @@
     width: 180px;
 }
 
+.left-panel.statistical .options{
+    margin-top: 32px;
+}
+
 .custom-select{
     border-radius:10px;
     width: 180px;
