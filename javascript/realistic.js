@@ -242,7 +242,7 @@ function updateChart(refineParam) {
     // Plot each type of satellites based on their purposes
     // Civil
     var civilSatellites = d3.select('#realistic-main-vis').selectAll('.civil.satellites')
-        .data(satByPurpose['Civil'] || [], function(d){
+        .data(satByPurpose['Civil'], function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -270,7 +270,7 @@ function updateChart(refineParam) {
 
     // Commercial
     var commercialSatellites = d3.select('#realistic-main-vis').selectAll('.commercial.satellites')
-        .data(satByPurpose['Commercial'] || [], function(d){
+        .data(satByPurpose['Commercial'], function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -305,7 +305,7 @@ function updateChart(refineParam) {
 
     // Government
     var governSatellites = d3.select('#realistic-main-vis').selectAll('.govern.satellites')
-        .data(satByPurpose['Government'] || [], function(d){
+        .data(satByPurpose['Government'], function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
