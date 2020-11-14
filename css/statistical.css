@@ -4,14 +4,19 @@
 /* layout */
 .main-display.statistical {
     padding: 40px 40px 40px 40px;
+    /* pointer-events: none; */
 }
 
 #statistical-main-vis{
     margin-top: 40px;
+    /* z-index: 100;
+    position: relative; */
+    /* pointer-events: none; */
 }
 
 .left-panel.statistical  {
     width: 180px;
+    /* pointer-events: all; */
 }
 
 .custom-select{
@@ -83,11 +88,13 @@ h3 {
     font-size: 14px;
 }
 
-.arc{
+/* .arc{
     pointer-events: all;
-}
+} */
 
 .g_main {
+    height: 800px;
+    width: 800px;
     pointer-events: all;
   }
 

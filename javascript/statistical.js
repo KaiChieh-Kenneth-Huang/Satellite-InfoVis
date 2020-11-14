@@ -129,6 +129,13 @@ function sta_updateChart(refineParam,radioValue) {
     .attr("class", "g_main")
     .attr("transform", "translate(" + (width/2-10) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
+    // var svg = d3.select('#statistical-main-vis')
+    // .append('rect')
+    // .attr('x',10)
+    // .attr('y',10)
+    // .attr("width", 50)
+    // .attr("height", 100)
+    // .attr('fill', 'red');
 
     var Tooltip = d3.select("#statistical-main-vis")
     .append("div")
@@ -217,7 +224,7 @@ function sta_updateChart(refineParam,radioValue) {
         if (sta_dataset[i]['new_country'] == 'USA'){
             USA++;
         }
-        else if (sta_dataset[i]['new_country'] == 'UK'){
+        else if (sta_dataset[i]['new_country'] == 'United Kingdom'){
             UK++;
         }
         else if (sta_dataset[i]['new_country'] == 'China'){
@@ -341,7 +348,8 @@ function sta_updateChart(refineParam,radioValue) {
 }
 
 if(radioValue == 'Country'){
-    var CountryBar = svg.append('g')
+    var CountryBar = svg
+    .append('g')
     .attr("class", "g_main")
     .selectAll('path')
     .data(country)
@@ -362,6 +370,9 @@ if(radioValue == 'Country'){
         }
         else if(d['country'] == 'Multinational'){
             return '#00ab9a';
+        }
+        else if(d['country'] == 'UK'){
+            return '#0079B8';
         }
         else {
             return '#28333c';
@@ -400,6 +411,9 @@ else{
         }
         else if(d['new_country'] == 'Multinational'){
             return '#00ab9a';
+        }
+        else if(d['new_country'] == 'United Kingdom'){
+            return '#0079B8';
         }
         else {
             return '#28333c';
