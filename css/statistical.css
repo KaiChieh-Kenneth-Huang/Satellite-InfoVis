@@ -14,9 +14,13 @@
     /* pointer-events: none; */
 }
 
-.left-panel.statistical  {
+.left-panel.statistical {
     width: 180px;
     /* pointer-events: all; */
+}
+
+.left-panel.statistical .options{
+    margin-top: 32px;
 }
 
 .custom-select{
@@ -51,7 +55,7 @@
 
 
 .options{
-    opacity: 0.7;
+    opacity: 0.8;
     width:200px;
 }
 

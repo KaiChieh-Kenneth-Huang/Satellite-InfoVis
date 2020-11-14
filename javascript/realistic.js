@@ -47,7 +47,7 @@ const FN_COUNTRY = 'new_country';
 const FN_PURPOSE = 'new_purpose';
 const FN_PERIOD = 'new_period';
 
-var refineByParams = {};
+var refineByParamsRealistic = {};
 
 // svg variables
 var satelliteData; // holds the satellite data
@@ -104,7 +104,6 @@ function opacityStyle(d) { //Opacity
 
 // *** Create a function to update chart ***
 function updateChart(refineParam) {
-
     // Remove the remaining earth PNG, orbit labels, and scale from the last time
     d3.select('.orbitLabels').remove();
     d3.select('.earth').remove();
@@ -126,6 +125,9 @@ function updateChart(refineParam) {
     var filteredSatellites = satelliteData.filter(function(d){
         let match = true;
         for (let key in refineParam) {
+            if (refineParam[key].substr(0, 3) === 'All') {
+                continue;
+            }
             if (d[key] !== refineParam[key]) {
                 match = false;
                 break;
@@ -204,32 +206,67 @@ function updateChart(refineParam) {
         })
         .style('opacity', 0.7);
 
-        
     // Put all data points into different groups based on purpose
-    var civilPurpose = filteredSatellites.filter(function(d){
+    var chinaData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'China';
+    });
+
+    var russiaData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'Russia';
+    });
+
+    var UKData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'UK';
+    });
+
+    var USAData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'USA';
+    });
+
+    var otherData = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'Others';
+    });
+
+    var civilData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Civil';
     });
 
-    var commercialPurpose = filteredSatellites.filter(function(d){
+    var commercialData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Commercial';
     });
 
-    var governPurpose = filteredSatellites.filter(function(d){
+    var governData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Government';
     });
 
-    var militaryPurpose = filteredSatellites.filter(function(d){
+    var militaryData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Military';
     });
     
-    var multiPurpose = filteredSatellites.filter(function(d){
+    var multiData = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Multi-purpose';
+    });
+
+    var year2010sData = filteredSatellites.filter(function(d){
+        return d['new_country'] == '2010 - 2020';
+    });
+
+    var year2000sData = filteredSatellites.filter(function(d){
+        return d['new_country'] == '2000 - 2009';
+    });
+
+    var year1990sData = filteredSatellites.filter(function(d){
+        return d['new_country'] == '1990 - 1999';
+    });
+
+    var yearBefore1990Data = filteredSatellites.filter(function(d){
+        return d['new_country'] == 'Before 1990';
     });
 
     // Plot each type of satellites based on their purposes
     // Civil
     var civilSatellites = d3.select('#realistic-main-vis').selectAll('.civil.satellites')
-        .data(civilPurpose, function(d){
+        .data(civilData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -257,7 +294,7 @@ function updateChart(refineParam) {
 
     // Commercial
     var commercialSatellites = d3.select('#realistic-main-vis').selectAll('.commercial.satellites')
-        .data(commercialPurpose, function(d){
+        .data(commercialData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -292,7 +329,7 @@ function updateChart(refineParam) {
 
     // Government
     var governSatellites = d3.select('#realistic-main-vis').selectAll('.govern.satellites')
-        .data(governPurpose, function(d){
+        .data(governData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -311,12 +348,12 @@ function updateChart(refineParam) {
 
     // Military
     var militarySatellites1 = d3.select('#realistic-main-vis').selectAll('.military1.satellites')
-        .data(militaryPurpose, function(d){
+        .data(militaryData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
 
     var militarySatellites2 = d3.select('#realistic-main-vis').selectAll('.military2.satellites')
-        .data(militaryPurpose, function(d){
+        .data(militaryData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -384,7 +421,7 @@ function updateChart(refineParam) {
 
     // Multi-purpose
     var multiSatellites = d3.select('#realistic-main-vis').selectAll('.multi.satellites')
-        .data(multiPurpose, function(d){
+        .data(multiData, function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -481,7 +518,7 @@ function updateChart(refineParam) {
         .transition();
 
     militarySatellites2.merge(militarySatellitesEnter2)
-    .transition();
+        .transition();
 
     multiSatellites.merge(multiSatellitesEnter)
         .transition();
@@ -510,6 +547,8 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
+    countries.push('All (6)');
+    countries.sort();
 
     let purposes = Object.keys(satelliteData.reduce((options, d) => {
         const fieldName = FN_PURPOSE;
@@ -518,6 +557,8 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
+    purposes.push('All (5)');
+    purposes.sort();
 
     let periods = Object.keys(satelliteData.reduce((options, d) => {
         const fieldName = FN_PERIOD;
@@ -525,7 +566,11 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
             options[d[fieldName]] = d[fieldName]; // can later make key, value pair different to display different things in dropdown options
         }
         return options;
-    }, {})).sort();
+    }, {})).sort((a, b) => {
+        return parseInt(b.substr(6)) - parseInt(a.substr(6));
+    });
+    periods.unshift('All (4)');
+    //periods.sort();
 
     // population refine by options
     const populateRefineBy = (selectEle, options) => {
@@ -565,26 +610,25 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
 
     kmToWidth = (mainVis.clientWidth - graphLeftPadding - mainVisRightPadding) / (maxApogee + maxPerigee);
 
-    updateChart(refineByParams);
+    updateChart(refineByParamsRealistic);
     
 });
-
 
 // *** Filter By Listeners ***
 // Drop downs
 document.querySelector('#refineByCountry').addEventListener('change', (event) => {
-    refineByParams[FN_COUNTRY] = event.target.value;
-    updateChart(refineByParams);
+    refineByParamsRealistic[FN_COUNTRY] = event.target.value;
+    updateChart(refineByParamsRealistic);
 });
 
 document.querySelector('#refineByPurpose').addEventListener('change', (event) => {
-    refineByParams[FN_PURPOSE] = event.target.value;
-    updateChart(refineByParams);
+    refineByParamsRealistic[FN_PURPOSE] = event.target.value;
+    updateChart(refineByParamsRealistic);
 });
 
 document.querySelector('#refineByPeriod').addEventListener('change', (event) => {
-    refineByParams[FN_PERIOD] = event.target.value;
-    updateChart(refineByParams);
+    refineByParamsRealistic[FN_PERIOD] = event.target.value;
+    updateChart(refineByParamsRealistic);
 });
 
 // Toggles for More Options
@@ -638,17 +682,17 @@ let zoomLevel_OVERVIEW = document.getElementById('radioOverview');
 zoomLevel_LEO.addEventListener('change', function(){
     zoom = ZOOM_LEO;
     //console.log('I am LEO');
-    updateChart();
+    updateChart(refineByParamsRealistic);
 });
 
 zoomLevel_GEO.addEventListener('change', function(){
     zoom = ZOOM_GEO;
     //console.log('I am GEO');
-    updateChart();
+    updateChart(refineByParamsRealistic);
 });
 
 zoomLevel_OVERVIEW.addEventListener('change', function(){
     zoom = ZOOM_OVERVIEW;
     //console.log('I am Overview');
-    updateChart();
+    updateChart(refineByParamsRealistic);
 });
