@@ -29,7 +29,7 @@ body {
 body::after {
     content: "";
     background-image:url('../data/Background.png');
-    opacity: 0.3;
+    opacity: 0.4;
     top: 0;
     left: 0;
     bottom: 0;
@@ -67,7 +67,7 @@ h3 {
     top: auto;
 }
 
-/*  */
+/* position, padding, margin */
 #main {
     position: relative;
     margin: 0;
@@ -117,6 +117,10 @@ h3 {
     z-index: -1;
 }
 
+.legend>li {
+    padding-bottom: 4px;
+}
+
 /* D3 */
 .axis text {
     fill: #fff;
@@ -125,4 +129,52 @@ h3 {
 .axis path,
 .axis line {
     stroke: #fff;
+}
+
+/* font for all texts */
+h1 {
+    font-size: 28px;
+}
+
+h2 {
+    font-size: 18px;
+}
+
+h3 {
+    font-size: 13px;
+}
+
+.custom-control-label, li{
+    font-size: 14px;
+}
+
+text.label {
+    text-anchor: middle;
+    font-size: 12px;
+    fill: #fff;
+    font-family: Metropolis, sans-serif;
+}
+
+g text {
+    font-size: 10px;
+    font-family: Metropolis, sans-serif;
+    fill: #fff;
+} 
+
+/* layout */
+#main-vis-switch {
+    padding: 0px;
+    margin: 0px;
+}
+
+.custom-control-top-right {
+    display: inline-block;
+    vertical-align: middle;
+    padding-right: 40px;
+    padding-top: 10px;
+}
+
+.custom-control-label {
+    font-size: 24px; /* no effect */
+    padding-top: 2.5px;
 }

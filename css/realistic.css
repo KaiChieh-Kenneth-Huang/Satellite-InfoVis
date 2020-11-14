@@ -1,17 +1,4 @@
 /* layout */
-
-h1{
-    font-size:28px;
-}
-
-h2{
-    font-size:18px;
-}
-
-h3{
-    font-size:13px;
-}
-
 .main-display.realistic {
     padding: 40px 40px 80px 40px;
 }
@@ -26,9 +13,10 @@ h3{
     right:48px;
 }
 
+/* Legend */
 .legend { 
     list-style: none; 
-    opacity: 0.7;
+    opacity: 1;
     margin-top: 40px;
     margin-right: 10px;
 }
@@ -43,20 +31,26 @@ h3{
     width: 10px; 
     height: 10px; 
     border-radius: 50%;
-    margin: 6px 6px 6px 0; 
+    margin: 5px 6px 6px 0; 
     background-color: #ffffff;
+    opacity: 0.9;
 }
 
-.legend .China { background-color: #E12200; }
-.legend .Russia { background-color: #9B56BB; }
-.legend .UK { background-color: #0079B8; }
-.legend .USA { background-color: #62A420; }
-.legend .Others { background-color: #FAC400; }
+.legend .China { background-color: #E12200; opacity: 0.75}
+.legend .Russia { background-color: #9B56BB; opacity: 0.75}
+.legend .UK { background-color: #0079B8; opacity: 0.75}
+.legend .USA { background-color: #62A420; opacity: 0.75}
+.legend .Others { background-color: #FAC400; opacity: 0.75}
 
-.legend .Commercial{ 
+.legend .Civil{ 
     width: 10px; 
     height: 10px;
     border-radius: 0%; 
+}
+
+.legend .Commercial {
+    background-color: transparent;
+    border: 2px solid white;
 }
 
 .legend .Government{
@@ -90,15 +84,9 @@ h3{
 
   }
 
-.legend .Multi-purpose{
-    background-color: transparent;
-    border: 2px solid white;
-}
-
-
-.legend .year1 { opacity: 0.75; }
-.legend .year2 { opacity: 0.5; }
-.legend .Before { opacity: 0.25; }
+.legend .year2000-2009 { opacity: 0.6; }
+.legend .year1990-1999 { opacity: 0.4; }
+.legend .Before1990 { opacity: 0.2; }
 
 
 /* D3 */
@@ -109,32 +97,11 @@ h3{
     fill: none;
 }
 
-/* font for all texts */
-h1 {
-    font-size: 28px;
+/* font */
+.orbitLabels{
+    opacity: 0.8;
 }
 
-h2 {
+.x.label{
     font-size: 18px;
 }
-
-h3 {
-    font-size: 13px;
-}
-
-.custom-control-label{
-    font-size: 14px;
-}
-
-text.label {
-    text-anchor: middle;
-    font-size: 12px;
-    fill: #fff;
-    font-family: Metropolis, sans-serif;
-}
-
-g text {
-    font-size: 10px;
-    font-family: Metropolis, sans-serif;
-    fill: #fff;
-} 

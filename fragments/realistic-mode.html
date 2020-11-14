@@ -26,43 +26,44 @@
     <section class="options">
         <h2>Zoom Level</h2>
         <div class="custom-control custom-radio">
-            <input type="radio" class="custom-control-input" id="radioLEO" name="zoom">
+            <input type="radio" class="custom-control-input" id="radioLEO" name="zoom" value="ZOOM_LEO">
             <label class="custom-control-label" for="radioLEO">LEO</label>
         </div>
         <div class="custom-control custom-radio">
-            <input type="radio" class="custom-control-input" id="radioGEO" name="zoom" checked>
+            <input type="radio" class="custom-control-input" id="radioGEO" name="zoom" value="ZOOM_GEO" checked>
             <label class="custom-control-label" for="radioGEO">GEO</label>
         </div>
         <div class="custom-control custom-radio">
-            <input type="radio" class="custom-control-input" id="radioOverview" name="zoom">
+            <input type="radio" class="custom-control-input" id="radioOverview" name="zoom" value="ZOOM_OVERVIEW">
             <label class="custom-control-label" for="radioOverview">Overview</label>
         </div>
     </section>
 </div>
+
 <div class="right-panel realistic">
     <section>
         <ul class="legend">
             <h2>Country</h2>
-            <li><span class="China"></span> China</li>
-            <li><span class="Russia"></span> Russia</li>
-            <li><span class="UK"></span> UK</li>
-            <li><span class="USA"></span> USA</li>
-            <li><span class="Others"></span> Others</li>
+            <li id="China"><span class="China"></span> China</li>
+            <li id="Russia"><span class="Russia"></span> Russia</li>
+            <li id="UK"><span class="UK"></span> UK</li>
+            <li id="USA"><span class="USA"></span> USA</li>
+            <li id="Others"><span class="Others"></span> Others</li>
         </ul>
         <ul class="legend">
             <h2>Purpose</h2>
-            <li><span class="Civil"></span> Civil</li>
-            <li><span class="Commercial"></span> Commercial</li>
-            <li><span class="Government"></span> Government</li>
-            <li><span class="Millitary"></span> Millitary</li>
-            <li><span class="Multi-purpose"></span> Multi-purpose</li>
+            <li id="Civil"><span class="Civil"></span> Civil</li>
+            <li id="Commercial"><span class="Commercial"></span> Commercial</li>
+            <li id="Government"><span class="Government"></span> Government</li>
+            <li id="Millitary"><span class="Millitary"></span> Millitary</li>
+            <li id="Multi-purpose"><span class="Multi-purpose"></span> Multi-purpose</li>
         </ul>
         <ul class="legend">
             <h2>Period</h2>
-            <li><span class="year0"></span> 2010 - 2020</li>
-            <li><span class="year1"></span> 2000 - 2009</li>
-            <li><span class="year2"></span> 1990 - 1999</li>
-            <li><span class="Before"></span> Before 1990</li>
+            <li id="year2010-2020"><span class="year2010-2020"></span> 2010 - 2020</li>
+            <li id="year2000-2009"><span class="year2000-2009"></span> 2000 - 2009</li>
+            <li id="year1990-1999"><span class="year1990-1999"></span> 1990 - 1999</li>
+            <li id="Before1990"><span class="Before1990"></span> Before 1990</li>
         </ul>
     </section>
     <!--<div id="zoom"></div>-->
