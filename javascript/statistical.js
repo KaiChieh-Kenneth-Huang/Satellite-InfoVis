@@ -8,7 +8,7 @@ const radius_range = 1.8 * Math.PI;
 var width = sta_mainVis.clientWidth;
 var height = sta_mainVis.clientHeight;
 
-var scaleup = 1.85;
+var scaleup = width/800;
 
 var outerRadius_Mass = 95*scaleup;
 var innerRadius_Mass = 65*scaleup;
