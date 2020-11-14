@@ -10,8 +10,12 @@
     margin-top: 40px;
 }
 
-.left-panel.statistical  {
+.left-panel.statistical {
     width: 180px;
+}
+
+.left-panel.statistical .options{
+    margin-top: 32px;
 }
 
 .custom-select{
