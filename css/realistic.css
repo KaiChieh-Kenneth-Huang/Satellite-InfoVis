@@ -16,7 +16,7 @@
 /* Legend */
 .legend { 
     list-style: none; 
-    opacity: 1;
+    opacity: 0.8;
     margin-top: 40px;
     margin-right: 10px;
 }
