@@ -7,7 +7,6 @@ scroller
     step: ".step",
   })
   .onStepEnter(({ element, index, direction }) => {
-	  console.log('hello')
 	const name = "is-active";
 	const arr = element.className.split(" ");
 	if (arr.indexOf(name) == -1) {
