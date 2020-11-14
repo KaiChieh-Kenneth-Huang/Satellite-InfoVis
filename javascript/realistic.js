@@ -206,21 +206,38 @@ function updateChart(refineParam) {
         })
         .style('opacity', 0.7);
 
-    
-    let satCount = {}; // How to use: element.innerText =  satCount['1990 - 1996'] ? satCount['1990 - 1996'] : 0;
-    let satByPurpose = {};
+    // Add numbers to the legend
+    let satCount = {};
     for (const satellite of filteredSatellites) {
         satCount[satellite[FN_COUNTRY]] = satCount[satellite[FN_COUNTRY]] ? satCount[satellite[FN_COUNTRY]] + 1 : 1;
         satCount[satellite[FN_PURPOSE]] = satCount[satellite[FN_PURPOSE]] ? satCount[satellite[FN_PURPOSE]] + 1 : 1;
         satCount[satellite[FN_PERIOD]] = satCount[satellite[FN_PERIOD]] ? satCount[satellite[FN_PERIOD]] + 1 : 1;
-
-        // Put all data points into different groups based on purpose
-        if (satByPurpose[satellite[FN_PURPOSE]]) {
-            satByPurpose[satellite[FN_PURPOSE]].push(satellite);
-        } else {
-            satByPurpose[satellite[FN_PURPOSE]] = [satellite];
-        }
     }
+
+    document.getElementById('NumOfChina').innerText =  satCount['China'] ? satCount['China'] : 0;
+    document.getElementById('NumOfRussia').innerText =  satCount['Russia'] ? satCount['Russia'] : 0;
+    document.getElementById('NumOfUSA').innerText =  satCount['USA'] ? satCount['USA'] : 0;
+
+    // Put all data points into different groups based on purpose
+    var civilData = filteredSatellites.filter(function(d){
+        return d['new_purpose'] == 'Civil';
+    });
+
+    var commercialData = filteredSatellites.filter(function(d){
+        return d['new_purpose'] == 'Commercial';
+    });
+
+    var governData = filteredSatellites.filter(function(d){
+        return d['new_purpose'] == 'Government';
+    });
+
+    var militaryData = filteredSatellites.filter(function(d){
+        return d['new_purpose'] == 'Military';
+    });
+    
+    var multiData = filteredSatellites.filter(function(d){
+        return d['new_purpose'] == 'Multi-purpose';
+    });
 
     // Plot each type of satellites based on their purposes
     // Civil
