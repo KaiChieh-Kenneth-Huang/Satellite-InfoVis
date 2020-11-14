@@ -23,7 +23,7 @@ h3{
 .right-panel.realistic{
     position: absolute;
     top: 86px;
-    right:48px;
+    right:36px;
 }
 
 .legend { 
@@ -111,7 +111,7 @@ h3{
 
 /* font for all texts */
 h1 {
-    font-size: 28px;
+    font-size: 26px;
 }
 
 h2 {

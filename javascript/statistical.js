@@ -518,34 +518,50 @@ else{
 
     // bar charts begin
     var main_svg = d3.select('#statistical-main-vis');
-    let barchart_width = 200;
-    let barchart_height = 75;
+    let barchart_width = 240;
+    let barchart_height = 70;
     let disArray = sta_dataset.map(d => parseFloat(d['avgDis']));
     let periodArray = sta_dataset.map(d => parseFloat(d['Period (minutes)']));
     let massArray = sta_dataset.map(d => parseFloat(d['Launch Mass (kg.)']));
-    let bin_num = 10;
-    let bin_period = 10;
-    let bin_mass = 10;
+    let bin_dis = 6;
+    let bin_period = 6;
+    let bin_mass = 6;
+    let y_tick = 4;
+
+    var svgWidth = mainVis.clientWidth;
+    var svgHeight = mainVis.clientHeight;
+    var pad = {t: 140, r: 280, b: 40, l: 40};
+    var bar_gap = 50;
+
+    console.log('WIDTHHHH'+svgWidth);
 
     //disArray
     var dis_barchart = main_svg.append('g')
-    .attr('transform', 'translate(625,150)') ;
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t]  + ')');
+    //.attr('transform', 'translate(880,150)');
+
+    dis_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-15, barchart_height+30]  + ')')
+    .text('Distance');
 
     min_avgDis = d3.min(disArray);
     max_avgDis = d3.max(disArray);
+
     var x_dis = d3.scaleLinear()
     .domain([min_avgDis,max_avgDis])
     .range([0,barchart_width]);
+
     dis_barchart.append('g')
     .attr('class','axis')
     .attr('transform', 'translate(0,' +barchart_height + ')')
-    .call(d3.axisBottom(x_dis).ticks(bin_num));
+    .call(d3.axisBottom(x_dis).ticks(bin_dis));
 
-    var dis_histogram = d3.histogram()
+    var dis_histogram = d3.histogram() 
     .domain(x_dis.domain())
-    .thresholds(x_dis.ticks(bin_num));
+    .thresholds(x_dis.ticks(bin_dis));
     
-    var bins = dis_histogram(disArray);
+    var bins = dis_histogram(disArray) ;
 
     // var y_dis = d3.scaleLinear()
     // .range([barchart_height, 0]);
@@ -558,11 +574,9 @@ else{
     //y_dis.domain([0, d3.max(bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
     y_dis.domain([1000, 1]);
 
-
-
     dis_barchart.append("g")
     .attr('class','axis')
-    .call(d3.axisLeft(y_dis).ticks(5));
+    .call(d3.axisLeft(y_dis).ticks(y_tick));
 
     // console.log(y_dis(10000));
     // console.log(y_dis(0));
@@ -580,7 +594,6 @@ else{
             return "translate("  + x_dis(d.x0) + ","  + (y_dis(d.length)) + ")"; 
         }
     })
-
     .attr("width", function(d) { return x_dis(d.x1) - x_dis(d.x0) -1 ; })
     .attr("height", function(d) { 
         if(d.length ==0){
@@ -594,7 +607,13 @@ else{
 
     //period array
     var period_barchart = main_svg.append('g')
-    .attr('transform', 'translate(625,' + (150+barchart_height + 25) + ')') ;
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height+bar_gap]  + ')');
+    //.attr('transform', 'translate(880,' + (150+barchart_height + 25) + ')') ;
+
+    period_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-15, barchart_height+30]  + ')')
+    .text('Period');
 
     min_period = d3.min(periodArray);
     max_period = d3.max(periodArray);
@@ -621,7 +640,8 @@ else{
     period_barchart.append("g")
     .attr('class','axis')
     //.attr('transform', 'translate(625,100)')
-    .call(d3.axisLeft(y_period));
+    .call(d3.axisLeft(y_period).ticks(y_tick));
+
 
     period_barchart.selectAll("rect")
     .data(period_bins)
@@ -635,7 +655,13 @@ else{
 
     //mass array
     var mass_barchart = main_svg.append('g')
-    .attr('transform', 'translate(625,' + (150+barchart_height*2 + 25*2) + ')') ;
+    //.attr('transform', 'translate(880,' + (150+barchart_height*2 + 25*2) + ')') ;
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height*2 + bar_gap*2]  + ')');
+
+    mass_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-10, barchart_height+30]  + ')')
+    .text('Mass');
 
     min_mass = d3.min(massArray);
     max_mass = d3.max(massArray);
@@ -662,7 +688,7 @@ else{
     mass_barchart.append("g")
     .attr('class','axis')
     //.attr('transform', 'translate(625,100)')
-    .call(d3.axisLeft(y_mass));
+    .call(d3.axisLeft(y_mass).ticks(y_tick));
 
 
     mass_barchart.selectAll("rect")
@@ -678,11 +704,17 @@ else{
 
     //purpose barchart
     var purpose_barchart = main_svg.append('g')
-    .attr('transform', 'translate(625,' + (150+barchart_height*3 + 25*3) + ')') ;
+    //.attr('transform', 'translate(880,' + (150+barchart_height*3 + 25*3) + ')') ;
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*3+bar_gap*3]  + ')');
+
+    purpose_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-10, barchart_height+30]  + ')')
+    .text('Purpose');
     
     var x_purpose = d3.scaleBand()
                     .range([0, barchart_width])
-                    .padding(0.5);
+                    .padding(0.1);
     var y_purpose = d3.scaleLinear().range([barchart_height, 0]);
     x_purpose.domain(purpose_statistical.map(function(d) { return d['purpose']; }));
     y_purpose.domain([0, d3.max(purpose_statistical, function(d) { return d['count']; })]);
@@ -699,18 +731,25 @@ else{
     .attr("transform", "translate(0," + barchart_height + ")")
     .attr('class','axis')
     .call(d3.axisBottom(x_purpose));
+
     purpose_barchart.append("g")
     .attr('class','axis')
-    .call(d3.axisLeft(y_purpose));
+    .call(d3.axisLeft(y_purpose).ticks(y_tick));
 
 
     //country barchart
     var country_barchart = main_svg.append('g')
-    .attr('transform', 'translate(625,' + (150+barchart_height*4 + 25*4) + ')') ;
+    //.attr('transform', 'translate(880,' + (150+barchart_height*4 + 25*4) + ')') ;
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*4+bar_gap*4]  + ')');
+
+    country_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-10, barchart_height+30]  + ')')
+    .text('Country');
     
     var x_country = d3.scaleBand()
                     .range([0, barchart_width])
-                    .padding(0.3);
+                    .padding(0.1);
     var y_country = d3.scaleLinear().range([barchart_height, 0]);
 
     x_country.domain(country_statistical.map(function(d) { return d['country']; }));
@@ -731,7 +770,7 @@ else{
     .call(d3.axisBottom(x_country));
     country_barchart.append("g")
     .attr('class','axis')
-    .call(d3.axisLeft(y_country));
+    .call(d3.axisLeft(y_country).ticks(y_tick));
 
 
 
