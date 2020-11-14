@@ -126,7 +126,10 @@ function updateChart(refineParam) {
     var filteredSatellites = satelliteData.filter(function(d){
         let match = true;
         for (let key in refineParam) {
-            if (d[key] !== refineParam[key]) {
+            if (refineParam[key] == 'All (4)' || 'All (5)' || 'All (6)'){
+                continue;
+            }
+            else if (d[key] !== refineParam[key]) {
                 match = false;
                 break;
             }
@@ -576,7 +579,6 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
     updateChart(refineByParams);
     
 });
-
 
 // *** Filter By Listeners ***
 // Drop downs
