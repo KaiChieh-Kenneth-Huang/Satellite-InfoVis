@@ -207,11 +207,12 @@ function updateChart(refineParam) {
         })
         .style('opacity', 0.7);
 
-        
     // Put all data points into different groups based on purpose
     var civilPurpose = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Civil';
     });
+
+    
 
     var commercialPurpose = filteredSatellites.filter(function(d){
         return d['new_purpose'] == 'Commercial';

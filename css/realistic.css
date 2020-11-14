@@ -9,16 +9,15 @@
 
 .right-panel.realistic{
     position: absolute;
-    top: 86px;
-    right:48px;
+    bottom: -50px;
+    right:40px;
 }
 
 /* Legend */
 .legend { 
     list-style: none; 
     opacity: 0.8;
-    margin-top: 40px;
-    margin-right: 10px;
+    margin-bottom: 40px;
 }
 
 .legend li{ 
