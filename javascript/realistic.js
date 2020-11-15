@@ -222,6 +222,23 @@ function updateChart(refineParam) {
         }
     }
 
+    document.getElementById('NumOfChina').innerText =  satCount['China'] ? satCount['China'] : 0;
+    document.getElementById('NumOfRussia').innerText =  satCount['Russia'] ? satCount['Russia'] : 0;
+    document.getElementById('NumOfUSA').innerText =  satCount['USA'] ? satCount['USA'] : 0;
+    document.getElementById('NumOfUK').innerText =  satCount['UK'] ? satCount['UK'] : 0;
+    document.getElementById('NumOfOthers').innerText =  satCount['Others'] ? satCount['Others'] : 0;
+
+    document.getElementById('NumOfCivil').innerText =  satCount['Civil'] ? satCount['Civil'] : 0;
+    document.getElementById('NumOfCommercial').innerText =  satCount['Commercial'] ? satCount['Commercial'] : 0;
+    document.getElementById('NumOfGovern').innerText =  satCount['Government'] ? satCount['Government'] : 0;
+    document.getElementById('NumOfMilitary').innerText =  satCount['Military'] ? satCount['Military'] : 0;
+    document.getElementById('NumOfMulti').innerText =  satCount['Multi-purpose'] ? satCount['Multi-purpose'] : 0;
+
+    document.getElementById('NumOf2010s').innerText =  satCount['2010 - 2020'] ? satCount['2010 - 2020'] : 0;
+    document.getElementById('NumOf2000s').innerText =  satCount['2000 - 2009'] ? satCount['2000 - 2009'] : 0;
+    document.getElementById('NumOf1990s').innerText =  satCount['1990 - 1999'] ? satCount['1990 - 1999'] : 0;
+    document.getElementById('NumOfBefore90').innerText =  satCount['Before 1990'] ? satCount['Before 1990'] : 0;
+
     // Plot each type of satellites based on their purposes
     // Civil
     var civilSatellites = d3.select('#realistic-main-vis').selectAll('.civil.satellites')
