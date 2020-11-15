@@ -175,7 +175,7 @@ function updateChart(refineParam) {
     // plot orbits
     var orbits = d3.select('#realistic-main-vis').selectAll('ellipse')
         .data(filteredSatellites, function(d){
-            return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         })
 
     var orbitsEnter = orbits.enter()
@@ -243,7 +243,7 @@ function updateChart(refineParam) {
     // Civil
     var civilSatellites = d3.select('#realistic-main-vis').selectAll('.civil.satellites')
         .data(satByPurpose['Civil'] || [], function(d){
-            return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var civilSatellitesEnter = civilSatellites.enter()
@@ -271,7 +271,7 @@ function updateChart(refineParam) {
     // Commercial
     var commercialSatellites = d3.select('#realistic-main-vis').selectAll('.commercial.satellites')
         .data(satByPurpose['Commercial'] || [], function(d){
-            return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var commercialSatellitesEnter = commercialSatellites.enter()
@@ -306,7 +306,7 @@ function updateChart(refineParam) {
     // Government
     var governSatellites = d3.select('#realistic-main-vis').selectAll('.govern.satellites')
         .data(satByPurpose['Government'] || [], function(d){
-            return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var governSatellitesEnter = governSatellites.enter()
@@ -325,12 +325,12 @@ function updateChart(refineParam) {
     // Military
     var militarySatellites1 = d3.select('#realistic-main-vis').selectAll('.military1.satellites')
         .data(satByPurpose['Military'] || [], function(d){
-            return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
 
     var militarySatellites2 = d3.select('#realistic-main-vis').selectAll('.military2.satellites')
         .data(satByPurpose['Military'] || [], function(d){
-            return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var militarySatellitesEnter1 = militarySatellites1.enter()
@@ -398,7 +398,7 @@ function updateChart(refineParam) {
     // Multi-purpose
     var multiSatellites = d3.select('#realistic-main-vis').selectAll('.multi.satellites')
         .data(satByPurpose['Multi-purpose'] || [], function(d){
-            return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var multiSatellitesEnter = multiSatellites.enter()
