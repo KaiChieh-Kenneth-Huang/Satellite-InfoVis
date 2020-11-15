@@ -139,15 +139,18 @@ function sta_updateChart(refineParam,radioValue) {
 
     var Tooltip = d3.select("#div_template")
     .append("div")
-    .style("opacity", 0)
     .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
     .style("background-color", "white")
+    .style("color","black")
     .style("border", "solid")
     .style("border-width", "2px")
     .style("border-radius", "5px")
     .style("padding", "5px")
 
     var mouseover = function(d) {
+        // console.log("Into mouseover");
         Tooltip
           .style("opacity", 1)
         d3.select(this)
@@ -155,17 +158,39 @@ function sta_updateChart(refineParam,radioValue) {
           .style("opacity", 1)
       }
       var mousemove = function(d) {
+        // console.log("Into mousemove");
+        //console.log("The country is: " + d['new_country']);
         Tooltip
-          .html("The country is: " + d['new_country'])
-          .style("left", (d3.mouse(this)[0]+70) + "px")
-          .style("top", (d3.mouse(this)[1]) + "px")
+          .html("Name: " + d['Name of Satellite  Alternate Names']  + "<br>"
+          + "Country: " + d['new_country']  + "<br>" 
+          + "Purpose: " + d['new_purpose']  + "<br>"
+          + "Peroid: " + d['Period (minutes)']  + "mins"+ "<br>"
+          + "Mass: " + d['Launch Mass (kg.)']  + "kg"+ "<br>"
+          + "Average Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
+          .style("left", (d3.mouse(this)[0]+1150) + "px")
+          .style("top", (d3.mouse(this)[1]+1250) + "px")
+      }
+
+      var country_mousemove = function(d){
+        Tooltip
+        .html("Country: " + d['country'])
+        .style("left", (d3.mouse(this)[0]+1150) + "px")
+        .style("top", (d3.mouse(this)[1]+1250) + "px")
+      }
+
+      var purpose_mousemove = function(d){
+        Tooltip
+        .html("Purpose: " + d['purpose'])
+        .style("left", (d3.mouse(this)[0]+1150) + "px")
+        .style("top", (d3.mouse(this)[1]+1250) + "px")
       }
       var mouseleave = function(d) {
+        // console.log("Into mouseleave");
         Tooltip
           .style("opacity", 0)
         d3.select(this)
           .style("stroke", "none")
-          .style("opacity", 0.8)
+          .style("opacity", 1)
       }
     
 
@@ -302,7 +327,10 @@ function sta_updateChart(refineParam,radioValue) {
         .endAngle(function(d){return d['start_angle'] + d['angle'];})
         .padAngle(0)
         .padRadius(outerRadius_Country)
-        );
+        )
+        .on('mouseover', mouseover)
+        .on('mousemove', purpose_mousemove)
+        .on('mouseout', mouseleave);
     }
     else{
     var purposeBar = svg.append('g')
@@ -346,7 +374,10 @@ function sta_updateChart(refineParam,radioValue) {
     .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
     .padAngle(padAngle)
     .padRadius(outerRadius_Purpose)
-    );
+    )
+    .on('mouseover', mouseover)
+    .on('mousemove', mousemove)
+    .on('mouseout', mouseleave);
 }
 
 if(radioValue == 'Country'){
@@ -389,7 +420,10 @@ if(radioValue == 'Country'){
     .endAngle(function(d){return d['start_angle'] + d['angle'];})
     .padAngle(0)
     .padRadius(outerRadius_Country)
-    );
+    )
+    .on('mouseover', mouseover)
+    .on('mousemove', country_mousemove)
+    .on('mouseout', mouseleave);
 }
 else{
     var CountryBar = svg.append('g')
@@ -428,7 +462,10 @@ else{
     .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
     .padAngle(padAngle)
     .padRadius(outerRadius_Country)
-    );
+    )
+    .on('mouseover', mouseover)
+    .on('mousemove', mousemove)
+    .on('mouseout', mouseleave);
     }
 
     var periodBar_background = svg.append('g')
@@ -465,9 +502,12 @@ else{
             .padAngle(padAngle)
             .padRadius(outerRadius_Period)
         )
-        .on('mouseover', function(d){console.log(d['new_country']);})
-        .on('mousemove', function(d){console.log(d['new_country']);})
-        .on('mouseout', function(d){console.log(d['new_country']);});
+        // .on('mouseover', function(d){console.log(d['new_country']);})
+        // .on('mousemove', function(d){console.log(d['new_country']);})
+        // .on('mouseout', function(d){console.log(d['new_country']);});
+        .on('mouseover', mouseover)
+        .on('mousemove', mousemove)
+        .on('mouseout', mouseleave);
 
     var massBar_background = svg.append('g')
     .attr("class", "g_main")
@@ -499,7 +539,10 @@ else{
             .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
             .padAngle(padAngle)
             .padRadius(outerRadius_Mass)
-        );
+        )
+        .on('mouseover', mouseover)
+        .on('mousemove', mousemove)
+        .on('mouseout', mouseleave);
 
 
     var disBar_background = svg.append('g')
@@ -531,7 +574,10 @@ else{
             .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
             .padAngle(padAngle)
             .padRadius(outerRadius_Dis)
-        );
+        )
+        .on('mouseover', mouseover)
+        .on('mousemove', mousemove)
+        .on('mouseout', mouseleave);
 
 
 
