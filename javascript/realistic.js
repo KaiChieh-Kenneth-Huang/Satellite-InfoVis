@@ -206,43 +206,26 @@ function updateChart(refineParam) {
         })
         .style('opacity', 0.7);
 
-    // Add numbers to the legend
-    let satCount = {};
+    
+    let satCount = {}; // How to use: element.innerText =  satCount['1990 - 1996'] ? satCount['1990 - 1996'] : 0;
+    let satByPurpose = {};
     for (const satellite of filteredSatellites) {
         satCount[satellite[FN_COUNTRY]] = satCount[satellite[FN_COUNTRY]] ? satCount[satellite[FN_COUNTRY]] + 1 : 1;
         satCount[satellite[FN_PURPOSE]] = satCount[satellite[FN_PURPOSE]] ? satCount[satellite[FN_PURPOSE]] + 1 : 1;
         satCount[satellite[FN_PERIOD]] = satCount[satellite[FN_PERIOD]] ? satCount[satellite[FN_PERIOD]] + 1 : 1;
+
+        // Put all data points into different groups based on purpose
+        if (satByPurpose[satellite[FN_PURPOSE]]) {
+            satByPurpose[satellite[FN_PURPOSE]].push(satellite);
+        } else {
+            satByPurpose[satellite[FN_PURPOSE]] = [satellite];
+        }
     }
-
-    document.getElementById('NumOfChina').innerText =  satCount['China'] ? satCount['China'] : 0;
-    document.getElementById('NumOfRussia').innerText =  satCount['Russia'] ? satCount['Russia'] : 0;
-    document.getElementById('NumOfUSA').innerText =  satCount['USA'] ? satCount['USA'] : 0;
-
-    // Put all data points into different groups based on purpose
-    var civilData = filteredSatellites.filter(function(d){
-        return d['new_purpose'] == 'Civil';
-    });
-
-    var commercialData = filteredSatellites.filter(function(d){
-        return d['new_purpose'] == 'Commercial';
-    });
-
-    var governData = filteredSatellites.filter(function(d){
-        return d['new_purpose'] == 'Government';
-    });
-
-    var militaryData = filteredSatellites.filter(function(d){
-        return d['new_purpose'] == 'Military';
-    });
-    
-    var multiData = filteredSatellites.filter(function(d){
-        return d['new_purpose'] == 'Multi-purpose';
-    });
 
     // Plot each type of satellites based on their purposes
     // Civil
     var civilSatellites = d3.select('#realistic-main-vis').selectAll('.civil.satellites')
-        .data(satByPurpose['Civil'], function(d){
+        .data(satByPurpose['Civil'] || [], function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -270,7 +253,7 @@ function updateChart(refineParam) {
 
     // Commercial
     var commercialSatellites = d3.select('#realistic-main-vis').selectAll('.commercial.satellites')
-        .data(satByPurpose['Commercial'], function(d){
+        .data(satByPurpose['Commercial'] || [], function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -305,7 +288,7 @@ function updateChart(refineParam) {
 
     // Government
     var governSatellites = d3.select('#realistic-main-vis').selectAll('.govern.satellites')
-        .data(satByPurpose['Government'], function(d){
+        .data(satByPurpose['Government'] || [], function(d){
             return d['Name of Satellite, Alternate Names']; // Use a key-function to maintain object constancy
         });
     
@@ -523,7 +506,8 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
-    countries.unshift('All (6)');
+    countries.push('All (6)');
+    countries.sort();
 
     let purposes = Object.keys(satelliteData.reduce((options, d) => {
         const fieldName = FN_PURPOSE;
@@ -532,7 +516,8 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
-    purposes.unshift('All (5)');
+    purposes.push('All (5)');
+    purposes.sort();
 
     let periods = Object.keys(satelliteData.reduce((options, d) => {
         const fieldName = FN_PERIOD;
