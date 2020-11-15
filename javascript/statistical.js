@@ -89,15 +89,15 @@ function sta_updateChart(refineParam,radioValue) {
     }
 
     var maxPeriod = d3.max(sta_dataset, function(d){
-        return +d['Period (minutes)'];
+        return +d['log_period'];
     });
 
     var maxMass = d3.max(sta_dataset,function(d){
-        return +d['Launch Mass (kg.)'];
+        return +d['log_mass'];
     });
 
     var maxDis = d3.max(sta_dataset,function(d){
-        return +d['avgDis'];
+        return +d['log_dis'];
     }); 
     
     var x = d3.scaleBand()
@@ -496,7 +496,7 @@ else{
         .attr('class','arc')
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_period(0); })
-            .outerRadius(function(d){return y_period(d['Period (minutes)']);})
+            .outerRadius(function(d){return y_period(d['log_period']);})
             .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
             .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
             .padAngle(padAngle)
@@ -534,7 +534,7 @@ else{
         .attr('fill','#f08934')
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_mass(0) })
-            .outerRadius(function(d){return y_mass(d['Launch Mass (kg.)']);})
+            .outerRadius(function(d){return y_mass(d['log_mass']);})
             .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
             .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
             .padAngle(padAngle)
@@ -569,7 +569,7 @@ else{
         .attr('fill','#ee7137')
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_dis(0) })
-            .outerRadius(function(d){return y_dis(d['Perigee (km)']);})
+            .outerRadius(function(d){return y_dis(d['log_dis']);})
             .startAngle(function(d){return x(d['Name of Satellite  Alternate Names']);})
             .endAngle(function(d){return x(d['Name of Satellite  Alternate Names']) + x.bandwidth();})
             .padAngle(padAngle)
