@@ -7,7 +7,9 @@ const magOfOverview = 1.8, magOfGEO = 2.5, magOfLEO = 13;
 const ZOOM_OVERVIEW = { mag: magOfOverview, center: false, orbitOpacity: 0.35, satelliteSize: 1.3};
 const ZOOM_GEO = { mag: magOfGEO, center: true, orbitOpacity: 0.25, satelliteSize: 2.2};
 const ZOOM_LEO = { mag: magOfLEO, center: true, orbitOpacity: 0.12, satelliteSize: 4};
+const TRANSITION_DURATION = 2000;
 var zoom = ZOOM_GEO;
+var prevZoom = ZOOM_GEO;
 
 // Visual codings of satellite points 
 const colorOfCountry = {
@@ -105,9 +107,11 @@ function opacityStyle(d) { //Opacity
 // *** Create a function to update chart ***
 function updateChart(refineParam) {
     // Remove the remaining earth PNG, orbit labels, and scale from the last time
-    d3.select('.orbitLabels').remove();
-    d3.select('.earth').remove();
-    d3.selectAll('.x').remove();
+    // d3.select('.orbitLabels').remove();
+    // d3.select('.earth').remove();
+    // d3.selectAll('.x').remove();
+    const shouldAnimate = prevZoom !== zoom;
+    prevZoom = zoom;
 
     // Update the scale based on Zoom Level
     scale = d3.scaleLinear()
@@ -157,30 +161,18 @@ function updateChart(refineParam) {
         return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).y;
     }
 
-   // Upload the Earth PNG
-   var earth = d3.select('#realistic-main-vis').selectAll('.earth')
-        .data([0])
-        .enter()
-        .append('image')
-        .attr('class', 'earth')
-        .attr('href', '../data/Flat Earth Map.png')
+    function animationSelector(selection, shouldAnimate) {
+        return shouldAnimate ? selection.transition().duration(TRANSITION_DURATION) : selection;
+    }
+    // attributes to update
+    function updateEarth(earth) {
+        earth
         .attr('width', scale(EARTH_RADIUS)*2).attr('height', scale(EARTH_RADIUS)*2)
         .attr('x', earthCenter[0] - scale(EARTH_RADIUS))
         .attr('y', earthCenter[1] - scale(EARTH_RADIUS))
-        .style('stroke', 'white')
-        .style('stroke-width', 2)
-        .style('opacity', 0.75)
-
-
-    // plot orbits
-    var orbits = d3.select('#realistic-main-vis').selectAll('ellipse')
-        .data(filteredSatellites, function(d){
-            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
-        })
-
-    var orbitsEnter = orbits.enter()
-        .append('ellipse')
-        .attr('class', 'regular-ellipse')
+    }
+    function updateOrbits(orbits) {
+        orbits
         .attr('cx', d => {
             return earthCenter[0] + scale((+d['Apogee (km)'] - +d['Perigee (km)']) / 2);
         })
@@ -203,9 +195,140 @@ function updateChart(refineParam) {
                     return 'rgba(200, 200, 200,' + zoom.orbitOpacity +')';
                 }
             }
-        })
-        .style('opacity', 0.7);
+        });
+    }
 
+    function updateCivil(satellites) {
+        satellites
+        .attr('x', d => {
+            return getPosX(d) - sizeStyle(d);
+        })
+        .attr('y', d => {
+            return getPosY(d) - sizeStyle(d);
+        })
+        .attr('width', d => {
+            return sizeStyle(d)*2
+        })
+        .attr('height', d => {
+            return sizeStyle(d)*2
+        })
+    }
+
+    function updateCommercial(satellites) {
+        satellites
+        .attr('cx', d => {
+            return getPosX(d);
+        })
+        .attr('cy', d => {
+            return getPosY(d);
+        })
+        .attr('r', d => {
+            return sizeStyle(d)
+        })
+        .style('stroke-width', d => {
+            if (zoom.mag == magOfLEO){
+                return '2px';
+             } else if (zoom.mag == magOfGEO) {
+                 return '1.5px';
+             } else {
+                 return '1px';
+             }
+        })
+    }
+
+    function updateGovern(satellites) {
+        satellites
+        .attr('points', d => {
+            return [[(getPosX(d) - sizeStyle(d)), (getPosY(d) + Math.sqrt(3)/3 * sizeStyle(d))], [(getPosX(d)), (getPosY(d) - Math.sqrt(3)/3*2 * sizeStyle(d))], [(getPosX(d) + sizeStyle(d)), (getPosY(d) + Math.sqrt(3)/3 * sizeStyle(d))]];
+        })
+    }
+
+    function updateMillitary1(satellites) {
+        satellites
+        .attr('x1', d => {
+            return getPosX(d) - sizeStyle(d);
+        })
+        .attr('y1', d => {
+            return getPosY(d) - sizeStyle(d);
+        })
+        .attr('x2', d => {
+            return getPosX(d) + sizeStyle(d);
+        })
+        .attr('y2', d => {
+            return getPosY(d) + sizeStyle(d);
+        })
+        .style('stroke-width', d => {
+            if (zoom.mag == magOfLEO){
+                return '2px';
+             } else if (zoom.mag == magOfGEO) {
+                 return '1.7px';
+             } else {
+                 return '1.2px';
+             }
+        })
+    }
+
+    function updateMillitary2(satellites) {
+        satellites
+        .attr('x1', d => {
+            return getPosX(d) - sizeStyle(d);
+        })
+        .attr('y1', d => {
+            return getPosY(d) + sizeStyle(d);
+        })
+        .attr('x2', d => {
+            return getPosX(d) + sizeStyle(d);
+        })
+        .attr('y2', d => {
+            return getPosY(d) - sizeStyle(d);
+        })
+        .style('stroke-width', d => {
+            if (zoom.mag == magOfLEO){
+                return '2px';
+             } else if (zoom.mag == magOfGEO) {
+                 return '1.7px';
+             } else {
+                 return '1.2px';
+             }
+        })
+    }
+
+    function updateMulti(satellites) {
+        satellites
+        .attr('cx', d => {
+            return getPosX(d);
+        })
+        .attr('cy', d => {
+            return getPosY(d);
+        })
+        .attr('r', d => {
+            return sizeStyle(d)
+        })
+    }
+
+   // Upload the Earth PNG
+   var earth = d3.select('#realistic-main-vis').selectAll('.earth')
+        .data([0], function(d) {return 'earth';});
+    var earthEnter = earth.enter()
+        .append('image')
+        .attr('class', 'earth')
+        .attr('href', '../data/Flat Earth Map.png')
+        .style('stroke', 'white')
+        .style('stroke-width', 2)
+        .style('opacity', 0.75);
+
+
+    // plot orbits
+    var orbits = d3.select('#realistic-main-vis').selectAll('ellipse')
+        .data(filteredSatellites, function(d){
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+        });
+
+    var orbitsEnter = orbits.enter()
+        .append('ellipse')
+        .attr('class', 'regular-ellipse')
+        .style('opacity', 0.7);
+    
     
     let satCount = {}; // How to use: element.innerText =  satCount['1990 - 1996'] ? satCount['1990 - 1996'] : 0;
     let satByPurpose = {};
@@ -249,18 +372,6 @@ function updateChart(refineParam) {
     var civilSatellitesEnter = civilSatellites.enter()
         .append('rect')
         .attr('class', 'civil satellites')
-        .attr('x', d => {
-            return getPosX(d) - sizeStyle(d);
-        })
-        .attr('y', d => {
-            return getPosY(d) - sizeStyle(d);
-        })
-        .attr('width', d => {
-            return sizeStyle(d)*2
-        })
-        .attr('height', d => {
-            return sizeStyle(d)*2
-        })
         .style('fill', d => {
             return colorStyle(d)
         })
@@ -277,26 +388,8 @@ function updateChart(refineParam) {
     var commercialSatellitesEnter = commercialSatellites.enter()
         .append('circle')
         .attr('class', 'commercial satellites')
-        .attr('cx', d => {
-            return getPosX(d);
-        })
-        .attr('cy', d => {
-            return getPosY(d);
-        })
-        .attr('r', d => {
-            return sizeStyle(d)
-        })
         .style('stroke', d => {
             return colorStyle(d)
-        })
-        .style('stroke-width', d => {
-            if (zoom.mag == magOfLEO){
-                return '2px';
-             } else if (zoom.mag == magOfGEO) {
-                 return '1.5px';
-             } else {
-                 return '1px';
-             }
         })
         .style('stroke-opacity', d => {
             return opacityStyle(d)
@@ -312,9 +405,6 @@ function updateChart(refineParam) {
     var governSatellitesEnter = governSatellites.enter()
         .append('polygon')
         .attr('class', 'govern satellites')
-        .attr('points', d => {
-            return [[(getPosX(d) - sizeStyle(d)), (getPosY(d) + Math.sqrt(3)/3 * sizeStyle(d))], [(getPosX(d)), (getPosY(d) - Math.sqrt(3)/3*2 * sizeStyle(d))], [(getPosX(d) + sizeStyle(d)), (getPosY(d) + Math.sqrt(3)/3 * sizeStyle(d))]];
-        })
         .style('fill', d => {
             return colorStyle(d)
         })
@@ -336,29 +426,8 @@ function updateChart(refineParam) {
     var militarySatellitesEnter1 = militarySatellites1.enter()
         .append('line')
         .attr('class', 'military1 satellites')
-        .attr('x1', d => {
-            return getPosX(d) - sizeStyle(d);
-        })
-        .attr('y1', d => {
-            return getPosY(d) - sizeStyle(d);
-        })
-        .attr('x2', d => {
-            return getPosX(d) + sizeStyle(d);
-        })
-        .attr('y2', d => {
-            return getPosY(d) + sizeStyle(d);
-        })
         .style('stroke', d => {
             return colorStyle(d)
-        })
-        .style('stroke-width', d => {
-            if (zoom.mag == magOfLEO){
-                return '2px';
-             } else if (zoom.mag == magOfGEO) {
-                 return '1.7px';
-             } else {
-                 return '1.2px';
-             }
         })
         .style('stroke-opacity', d => {
             return opacityStyle(d)
@@ -367,29 +436,8 @@ function updateChart(refineParam) {
     var militarySatellitesEnter2 = militarySatellites2.enter()
         .append('line')
         .attr('class', 'military2 satellites')
-        .attr('x1', d => {
-            return getPosX(d) - sizeStyle(d);
-        })
-        .attr('y1', d => {
-            return getPosY(d) + sizeStyle(d);
-        })
-        .attr('x2', d => {
-            return getPosX(d) + sizeStyle(d);
-        })
-        .attr('y2', d => {
-            return getPosY(d) - sizeStyle(d);
-        })
         .style('stroke', d => {
             return colorStyle(d)
-        })
-        .style('stroke-width', d => {
-            if (zoom.mag == magOfLEO){
-                return '2px';
-             } else if (zoom.mag == magOfGEO) {
-                 return '1.7px';
-             } else {
-                 return '1.2px';
-             }
         })
         .style('stroke-opacity', d => {
             return opacityStyle(d)
@@ -404,15 +452,6 @@ function updateChart(refineParam) {
     var multiSatellitesEnter = multiSatellites.enter()
         .append('circle')
         .attr('class', 'multi satellites')
-        .attr('cx', d => {
-            return getPosX(d);
-        })
-        .attr('cy', d => {
-            return getPosY(d);
-        })
-        .attr('r', d => {
-            return sizeStyle(d)
-        })
         .style('fill', d => {
             return colorStyle(d)
         })
@@ -433,10 +472,15 @@ function updateChart(refineParam) {
     var axisGroug = svg.append('g')
         .attr('transform', 'translate(' + [canvasLeftPadding, mainVis.clientHeight - canvasBottomPadding] + ')');
     
-    axisGroug.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(' + [0, -10] + ')')
-        .call(xAxisBot);
+    var xAxis = d3.select('.x.axis');
+    if (xAxis.empty()) {
+        axisGroug.append('g').attr('class', 'x axis');
+        xAxis = d3.select('.x.axis');
+
+        xAxis
+        .attr('transform', 'translate(' + [0, -10] + ')');
+    }
+    animationSelector(xAxis, shouldAnimate).call(xAxisBot);
 
     // Plot scale label
     axisGroug.append('text')
@@ -444,37 +488,41 @@ function updateChart(refineParam) {
         .attr('transform', 'translate(' + [canvasLeftPadding + 20, -30] + ')')
         .text('Distance in KM');
 
-
     // Plot orbit labels
-    var orbitLabels = svg.append('g')
-    .attr('class', 'orbitLabels')
-    .attr('transform', 'translate(' + [earthCenter[0], earthCenter[1]] + ')')
+    var orbitLabels = d3.select('.orbitLabels');
+    if (orbitLabels.empty()) {
+        svg.append('g').attr('class', 'orbitLabels');
+        orbitLabels = d3.select('.orbitLabels');
+
+        orbitLabels.append('text')
+        .attr('class', 'LEO label')
+        .text('LEO');
+        
+        orbitLabels.append('text')
+        .attr('class', 'MEO label')
+        .text('MEO');
     
-    orbitLabels.append('text')
-    .attr('class', 'LEO label')
-    .attr('y', function(d) {
+        orbitLabels.append('text')
+        .attr('class', 'GEO label')
+        .text('GEO');
+        
+        orbitLabels.append('text')
+        .attr('class', 'HEO label')
+        .text('HEO');
+    }
+    
+    animationSelector(orbitLabels, shouldAnimate).attr('transform', 'translate(' + [earthCenter[0], earthCenter[1]] + ')');
+    animationSelector(orbitLabels.select('.LEO'), shouldAnimate).attr('y', function(d) {
         if (zoom.mag == magOfLEO){
            return -scale(maxLEOApogee) - 15;
         } else {
             return -scale(maxLEOApogee) - 6;
         }
-    })
-    .text('LEO')
-    
-    orbitLabels.append('text')
-    .attr('class', 'MEO label')
-    .attr('y', -scale(maxMEOApogee) - 6)
-    .text('MEO')
+    });
+    animationSelector(orbitLabels.select('.MEO'), shouldAnimate).attr('y', -scale(maxMEOApogee) - 6);
+    animationSelector(orbitLabels.select('.GEO'), shouldAnimate).attr('y', -scale(maxGEOApogee) - 12)
+    animationSelector(orbitLabels.select('.HEO'), shouldAnimate).attr('x', scale(EARTH_RADIUS) * 7.7)
 
-    orbitLabels.append('text')
-    .attr('class', 'GEO label')
-    .attr('y', -scale(maxGEOApogee) - 12)
-    .text('GEO')
-    
-    orbitLabels.append('text')
-    .attr('class', 'HEO label')
-    .attr('x', scale(EARTH_RADIUS) * 7.7)
-    .text('HEO')
 
     // Create an UPDATE + ENTER selection
     // Selects all data-bound elements that are in SVG or just added to SVG
@@ -509,6 +557,16 @@ function updateChart(refineParam) {
     militarySatellites1.exit().remove();
     militarySatellites2.exit().remove();
     multiSatellites.exit().remove();
+
+    updateEarth(animationSelector(d3.select('#realistic-main-vis').selectAll('.earth'), shouldAnimate));
+    updateOrbits(animationSelector(d3.select('#realistic-main-vis').selectAll('ellipse'), shouldAnimate));
+    updateCivil(animationSelector(d3.select('#realistic-main-vis').selectAll('.civil.satellites'), shouldAnimate));
+    updateCommercial(animationSelector(d3.select('#realistic-main-vis').selectAll('.commercial.satellites'), shouldAnimate));
+    updateGovern(animationSelector(d3.select('#realistic-main-vis').selectAll('.govern.satellites'), shouldAnimate));
+    updateMillitary1(animationSelector(d3.select('#realistic-main-vis').selectAll('.military1.satellites'), shouldAnimate));
+    updateMillitary2(animationSelector(d3.select('#realistic-main-vis').selectAll('.military2.satellites'), shouldAnimate));
+    updateMulti(animationSelector(d3.select('#realistic-main-vis').selectAll('.multi.satellites'), shouldAnimate));
+    
 }
 
 // **** Load data ****
@@ -657,18 +715,15 @@ let zoomLevel_OVERVIEW = document.getElementById('radioOverview');
 
 zoomLevel_LEO.addEventListener('change', function(){
     zoom = ZOOM_LEO;
-    //console.log('I am LEO');
     updateChart(refineByParamsRealistic);
 });
 
 zoomLevel_GEO.addEventListener('change', function(){
     zoom = ZOOM_GEO;
-    //console.log('I am GEO');
     updateChart(refineByParamsRealistic);
 });
 
 zoomLevel_OVERVIEW.addEventListener('change', function(){
     zoom = ZOOM_OVERVIEW;
-    //console.log('I am Overview');
     updateChart(refineByParamsRealistic);
 });
