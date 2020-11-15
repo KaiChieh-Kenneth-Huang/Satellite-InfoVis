@@ -567,11 +567,61 @@ function updateChart(refineParam) {
     updateMillitary2(animationSelector(d3.select('#realistic-main-vis').selectAll('.military2.satellites'), shouldAnimate));
     updateMulti(animationSelector(d3.select('#realistic-main-vis').selectAll('.multi.satellites'), shouldAnimate));
     
+    // test orbit animation
+    // setInterval(() => {
+    //     const getPointOnEllipse = (apogee, perigee, angle) => {
+    //         const centerX = earthCenter[0] + scale((apogee - perigee) / 2);
+    //         const a = ((apogee + EARTH_RADIUS) + (perigee + EARTH_RADIUS)) / 2;
+    //         const b = Math.sqrt((apogee + EARTH_RADIUS) * (perigee + EARTH_RADIUS));
+    //         const xAbs = a * b / Math.sqrt(b * b + Math.pow(a * Math.tan(angle), 2));
+
+    //         const x = Math.abs(angle) < Math.PI / 2 ? centerX + scale(xAbs) : centerX - scale(xAbs);
+    //         const y = angle < 0 ? earthCenter[1] - scale(xAbs * Math.abs(Math.tan(angle))) : earthCenter[1] + scale(xAbs * Math.abs(Math.tan(angle))); // minus because +y direction is actually down on svg
+
+    //         return {x: x, y: y};
+    //     }
+    //     function getPosX(d) {
+    //         return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).x;
+    //     }
+
+    //     function getPosY(d) {
+    //         return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).y;
+    //     }
+    //     function updateCivil(satellites) {
+    //         satellites
+    //         .attr('x', d => {
+    //             return getPosX(d) - sizeStyle(d);
+    //         })
+    //         .attr('y', d => {
+    //             return getPosY(d) - sizeStyle(d);
+    //         })
+    //     }
+    //     function updateCommercial(satellites) {
+    //         satellites
+    //         .attr('cx', d => {
+    //             return getPosX(d);
+    //         })
+    //         .attr('cy', d => {
+    //             return getPosY(d);
+    //         })
+    //     }
+    //     satByPurpose['Commercial'].forEach(function(d) {
+    //         const nextAngle = d['Angle'] + 0.01;
+    //         d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
+    //     })
+    //     updateCommercial(d3.select('#realistic-main-vis').selectAll('.commercial.satellites'));
+    // }, 100);
 }
+
+
 
 // **** Load data ****
 d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
     satelliteData = dataset;
+
+    satelliteData.forEach((d) => {
+        d['Angle'] = +d['Angle'];
+    });
     
     // acquire options for refine by dropdowns
     let countries = Object.keys(satelliteData.reduce((options, d) => {
