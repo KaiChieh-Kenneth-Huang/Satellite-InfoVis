@@ -171,22 +171,22 @@ function sta_updateChart(refineParam,radioValue) {
           + "Peroid: " + d['Period (minutes)']  + "mins"+ "<br>"
           + "Mass: " + d['Launch Mass (kg.)']  + "kg"+ "<br>"
           + "Average Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
-          .style("left", (d3.mouse(this)[0]+1150) + "px")
-          .style("top", (d3.mouse(this)[1]+1250) + "px")
+          .style("left", (d3.mouse(svg.node())[0]+70 + width/2) + "px")
+          .style("top", (d3.mouse(svg.node())[1]+70 + height/2) + "px")
       }
 
       var country_mousemove = function(d){
         Tooltip
         .html("Country: " + d['country'])
-        .style("left", (d3.mouse(this)[0]+1150) + "px")
-        .style("top", (d3.mouse(this)[1]+1250) + "px")
+        .style("left", (d3.mouse(this)[0]+70+ width/2) + "px")
+        .style("top", (d3.mouse(this)[1]+70+ height/2) + "px")
       }
 
       var purpose_mousemove = function(d){
         Tooltip
         .html("Purpose: " + d['purpose'])
-        .style("left", (d3.mouse(this)[0]+1150) + "px")
-        .style("top", (d3.mouse(this)[1]+1250) + "px")
+        .style("left", (d3.mouse(this)[0]+70+ width/2) + "px")
+        .style("top", (d3.mouse(this)[1]+70+ height/2) + "px")
       }
       var mouseleave = function(d) {
         // console.log("Into mouseleave");
