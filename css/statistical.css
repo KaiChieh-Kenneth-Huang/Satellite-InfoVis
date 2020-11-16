@@ -8,9 +8,9 @@
 }
 
 #statistical-main-vis{
+    position: absolute;
     margin-top: 40px;
-    /* z-index: 100;
-    position: relative; */
+    z-index: 100;
     /* pointer-events: none; */
 }
 
