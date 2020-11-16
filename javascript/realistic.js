@@ -4,7 +4,7 @@
 const EARTH_RADIUS = 6378;
 
 const magOfOverview = 1.8, magOfGEO = 2.5, magOfLEO = 13;
-const ZOOM_OVERVIEW = { mag: magOfOverview, center: false, orbitOpacity: 0.35, satelliteSize: 1.3};
+const ZOOM_OVERVIEW = { mag: magOfOverview, center: false, orbitOpacity: 0.25, satelliteSize: 1.3};
 const ZOOM_GEO = { mag: magOfGEO, center: true, orbitOpacity: 0.25, satelliteSize: 2.2};
 const ZOOM_LEO = { mag: magOfLEO, center: true, orbitOpacity: 0.12, satelliteSize: 4};
 const TRANSITION_DURATION = 2000;
@@ -30,12 +30,12 @@ const opacityOfPeriod = {
 
 // Width, padding of canvas
 const mainVis = document.getElementById('realistic-main-vis');
+const mainVis_scrolly = document.getElementById('scrolly-main-vis');
 const canvasLeftPadding = 40;
 const canvasBottomPadding = 40;
 const leftControlsWidth = 200;
 const mainVisLeftPadding = 40;
 const mainVisRightPadding = 10;
-const axisWidth = 0.3 * mainVis.clientWidth;
 
 const graphLeftPadding = canvasLeftPadding + leftControlsWidth + mainVisLeftPadding;
 
@@ -48,14 +48,15 @@ const refineByPeriod = document.querySelector('#refineByPeriod');
 const FN_COUNTRY = 'new_country';
 const FN_PURPOSE = 'new_purpose';
 const FN_PERIOD = 'new_period';
+const FN_ORBIT = 'Class of Orbit';
 
 var refineByParamsRealistic = {};
 
 // svg variables
 var satelliteData; // holds the satellite data
-var earthCenterX, earthCenter;
 var scale;
 var kmToWidth;
+var kmToWidth_scrolly;
 var maxApogee, maxPerigee, maxLEOApogee, maxMEOApogee, maxGEOApogee;
 
 // TODO: sizing code needs to be inside resize listener
@@ -104,12 +105,451 @@ function opacityStyle(d) { //Opacity
     }
 }
 
+// helper functions
+function animationSelector(selection, shouldAnimate) {
+    return shouldAnimate ? selection.transition().duration(TRANSITION_DURATION) : selection;
+}
+
+// main vis setup
+// REFER TO REALISTIC.JS FOR CODE REFERENCE
+
+// *** Create a function to update chart ***
+// controlParams: {
+//   zoom: <obj>,
+//   orbitOpacityCoefficient: {
+//     LEO: <number>
+//     MEO: <number>
+//     GEO: <number>
+//     Elliptical: <number>
+//   },
+//   hideSatellites: <bool>,
+//   shouldAnimate: <bool>
+// }
+function updateChart_scrolly(controlParams) {
+    // patch controlParams
+    controlParams = controlParams || {};
+    controlParams.zoom = controlParams.zoom === undefined ? ZOOM_OVERVIEW : controlParams.zoom;
+    controlParams.orbitOpacityCoefficient = controlParams.orbitOpacityCoefficient === undefined
+      ? {LEO: 1, MEO: 1, GEO: 1, Elliptical: 1} 
+      : controlParams.orbitOpacityCoefficient;
+    controlParams.hideSatellites = controlParams.hideSatellites === undefined ? false : controlParams.hideSatellites;
+    controlParams.shouldAnimate = controlParams.shouldAnimate === undefined ? false : controlParams.shouldAnimate;
+  
+    // Update the scale based on Zoom Level
+    scale_scrolly = d3.scaleLinear()
+        .domain([0, maxApogee / controlParams.zoom.mag])
+        .range([0,kmToWidth_scrolly * maxApogee]);
+  
+    // Update the earth center on canvas;    
+    const earthCenterX = controlParams.zoom.center
+        ? (mainVis_scrolly.clientWidth) / 2
+        : kmToWidth_scrolly * maxPerigee + 100;
+  
+    const earthCenter = [earthCenterX, mainVis.clientHeight / 2];
+  
+    // Define the relative position of satellite points
+    const getPointOnEllipse = (apogee, perigee, angle) => {
+      const tangent = Math.tan(angle);
+      const centerX = earthCenter[0] + scale_scrolly((apogee - perigee) / 2);
+      const a = ((apogee + EARTH_RADIUS) + (perigee + EARTH_RADIUS)) / 2;
+      const bSq = (apogee + EARTH_RADIUS) * (perigee + EARTH_RADIUS);
+      const xAbs = 1.0 / Math.sqrt(1.0 / (a * a) + Math.pow(tangent, 2) / bSq);
+  
+      const x = Math.abs(angle) < Math.PI / 2 ? centerX + scale_scrolly(xAbs) : centerX - scale_scrolly(xAbs);
+      const y = angle < 0 ? earthCenter[1] - scale_scrolly(xAbs * Math.abs(tangent)) : earthCenter[1] + scale_scrolly(xAbs * Math.abs(tangent)); // minus because +y direction is actually down on svg
+      return {x: x, y: y};
+    }
+  
+    function getPosX(d) {
+        return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).x;
+    }
+  
+    function getPosY(d) {
+        return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).y;
+    }
+    // attributes to update
+    function updateEarth(earth) {
+        earth
+        .attr('width', scale_scrolly(EARTH_RADIUS)*2).attr('height', scale_scrolly(EARTH_RADIUS)*2)
+        .attr('x', earthCenter[0] - scale_scrolly(EARTH_RADIUS))
+        .attr('y', earthCenter[1] - scale_scrolly(EARTH_RADIUS))
+    }
+    function updateOrbits(orbits) {
+        orbits
+        .attr('cx', d => {
+            return earthCenter[0] + scale_scrolly((+d['Apogee (km)'] - +d['Perigee (km)']) / 2);
+        })
+        .attr('cy', earthCenter[1])
+        .attr('rx', d => scale_scrolly(((+d['Apogee (km)'] + EARTH_RADIUS) + (+d['Perigee (km)'] + EARTH_RADIUS)) / 2) )
+        .attr('ry', d => scale_scrolly(Math.sqrt((+d['Apogee (km)'] + EARTH_RADIUS) * (+d['Perigee (km)'] + EARTH_RADIUS))) )
+        .style('stroke', d => {
+            const orbitClass = d['Class of Orbit'];
+            const orbitOpacity = controlParams.zoom.orbitOpacity * controlParams.orbitOpacityCoefficient[orbitClass];
+            switch (orbitClass) {
+                case 'LEO': {
+                    return 'rgba(68, 68, 68,' + orbitOpacity +')';
+                }
+                case 'MEO': {
+                    return 'rgba(100, 100, 100,' + orbitOpacity +')';
+                }
+                case 'GEO': {
+                    return 'rgba(68, 68, 68,' + orbitOpacity +')';
+                }
+                case 'Elliptical': {
+                    return 'rgba(200, 200, 200,' + orbitOpacity +')';
+                }
+            }
+        });
+    }
+  
+    function updateCivil(satellites) {
+        satellites
+        .attr('x', d => {
+            return getPosX(d) - sizeStyle(d);
+        })
+        .attr('y', d => {
+            return getPosY(d) - sizeStyle(d);
+        })
+        .attr('width', d => {
+            return sizeStyle(d)*2
+        })
+        .attr('height', d => {
+            return sizeStyle(d)*2
+        })
+        .style('opacity', d => {
+            return controlParams.hideSatellites
+            ? 0
+            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
+        });
+    }
+  
+    function updateCommercial(satellites) {
+        satellites
+        .attr('cx', d => {
+            return getPosX(d);
+        })
+        .attr('cy', d => {
+            return getPosY(d);
+        })
+        .attr('r', d => {
+            return sizeStyle(d)
+        })
+        .style('stroke-width', d => {
+            if (controlParams.zoom.mag == magOfLEO){
+                return '2px';
+             } else if (controlParams.zoom.mag == magOfGEO) {
+                 return '1.5px';
+             } else {
+                 return '1px';
+             }
+        })
+        .style('opacity', d => {
+            return controlParams.hideSatellites
+            ? 0
+            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
+        });
+    }
+  
+    function updateGovern(satellites) {
+        satellites
+        .attr('points', d => {
+            const xPos = getPosX(d);
+            const yPos = getPosY(d);
+            return [[(xPos - sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))], [(xPos), (yPos - Math.sqrt(3)/3*2 * sizeStyle(d))], [(xPos + sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))]];
+        })
+        .style('opacity', d => {
+            return controlParams.hideSatellites
+            ? 0
+            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
+        });
+    }
+  
+    function updateMillitary1(satellites) {
+        satellites
+        .attr('x1', d => {
+            return getPosX(d) - sizeStyle(d);
+        })
+        .attr('y1', d => {
+            return getPosY(d) - sizeStyle(d);
+        })
+        .attr('x2', d => {
+            return getPosX(d) + sizeStyle(d);
+        })
+        .attr('y2', d => {
+            return getPosY(d) + sizeStyle(d);
+        })
+        .style('stroke-width', d => {
+            if (controlParams.zoom.mag == magOfLEO){
+                return '2px';
+             } else if (controlParams.zoom.mag == magOfGEO) {
+                 return '1.7px';
+             } else {
+                 return '1.2px';
+             }
+        })
+        .style('stroke-opacity', d => {
+            return controlParams.hideSatellites
+            ? 0
+            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
+        });
+    }
+  
+    function updateMillitary2(satellites) {
+        satellites
+        .attr('x1', d => {
+            return getPosX(d) - sizeStyle(d);
+        })
+        .attr('y1', d => {
+            return getPosY(d) + sizeStyle(d);
+        })
+        .attr('x2', d => {
+            return getPosX(d) + sizeStyle(d);
+        })
+        .attr('y2', d => {
+            return getPosY(d) - sizeStyle(d);
+        })
+        .style('stroke-width', d => {
+            if (controlParams.zoom.mag == magOfLEO){
+                return '2px';
+             } else if (controlParams.zoom.mag == magOfGEO) {
+                 return '1.7px';
+             } else {
+                 return '1.2px';
+             }
+        })
+        .style('stroke-opacity', d => {
+            return controlParams.hideSatellites
+            ? 0
+            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
+        });
+    }
+  
+    function updateMulti(satellites) {
+        satellites
+        .attr('cx', d => {
+            return getPosX(d);
+        })
+        .attr('cy', d => {
+            return getPosY(d);
+        })
+        .attr('r', d => {
+            return sizeStyle(d)
+        })
+        .style('opacity', d => {
+            return controlParams.hideSatellites
+            ? 0
+            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
+        });
+    }
+  
+   // Upload the Earth PNG
+   var earth = d3.select('#scrolly-main-vis').selectAll('.earth')
+        .data([0], function(d) {return 'earth';});
+    var earthEnter = earth.enter()
+        .append('image')
+        .attr('class', 'earth')
+        .attr('href', '../data/Flat Earth Map.png')
+        .style('stroke', 'white')
+        .style('stroke-width', 2)
+        .style('opacity', 0.75);
+  
+  
+    // plot orbits
+    var orbits = d3.select('#scrolly-main-vis').selectAll('ellipse')
+        .data(satelliteData, function(d){
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+        });
+  
+    var orbitsEnter = orbits.enter()
+        .append('ellipse')
+        .attr('class', 'regular-ellipse')
+        .style('opacity', 0.7);
+    
+    let satByPurpose = {};
+    for (const satellite of satelliteData) {
+        // Put all data points into different groups based on purpose
+        if (satByPurpose[satellite[FN_PURPOSE]]) {
+            satByPurpose[satellite[FN_PURPOSE]].push(satellite);
+        } else {
+            satByPurpose[satellite[FN_PURPOSE]] = [satellite];
+        }
+    }
+  
+    // Plot each type of satellites based on their purposes
+    // Civil
+    var civilSatellites = d3.select('#scrolly-main-vis').selectAll('.civil.satellites')
+        .data(satByPurpose['Civil'] || [], function(d){
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+        });
+    
+    var civilSatellitesEnter = civilSatellites.enter()
+        .append('rect')
+        .attr('class', 'civil satellites')
+        .style('fill', d => {
+            return colorStyle(d)
+        });
+  
+    // Commercial
+    var commercialSatellites = d3.select('#scrolly-main-vis').selectAll('.commercial.satellites')
+        .data(satByPurpose['Commercial'] || [], function(d){
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+        });
+    
+    var commercialSatellitesEnter = commercialSatellites.enter()
+        .append('circle')
+        .attr('class', 'commercial satellites')
+        .style('stroke', d => {
+            return colorStyle(d)
+        })
+        .style('fill-opacity', 0);
+  
+    // Government
+    var governSatellites = d3.select('#scrolly-main-vis').selectAll('.govern.satellites')
+        .data(satByPurpose['Government'] || [], function(d){
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+        });
+    
+    var governSatellitesEnter = governSatellites.enter()
+        .append('polygon')
+        .attr('class', 'govern satellites')
+        .style('fill', d => {
+            return colorStyle(d)
+        });
+  
+    // Military
+    var militarySatellites1 = d3.select('#scrolly-main-vis').selectAll('.military1.satellites')
+        .data(satByPurpose['Military'] || [], function(d){
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+        });
+  
+    var militarySatellites2 = d3.select('#scrolly-main-vis').selectAll('.military2.satellites')
+        .data(satByPurpose['Military'] || [], function(d){
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+        });
+    
+    var militarySatellitesEnter1 = militarySatellites1.enter()
+        .append('line')
+        .attr('class', 'military1 satellites')
+        .style('stroke', d => {
+            return colorStyle(d)
+        });
+  
+    var militarySatellitesEnter2 = militarySatellites2.enter()
+        .append('line')
+        .attr('class', 'military2 satellites')
+        .style('stroke', d => {
+            return colorStyle(d)
+        });
+  
+    // Multi-purpose
+    var multiSatellites = d3.select('#scrolly-main-vis').selectAll('.multi.satellites')
+        .data(satByPurpose['Multi-purpose'] || [], function(d){
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+        });
+    
+    var multiSatellitesEnter = multiSatellites.enter()
+        .append('circle')
+        .attr('class', 'multi satellites')
+        .style('fill', d => {
+            return colorStyle(d)
+        });
+  
+    var svg = d3.select('#scrolly-main-vis');
+    // Plot orbit labels
+    var orbitLabels = d3.select('.orbitLabels_scrolly');
+    if (orbitLabels.empty()) {
+        svg.append('g').attr('class', 'orbitLabels_scrolly');
+        orbitLabels = d3.select('.orbitLabels_scrolly');
+  
+        orbitLabels.append('text')
+        .attr('class', 'LEO label')
+        .text('LEO');
+        
+        orbitLabels.append('text')
+        .attr('class', 'MEO label')
+        .text('MEO');
+    
+        orbitLabels.append('text')
+        .attr('class', 'GEO label')
+        .text('GEO');
+        
+        orbitLabels.append('text')
+        .attr('class', 'HEO label')
+        .text('HEO');
+    }
+    
+    animationSelector(orbitLabels, controlParams.shouldAnimate).attr('transform', 'translate(' + [earthCenter[0], earthCenter[1]] + ')');
+    animationSelector(orbitLabels.select('.LEO'), controlParams.shouldAnimate)
+        .attr('y', function(d) {
+            if (controlParams.zoom.mag == magOfLEO){
+            return -scale_scrolly(maxLEOApogee) - 15;
+            } else {
+                return -scale_scrolly(maxLEOApogee) - 6;
+            }
+        })
+        .style('opacity', controlParams.orbitOpacityCoefficient.LEO === 1 ? 1 : 0.2);
+    animationSelector(orbitLabels.select('.MEO'), controlParams.shouldAnimate)
+        .attr('y', -scale_scrolly(maxMEOApogee) - 6)
+        .style('opacity', controlParams.orbitOpacityCoefficient.MEO === 1 ? 1 : 0.2);
+    animationSelector(orbitLabels.select('.GEO'), controlParams.shouldAnimate)
+        .attr('y', -scale_scrolly(maxGEOApogee) - 12)
+        .style('opacity', controlParams.orbitOpacityCoefficient.GEO === 1 ? 1 : 0.2);
+    animationSelector(orbitLabels.select('.HEO'), controlParams.shouldAnimate)
+        .attr('x', scale_scrolly(EARTH_RADIUS) * 7.7)
+        .style('opacity', controlParams.orbitOpacityCoefficient.Elliptical === 1 ? 1 : 0.2);
+  
+  
+    // Create an UPDATE + ENTER selection
+    // Selects all data-bound elements that are in SVG or just added to SVG
+    orbits.merge(orbitsEnter)
+        .transition();
+  
+    civilSatellites.merge(civilSatellitesEnter)
+        .transition();
+  
+    commercialSatellites.merge(commercialSatellitesEnter)
+        .transition();
+    
+    governSatellites.merge(governSatellitesEnter)
+        .transition();
+  
+    militarySatellites1.merge(militarySatellitesEnter1)
+        .transition();
+  
+    militarySatellites2.merge(militarySatellitesEnter2)
+        .transition();
+  
+    multiSatellites.merge(multiSatellitesEnter)
+        .transition();
+    
+    // Use the EXIT selection to remove all bars that have been filtered out
+    // Using a key-function in the data() method is crucial to a proper EXIT
+    orbits.exit().remove();
+  
+    civilSatellites.exit().remove();
+    commercialSatellites.exit().remove();
+    governSatellites.exit().remove();
+    militarySatellites1.exit().remove();
+    militarySatellites2.exit().remove();
+    multiSatellites.exit().remove();
+  
+    updateEarth(animationSelector(d3.select('#scrolly-main-vis').selectAll('.earth'), controlParams.shouldAnimate));
+    updateOrbits(animationSelector(d3.select('#scrolly-main-vis').selectAll('ellipse'), controlParams.shouldAnimate));
+    updateCivil(animationSelector(d3.select('#scrolly-main-vis').selectAll('.civil.satellites'), controlParams.shouldAnimate));
+    updateCommercial(animationSelector(d3.select('#scrolly-main-vis').selectAll('.commercial.satellites'), controlParams.shouldAnimate));
+    updateGovern(animationSelector(d3.select('#scrolly-main-vis').selectAll('.govern.satellites'), controlParams.shouldAnimate));
+    updateMillitary1(animationSelector(d3.select('#scrolly-main-vis').selectAll('.military1.satellites'), controlParams.shouldAnimate));
+    updateMillitary2(animationSelector(d3.select('#scrolly-main-vis').selectAll('.military2.satellites'), controlParams.shouldAnimate));
+    updateMulti(animationSelector(d3.select('#scrolly-main-vis').selectAll('.multi.satellites'), controlParams.shouldAnimate));
+  }
+
 // *** Create a function to update chart ***
 function updateChart(refineParam) {
-    // Remove the remaining earth PNG, orbit labels, and scale from the last time
-    // d3.select('.orbitLabels').remove();
-    // d3.select('.earth').remove();
-    // d3.selectAll('.x').remove();
+    // responsive setup
+    kmToWidth = (mainVis.clientWidth - graphLeftPadding - mainVisRightPadding) / (maxApogee + maxPerigee);
+    const axisWidth = 0.3 * mainVis.clientWidth;
+
+
     const shouldAnimate = prevZoom !== zoom;
     prevZoom = zoom;
 
@@ -119,11 +559,11 @@ function updateChart(refineParam) {
         .range([0,kmToWidth * maxApogee]);
 
     // Update the earth center on canvas;    
-    earthCenterX = zoom.center
+    const earthCenterX = zoom.center
         ? (mainVis.clientWidth + graphLeftPadding/5 - mainVisRightPadding) / 2
         : kmToWidth * maxPerigee + graphLeftPadding * 1.4;
 
-    earthCenter = [earthCenterX, mainVis.clientHeight / 2];
+    const earthCenter = [earthCenterX, mainVis.clientHeight / 2];
 
     // Update all satellite data based on filter selection    
     var filteredSatellites = satelliteData.filter(function(d){
@@ -142,14 +582,14 @@ function updateChart(refineParam) {
 
     // Define the relative position of satellite points
     const getPointOnEllipse = (apogee, perigee, angle) => {
+        const tangent = Math.tan(angle);
         const centerX = earthCenter[0] + scale((apogee - perigee) / 2);
         const a = ((apogee + EARTH_RADIUS) + (perigee + EARTH_RADIUS)) / 2;
-        const b = Math.sqrt((apogee + EARTH_RADIUS) * (perigee + EARTH_RADIUS));
-        const xAbs = a * b / Math.sqrt(b * b + Math.pow(a * Math.tan(angle), 2));
+        const bSq = (apogee + EARTH_RADIUS) * (perigee + EARTH_RADIUS);
+        const xAbs = 1.0 / Math.sqrt(1.0 / (a * a) + Math.pow(tangent, 2) / bSq);
 
         const x = Math.abs(angle) < Math.PI / 2 ? centerX + scale(xAbs) : centerX - scale(xAbs);
-        const y = angle < 0 ? earthCenter[1] - scale(xAbs * Math.abs(Math.tan(angle))) : earthCenter[1] + scale(xAbs * Math.abs(Math.tan(angle))); // minus because +y direction is actually down on svg
-
+        const y = angle < 0 ? earthCenter[1] - scale(xAbs * Math.abs(tangent)) : earthCenter[1] + scale(xAbs * Math.abs(tangent)); // minus because +y direction is actually down on svg
         return {x: x, y: y};
     }
 
@@ -161,9 +601,6 @@ function updateChart(refineParam) {
         return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).y;
     }
 
-    function animationSelector(selection, shouldAnimate) {
-        return shouldAnimate ? selection.transition().duration(TRANSITION_DURATION) : selection;
-    }
     // attributes to update
     function updateEarth(earth) {
         earth
@@ -239,7 +676,9 @@ function updateChart(refineParam) {
     function updateGovern(satellites) {
         satellites
         .attr('points', d => {
-            return [[(getPosX(d) - sizeStyle(d)), (getPosY(d) + Math.sqrt(3)/3 * sizeStyle(d))], [(getPosX(d)), (getPosY(d) - Math.sqrt(3)/3*2 * sizeStyle(d))], [(getPosX(d) + sizeStyle(d)), (getPosY(d) + Math.sqrt(3)/3 * sizeStyle(d))]];
+            const xPos = getPosX(d);
+            const yPos = getPosY(d);
+            return [[(xPos - sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))], [(xPos), (yPos - Math.sqrt(3)/3*2 * sizeStyle(d))], [(xPos + sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))]];
         })
     }
 
@@ -332,6 +771,7 @@ function updateChart(refineParam) {
     
     let satCount = {}; // How to use: element.innerText =  satCount['1990 - 1996'] ? satCount['1990 - 1996'] : 0;
     let satByPurpose = {};
+    let satByOrbit = {};
     for (const satellite of filteredSatellites) {
         satCount[satellite[FN_COUNTRY]] = satCount[satellite[FN_COUNTRY]] ? satCount[satellite[FN_COUNTRY]] + 1 : 1;
         satCount[satellite[FN_PURPOSE]] = satCount[satellite[FN_PURPOSE]] ? satCount[satellite[FN_PURPOSE]] + 1 : 1;
@@ -342,6 +782,12 @@ function updateChart(refineParam) {
             satByPurpose[satellite[FN_PURPOSE]].push(satellite);
         } else {
             satByPurpose[satellite[FN_PURPOSE]] = [satellite];
+        }
+        // Put all data points into different groups based on orbit
+        if (satByOrbit[satellite[FN_ORBIT]]) {
+            satByOrbit[satellite[FN_ORBIT]].push(satellite);
+        } else {
+            satByOrbit[satellite[FN_ORBIT]] = [satellite];
         }
     }
 
@@ -469,24 +915,24 @@ function updateChart(refineParam) {
 
     // Append a new <g> element that we will populate the axis with
     var svg = d3.select('#realistic-main-vis');
-    var axisGroug = svg.append('g')
-        .attr('transform', 'translate(' + [canvasLeftPadding, mainVis.clientHeight - canvasBottomPadding] + ')');
-    
+    var axisGroup = d3.select('.axis-group');
     var xAxis = d3.select('.x.axis');
-    if (xAxis.empty()) {
-        axisGroug.append('g').attr('class', 'x axis');
-        xAxis = d3.select('.x.axis');
+    if (axisGroup.empty()) {
+        axisGroup = svg.append('g')
+            .attr('class', 'axis-group');
+        // Plot scale label
+        axisGroup.append('text')
+            .attr('class', 'x label')
+            .attr('transform', 'translate(' + [canvasLeftPadding + 20, -30] + ')')
+            .text('Distance in KM');
+
+        xAxis = axisGroup.append('g').attr('class', 'x axis');
 
         xAxis
         .attr('transform', 'translate(' + [0, -10] + ')');
     }
+    animationSelector(axisGroup, shouldAnimate).attr('transform', 'translate(' + [canvasLeftPadding, mainVis.clientHeight - canvasBottomPadding] + ')');
     animationSelector(xAxis, shouldAnimate).call(xAxisBot);
-
-    // Plot scale label
-    axisGroug.append('text')
-        .attr('class', 'x label')
-        .attr('transform', 'translate(' + [canvasLeftPadding + 20, -30] + ')')
-        .text('Distance in KM');
 
     // Plot orbit labels
     var orbitLabels = d3.select('.orbitLabels');
@@ -568,18 +1014,19 @@ function updateChart(refineParam) {
     updateMulti(animationSelector(d3.select('#realistic-main-vis').selectAll('.multi.satellites'), shouldAnimate));
     
     // test orbit animation
+    // const satToAnimate = d3.select('#realistic-main-vis').selectAll('.commercial.satellites');
     // setInterval(() => {
-    //     const getPointOnEllipse = (apogee, perigee, angle) => {
-    //         const centerX = earthCenter[0] + scale((apogee - perigee) / 2);
-    //         const a = ((apogee + EARTH_RADIUS) + (perigee + EARTH_RADIUS)) / 2;
-    //         const b = Math.sqrt((apogee + EARTH_RADIUS) * (perigee + EARTH_RADIUS));
-    //         const xAbs = a * b / Math.sqrt(b * b + Math.pow(a * Math.tan(angle), 2));
+        // const getPointOnEllipse = (apogee, perigee, angle) => {
+        //     const tangent = Math.tan(angle);
+        //     const centerX = earthCenter[0] + scale((apogee - perigee) / 2);
+        //     const a = ((apogee + EARTH_RADIUS) + (perigee + EARTH_RADIUS)) / 2;
+        //     const bSq = (apogee + EARTH_RADIUS) * (perigee + EARTH_RADIUS);
+        //     const xAbs = 1.0 / Math.sqrt(1.0 / (a * a) + Math.pow(tangent, 2) / bSq);
 
-    //         const x = Math.abs(angle) < Math.PI / 2 ? centerX + scale(xAbs) : centerX - scale(xAbs);
-    //         const y = angle < 0 ? earthCenter[1] - scale(xAbs * Math.abs(Math.tan(angle))) : earthCenter[1] + scale(xAbs * Math.abs(Math.tan(angle))); // minus because +y direction is actually down on svg
-
-    //         return {x: x, y: y};
-    //     }
+        //     const x = Math.abs(angle) < Math.PI / 2 ? centerX + scale(xAbs) : centerX - scale(xAbs);
+        //     const y = angle < 0 ? earthCenter[1] - scale(xAbs * Math.abs(tangent)) : earthCenter[1] + scale(xAbs * Math.abs(tangent)); // minus because +y direction is actually down on svg
+        //     return {x: x, y: y};
+        // }
     //     function getPosX(d) {
     //         return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).x;
     //     }
@@ -587,30 +1034,46 @@ function updateChart(refineParam) {
     //     function getPosY(d) {
     //         return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).y;
     //     }
-    //     function updateCivil(satellites) {
+    //     // function updateCivil(satellites) {
+    //     //     satellites
+    //     //     .attr('x', d => {
+    //     //         return getPosX(d) - sizeStyle(d);
+    //     //     })
+    //     //     .attr('y', d => {
+    //     //         return getPosY(d) - sizeStyle(d);
+    //     //     })
+    //     // }
+    //     // function updateCommercial(satellites) {
+    //     //     satellites
+    //     //     .attr('cx', d => {
+    //     //         return getPosX(d);
+    //     //     })
+    //     //     .attr('cy', d => {
+    //     //         return getPosY(d);
+    //     //     })
+    //     // }
+    //     function updateGovern(satellites) {
     //         satellites
-    //         .attr('x', d => {
-    //             return getPosX(d) - sizeStyle(d);
-    //         })
-    //         .attr('y', d => {
-    //             return getPosY(d) - sizeStyle(d);
+    //         .attr('points', d => {
+    //             const xPos = getPosX(d);
+    //             const yPos = getPosY(d);
+    //             return [[(xPos - sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))], [(xPos), (yPos - Math.sqrt(3)/3*2 * sizeStyle(d))], [(xPos + sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))]];
     //         })
     //     }
-    //     function updateCommercial(satellites) {
-    //         satellites
-    //         .attr('cx', d => {
-    //             return getPosX(d);
-    //         })
-    //         .attr('cy', d => {
-    //             return getPosY(d);
-    //         })
-    //     }
-    //     satByPurpose['Commercial'].forEach(function(d) {
+    //     const shouldAnimate = false;
+    //     const satToAnimate = d3.select('#realistic-main-vis').selectAll('.govern.satellites');
+    //     satByOrbit['Elliptical'].forEach(function(d) {
     //         const nextAngle = d['Angle'] + 0.01;
     //         d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
     //     })
-    //     updateCommercial(d3.select('#realistic-main-vis').selectAll('.commercial.satellites'));
-    // }, 100);
+    //     // updateCommercial(satToAnimate);
+    //     // updateCivil(animationSelector(d3.select('#realistic-main-vis').selectAll('.civil.satellites'), shouldAnimate));
+    //     // updateCommercial(animationSelector(d3.select('#realistic-main-vis').selectAll('.commercial.satellites'), shouldAnimate));
+    //     updateGovern(satToAnimate);
+    //     // updateMillitary1(animationSelector(d3.select('#realistic-main-vis').selectAll('.military1.satellites'), shouldAnimate));
+    //     // updateMillitary2(animationSelector(d3.select('#realistic-main-vis').selectAll('.military2.satellites'), shouldAnimate));
+    //     // updateMulti(animationSelector(d3.select('#realistic-main-vis').selectAll('.multi.satellites'), shouldAnimate));
+    // }, 500);
 }
 
 
@@ -621,6 +1084,9 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
 
     satelliteData.forEach((d) => {
         d['Angle'] = +d['Angle'];
+        d['Apogee (km)'] = +d['Apogee (km)'];
+        d['Perigee (km)'] = +d['Perigee (km)'];
+        d['new_year'] = +d['new_year'];
     });
     
     // acquire options for refine by dropdowns
@@ -692,10 +1158,10 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
     });
 
-    kmToWidth = (mainVis.clientWidth - graphLeftPadding - mainVisRightPadding) / (maxApogee + maxPerigee);
+    kmToWidth_scrolly = mainVis_scrolly.clientWidth / (maxApogee + maxPerigee);
 
     updateChart(refineByParamsRealistic);
-    
+    updateChart_scrolly();
 });
 
 // *** Filter By Listeners ***
@@ -777,3 +1243,6 @@ zoomLevel_OVERVIEW.addEventListener('change', function(){
     zoom = ZOOM_OVERVIEW;
     updateChart(refineByParamsRealistic);
 });
+
+// setup resize event
+window.addEventListener("resize", () => {updateChart(refineByParamsRealistic)});
