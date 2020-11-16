@@ -205,129 +205,7 @@ function updateChart_scrolly(controlParams) {
         });
     }
   
-    function updateCivil(satellites) {
-        satellites
-        .attr('x', d => {
-            return getPosX(d) - sizeStyle(d);
-        })
-        .attr('y', d => {
-            return getPosY(d) - sizeStyle(d);
-        })
-        .attr('width', d => {
-            return sizeStyle(d)*2
-        })
-        .attr('height', d => {
-            return sizeStyle(d)*2
-        })
-        .style('opacity', d => {
-            return controlParams.hideSatellites
-            ? 0
-            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
-        });
-    }
-  
-    function updateCommercial(satellites) {
-        satellites
-        .attr('cx', d => {
-            return getPosX(d);
-        })
-        .attr('cy', d => {
-            return getPosY(d);
-        })
-        .attr('r', d => {
-            return sizeStyle(d)
-        })
-        .style('stroke-width', d => {
-            if (controlParams.zoom.mag == magOfLEO){
-                return '2px';
-             } else if (controlParams.zoom.mag == magOfGEO) {
-                 return '1.5px';
-             } else {
-                 return '1px';
-             }
-        })
-        .style('opacity', d => {
-            return controlParams.hideSatellites
-            ? 0
-            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
-        });
-    }
-  
-    function updateGovern(satellites) {
-        satellites
-        .attr('points', d => {
-            const xPos = getPosX(d);
-            const yPos = getPosY(d);
-            return [[(xPos - sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))], [(xPos), (yPos - Math.sqrt(3)/3*2 * sizeStyle(d))], [(xPos + sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))]];
-        })
-        .style('opacity', d => {
-            return controlParams.hideSatellites
-            ? 0
-            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
-        });
-    }
-  
-    function updateMillitary1(satellites) {
-        satellites
-        .attr('x1', d => {
-            return getPosX(d) - sizeStyle(d);
-        })
-        .attr('y1', d => {
-            return getPosY(d) - sizeStyle(d);
-        })
-        .attr('x2', d => {
-            return getPosX(d) + sizeStyle(d);
-        })
-        .attr('y2', d => {
-            return getPosY(d) + sizeStyle(d);
-        })
-        .style('stroke-width', d => {
-            if (controlParams.zoom.mag == magOfLEO){
-                return '2px';
-             } else if (controlParams.zoom.mag == magOfGEO) {
-                 return '1.7px';
-             } else {
-                 return '1.2px';
-             }
-        })
-        .style('stroke-opacity', d => {
-            return controlParams.hideSatellites
-            ? 0
-            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
-        });
-    }
-  
-    function updateMillitary2(satellites) {
-        satellites
-        .attr('x1', d => {
-            return getPosX(d) - sizeStyle(d);
-        })
-        .attr('y1', d => {
-            return getPosY(d) + sizeStyle(d);
-        })
-        .attr('x2', d => {
-            return getPosX(d) + sizeStyle(d);
-        })
-        .attr('y2', d => {
-            return getPosY(d) - sizeStyle(d);
-        })
-        .style('stroke-width', d => {
-            if (controlParams.zoom.mag == magOfLEO){
-                return '2px';
-             } else if (controlParams.zoom.mag == magOfGEO) {
-                 return '1.7px';
-             } else {
-                 return '1.2px';
-             }
-        })
-        .style('stroke-opacity', d => {
-            return controlParams.hideSatellites
-            ? 0
-            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
-        });
-    }
-  
-    function updateMulti(satellites) {
+    function updateSatellite(satellites) {
         satellites
         .attr('cx', d => {
             return getPosX(d);
@@ -368,15 +246,8 @@ function updateChart_scrolly(controlParams) {
         .attr('class', 'regular-ellipse')
         .style('opacity', 0.7);
     
-    let satByPurpose = {};
     let satByOrbit = {};
     for (const satellite of satelliteData) {
-        // Put all data points into different groups based on purpose
-        if (satByPurpose[satellite[FN_PURPOSE]]) {
-            satByPurpose[satellite[FN_PURPOSE]].push(satellite);
-        } else {
-            satByPurpose[satellite[FN_PURPOSE]] = [satellite];
-        }
         // Put all data points into different groups based on orbit
         if (satByOrbit[satellite[FN_ORBIT]]) {
             satByOrbit[satellite[FN_ORBIT]].push(satellite);
@@ -385,96 +256,18 @@ function updateChart_scrolly(controlParams) {
         }
     }
   
-    // Plot each type of satellites based on their purposes
-    // Civil
-    var civilSatellites = d3.select('#scrolly-main-vis').selectAll('.civil.satellites')
-        .data(satByPurpose['Civil'] || [], function(d){
+    // Plot satellites
+    var satellites = d3.select('#scrolly-main-vis').selectAll('.satellites')
+        .data(satelliteData || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
-    var civilSatellitesEnter = civilSatellites.enter()
-        .append('rect')
-        .attr('class', d => {
-            return 'civil satellites ' + d['Class of Orbit'];
-        })
-        .style('fill', d => {
-            return colorStyle(d)
-        });
-  
-    // Commercial
-    var commercialSatellites = d3.select('#scrolly-main-vis').selectAll('.commercial.satellites')
-        .data(satByPurpose['Commercial'] || [], function(d){
-            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
-        });
-    
-    var commercialSatellitesEnter = commercialSatellites.enter()
+    var satellitesEnter = satellites.enter()
         .append('circle')
         .attr('class', d => {
-            return 'commercial satellites ' + d['Class of Orbit'];
+            return 'satellites ' + d['Class of Orbit'];
         })
-        .style('stroke', d => {
-            return colorStyle(d)
-        })
-        .style('fill-opacity', 0);
-  
-    // Government
-    var governSatellites = d3.select('#scrolly-main-vis').selectAll('.govern.satellites')
-        .data(satByPurpose['Government'] || [], function(d){
-            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
-        });
-    
-    var governSatellitesEnter = governSatellites.enter()
-        .append('polygon')
-        .attr('class', d => {
-            return 'govern satellites ' + d['Class of Orbit'];
-        })
-        .style('fill', d => {
-            return colorStyle(d)
-        });
-  
-    // Military
-    var militarySatellites1 = d3.select('#scrolly-main-vis').selectAll('.military1.satellites')
-        .data(satByPurpose['Military'] || [], function(d){
-            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
-        });
-  
-    var militarySatellites2 = d3.select('#scrolly-main-vis').selectAll('.military2.satellites')
-        .data(satByPurpose['Military'] || [], function(d){
-            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
-        });
-    
-    var militarySatellitesEnter1 = militarySatellites1.enter()
-        .append('line')
-        .attr('class', d => {
-            return 'military1 satellites ' + d['Class of Orbit'];
-        })
-        .style('stroke', d => {
-            return colorStyle(d)
-        });
-  
-    var militarySatellitesEnter2 = militarySatellites2.enter()
-        .append('line')
-        .attr('class', d => {
-            return 'military2 satellites ' + d['Class of Orbit'];
-        })
-        .style('stroke', d => {
-            return colorStyle(d)
-        });
-  
-    // Multi-purpose
-    var multiSatellites = d3.select('#scrolly-main-vis').selectAll('.multi.satellites')
-        .data(satByPurpose['Multi-purpose'] || [], function(d){
-            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
-        });
-    
-    var multiSatellitesEnter = multiSatellites.enter()
-        .append('circle')
-        .attr('class', d => {
-            return 'multi satellites ' + d['Class of Orbit'];
-        })
-        .style('fill', d => {
-            return colorStyle(d)
-        });
+        .style('fill', '#ffffff');
   
     var svg = d3.select('#scrolly-main-vis');
     // Plot orbit labels
@@ -523,46 +316,18 @@ function updateChart_scrolly(controlParams) {
   
     // Create an UPDATE + ENTER selection
     // Selects all data-bound elements that are in SVG or just added to SVG
-    orbits.merge(orbitsEnter)
-        .transition();
-  
-    civilSatellites.merge(civilSatellitesEnter)
-        .transition();
-  
-    commercialSatellites.merge(commercialSatellitesEnter)
-        .transition();
-    
-    governSatellites.merge(governSatellitesEnter)
-        .transition();
-  
-    militarySatellites1.merge(militarySatellitesEnter1)
-        .transition();
-  
-    militarySatellites2.merge(militarySatellitesEnter2)
-        .transition();
-  
-    multiSatellites.merge(multiSatellitesEnter)
+    satellites.merge(satellitesEnter)
         .transition();
     
     // Use the EXIT selection to remove all bars that have been filtered out
     // Using a key-function in the data() method is crucial to a proper EXIT
     orbits.exit().remove();
   
-    civilSatellites.exit().remove();
-    commercialSatellites.exit().remove();
-    governSatellites.exit().remove();
-    militarySatellites1.exit().remove();
-    militarySatellites2.exit().remove();
-    multiSatellites.exit().remove();
+    satellites.exit().remove();
   
     updateEarth(animationSelector(d3.select('#scrolly-main-vis').selectAll('.earth'), controlParams.shouldAnimate));
     updateOrbits(animationSelector(d3.select('#scrolly-main-vis').selectAll('ellipse'), controlParams.shouldAnimate));
-    updateCivil(animationSelector(d3.select('#scrolly-main-vis').selectAll('.civil.satellites'), controlParams.shouldAnimate));
-    updateCommercial(animationSelector(d3.select('#scrolly-main-vis').selectAll('.commercial.satellites'), controlParams.shouldAnimate));
-    updateGovern(animationSelector(d3.select('#scrolly-main-vis').selectAll('.govern.satellites'), controlParams.shouldAnimate));
-    updateMillitary1(animationSelector(d3.select('#scrolly-main-vis').selectAll('.military1.satellites'), controlParams.shouldAnimate));
-    updateMillitary2(animationSelector(d3.select('#scrolly-main-vis').selectAll('.military2.satellites'), controlParams.shouldAnimate));
-    updateMulti(animationSelector(d3.select('#scrolly-main-vis').selectAll('.multi.satellites'), controlParams.shouldAnimate));
+    updateSatellite(animationSelector(d3.select('#scrolly-main-vis').selectAll('.satellites'), controlParams.shouldAnimate));
 
     // animate HEO
     clearInterval(orbitInterval);
@@ -572,12 +337,7 @@ function updateChart_scrolly(controlParams) {
                 const nextAngle = d['Angle'] + 1000 * (Math.abs(d['Angle']) + 1) / (d['Perigee (km)'] + d['Apogee (km)']);
                 d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
             })
-            // updateCivil(d3.select('#scrolly-main-vis').selectAll('.civil.satellites'));
-            //updateCommercial(d3.select('#scrolly-main-vis').selectAll('.commercial.satellites.Elliptical'));
-            updateGovern(d3.select('#scrolly-main-vis').selectAll('.govern.satellites.Elliptical'));
-            // updateMillitary1(d3.select('#scrolly-main-vis').selectAll('.military1.satellites.Elliptical'));
-            // updateMillitary2(d3.select('#scrolly-main-vis').selectAll('.military2.satellites.Elliptical'));
-            // updateMulti(d3.select('#scrolly-main-vis').selectAll('.multi.satellites.Elliptical'));
+            updateSatellite(d3.select('#scrolly-main-vis').selectAll('.satellites.Elliptical'));
         }, 200);
     }
   }
