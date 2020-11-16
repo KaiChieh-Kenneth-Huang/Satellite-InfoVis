@@ -49,6 +49,10 @@ var sta_satelliteData; // holds the satellite data
 var earthCenter;
 var scale;
 
+Math.degrees = function(radians) {
+	return radians * 180 / Math.PI;
+}
+
 // TODO: sizing code needs to be inside resize listener
 
 function sta_updateChart(refineParam,radioValue) {
@@ -326,12 +330,41 @@ function sta_updateChart(refineParam,radioValue) {
         .startAngle(function(d){return d['start_angle'];})
         .endAngle(function(d){return d['start_angle'] + d['angle'];})
         .padAngle(0)
-        .padRadius(outerRadius_Country)
+        .padRadius(outerRadius_Purpose)
         )
         .on('mouseover', mouseover)
         .on('mousemove', purpose_mousemove)
         .on('mouseout', mouseleave);
-    }
+    var purpose_caption_radius = innerRadius_Purpose + (outerRadius_Purpose - innerRadius_Purpose)/2 - 5;
+
+    var purpose_caption = svg.append('g')
+    .attr("class", "g_caption")
+    .selectAll('text')
+    .data(purpose)
+    .enter()
+    .append('text')
+    .style("text-anchor", "middle")
+    .attr('x', 0)
+    //.attr('y', -purpose_caption_radius)
+    .attr('y', 0)
+    .attr("transform", function(d) {
+        var degree = Math.degrees( d['start_angle'] + d['angle']/2);
+        var radians = d['start_angle'] + d['angle']/2;
+        console.log(degree);
+        console.log(purpose_caption_radius * Math.sin(degree));
+        console.log(purpose_caption_radius * Math.cos(degree));
+         return ("translate(" +(purpose_caption_radius * Math.sin(radians)) + "," + (-purpose_caption_radius * Math.cos(radians)) +") rotate(" + (degree)  +")")
+
+     })
+    .text(function(d){
+        if (d['angle'] > 0.5){
+            return d['purpose'];
+        }
+        else{
+            return '';
+        }
+    });
+}
     else{
     var purposeBar = svg.append('g')
     .attr("class", "g_main")
@@ -424,6 +457,37 @@ if(radioValue == 'Country'){
     .on('mouseover', mouseover)
     .on('mousemove', country_mousemove)
     .on('mouseout', mouseleave);
+
+
+    var country_caption_radius = innerRadius_Country + (outerRadius_Country - innerRadius_Country)/2 - 5;
+
+    var country_caption = svg.append('g')
+    .attr("class", "g_caption")
+    .selectAll('text')
+    .data(country)
+    .enter()
+    .append('text')
+    .style("text-anchor", "middle")
+    .attr('x', 0)
+    //.attr('y', -purpose_caption_radius)
+    .attr('y', 0)
+    .attr("transform", function(d) {
+        var degree = Math.degrees( d['start_angle'] + d['angle']/2);
+        var radians = d['start_angle'] + d['angle']/2;
+        console.log(degree);
+        console.log(country_caption_radius * Math.sin(degree));
+        console.log(country_caption_radius * Math.cos(degree));
+         return ("translate(" +(country_caption_radius * Math.sin(radians)) + "," + (-country_caption_radius * Math.cos(radians)) +") rotate(" + (degree)  +")")
+
+     })
+    .text(function(d){
+        if (d['angle'] > 0.5){
+            return d['country'];
+        }
+        else{
+            return '';
+        }
+    });
 }
 else{
     var CountryBar = svg.append('g')
