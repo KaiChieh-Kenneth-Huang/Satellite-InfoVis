@@ -59,6 +59,9 @@ var kmToWidth;
 var kmToWidth_scrolly;
 var maxApogee, maxPerigee, maxLEOApogee, maxMEOApogee, maxGEOApogee;
 
+// animation variables
+var orbitInterval;
+
 // TODO: sizing code needs to be inside resize listener
 console.log('client', mainVis.clientWidth + 'x' + mainVis.clientHeight);
 
@@ -366,12 +369,19 @@ function updateChart_scrolly(controlParams) {
         .style('opacity', 0.7);
     
     let satByPurpose = {};
+    let satByOrbit = {};
     for (const satellite of satelliteData) {
         // Put all data points into different groups based on purpose
         if (satByPurpose[satellite[FN_PURPOSE]]) {
             satByPurpose[satellite[FN_PURPOSE]].push(satellite);
         } else {
             satByPurpose[satellite[FN_PURPOSE]] = [satellite];
+        }
+        // Put all data points into different groups based on orbit
+        if (satByOrbit[satellite[FN_ORBIT]]) {
+            satByOrbit[satellite[FN_ORBIT]].push(satellite);
+        } else {
+            satByOrbit[satellite[FN_ORBIT]] = [satellite];
         }
     }
   
@@ -384,7 +394,9 @@ function updateChart_scrolly(controlParams) {
     
     var civilSatellitesEnter = civilSatellites.enter()
         .append('rect')
-        .attr('class', 'civil satellites')
+        .attr('class', d => {
+            return 'civil satellites ' + d['Class of Orbit'];
+        })
         .style('fill', d => {
             return colorStyle(d)
         });
@@ -397,7 +409,9 @@ function updateChart_scrolly(controlParams) {
     
     var commercialSatellitesEnter = commercialSatellites.enter()
         .append('circle')
-        .attr('class', 'commercial satellites')
+        .attr('class', d => {
+            return 'commercial satellites ' + d['Class of Orbit'];
+        })
         .style('stroke', d => {
             return colorStyle(d)
         })
@@ -411,7 +425,9 @@ function updateChart_scrolly(controlParams) {
     
     var governSatellitesEnter = governSatellites.enter()
         .append('polygon')
-        .attr('class', 'govern satellites')
+        .attr('class', d => {
+            return 'govern satellites ' + d['Class of Orbit'];
+        })
         .style('fill', d => {
             return colorStyle(d)
         });
@@ -429,14 +445,18 @@ function updateChart_scrolly(controlParams) {
     
     var militarySatellitesEnter1 = militarySatellites1.enter()
         .append('line')
-        .attr('class', 'military1 satellites')
+        .attr('class', d => {
+            return 'military1 satellites ' + d['Class of Orbit'];
+        })
         .style('stroke', d => {
             return colorStyle(d)
         });
   
     var militarySatellitesEnter2 = militarySatellites2.enter()
         .append('line')
-        .attr('class', 'military2 satellites')
+        .attr('class', d => {
+            return 'military2 satellites ' + d['Class of Orbit'];
+        })
         .style('stroke', d => {
             return colorStyle(d)
         });
@@ -449,7 +469,9 @@ function updateChart_scrolly(controlParams) {
     
     var multiSatellitesEnter = multiSatellites.enter()
         .append('circle')
-        .attr('class', 'multi satellites')
+        .attr('class', d => {
+            return 'multi satellites ' + d['Class of Orbit'];
+        })
         .style('fill', d => {
             return colorStyle(d)
         });
@@ -541,6 +563,23 @@ function updateChart_scrolly(controlParams) {
     updateMillitary1(animationSelector(d3.select('#scrolly-main-vis').selectAll('.military1.satellites'), controlParams.shouldAnimate));
     updateMillitary2(animationSelector(d3.select('#scrolly-main-vis').selectAll('.military2.satellites'), controlParams.shouldAnimate));
     updateMulti(animationSelector(d3.select('#scrolly-main-vis').selectAll('.multi.satellites'), controlParams.shouldAnimate));
+
+    // animate HEO
+    clearInterval(orbitInterval);
+    if (controlParams.animateHEOOribit) {
+        orbitInterval = setInterval(() => {
+            satByOrbit['Elliptical'].forEach(function(d) {
+                const nextAngle = d['Angle'] + 1000 * (Math.abs(d['Angle']) + 1) / (d['Perigee (km)'] + d['Apogee (km)']);
+                d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
+            })
+            // updateCivil(d3.select('#scrolly-main-vis').selectAll('.civil.satellites'));
+            //updateCommercial(d3.select('#scrolly-main-vis').selectAll('.commercial.satellites.Elliptical'));
+            updateGovern(d3.select('#scrolly-main-vis').selectAll('.govern.satellites.Elliptical'));
+            // updateMillitary1(d3.select('#scrolly-main-vis').selectAll('.military1.satellites.Elliptical'));
+            // updateMillitary2(d3.select('#scrolly-main-vis').selectAll('.military2.satellites.Elliptical'));
+            // updateMulti(d3.select('#scrolly-main-vis').selectAll('.multi.satellites.Elliptical'));
+        }, 200);
+    }
   }
 
 // *** Create a function to update chart ***

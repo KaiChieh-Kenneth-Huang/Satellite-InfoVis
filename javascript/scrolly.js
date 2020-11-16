@@ -80,6 +80,7 @@ scroller
         visControlParams = {
           orbitOpacityCoefficient: {LEO: DIMMING_COEFFICIENT_LEO, MEO: DIMMING_COEFFICIENT_MEO, GEO: DIMMING_COEFFICIENT_GEO, Elliptical: 1},
           shouldAnimate: true,
+          animateHEOOribit: true,
           zoom: ZOOM_OVERVIEW
         };
         break;
