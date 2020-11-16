@@ -127,18 +127,6 @@ h3 {
     z-index: -1;
 }
 
-#statistical-main-vis {
-    position: absolute;
-    /* width: 80%;
-    height: 80%; */
-    width: calc(100% - 400px);
-    height: calc(100% - 100px);
-    left: 400px;
-    top: 100px;
-    min-width: 600px;
-    min-height: 400px;
-    z-index: -1;
-}
 
 .legend>li {
     padding-bottom: 4px;
