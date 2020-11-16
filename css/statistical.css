@@ -7,11 +7,24 @@
     /* pointer-events: none; */
 }
 
-#statistical-main-vis{
+/* #statistical-main-vis{
     position: absolute;
     margin-top: 40px;
     z-index: 100;
     /* pointer-events: none; */
+} */
+
+#statistical-main-vis {
+    position: absolute;
+    /* width: 80%;
+    height: 80%; */
+    width: calc(100% - 400px);
+    height: calc(100% - 100px);
+    left: 400px;
+    top: 100px;
+    min-width: 600px;
+    min-height: 400px;
+    z-index: 100;
 }
 
 .left-panel.statistical {
