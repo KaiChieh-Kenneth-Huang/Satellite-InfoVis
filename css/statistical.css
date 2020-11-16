@@ -7,13 +7,6 @@
     /* pointer-events: none; */
 }
 
-/* #statistical-main-vis{
-    position: absolute;
-    margin-top: 40px;
-    z-index: 100;
-    /* pointer-events: none; */
-} */
-
 #statistical-main-vis {
     position: absolute;
     /* width: 80%;
