@@ -1,6 +1,11 @@
 /* layout */
 .main-display.realistic {
     padding: 50px 40px 80px 40px;
+    pointer-events: none;
+}
+
+.main-display.realistic * {
+    pointer-events:all;
 }
 
 .left-panel.realistic > .options {

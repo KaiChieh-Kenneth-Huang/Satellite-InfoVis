@@ -4,20 +4,15 @@
 /* layout */
 .main-display.statistical {
     padding: 40px 40px 40px 40px;
-    /* pointer-events: none; */
+    pointer-events: none;
+}
+
+.main-display.statistical * {
+    pointer-events:all;
 }
 
 #statistical-main-vis {
-    position: absolute;
-    /* width: 80%;
-    height: 80%; */
-    width: calc(100% - 400px);
-    height: calc(100% - 100px);
-    left: 400px;
-    top: 100px;
-    min-width: 600px;
-    min-height: 400px;
-    z-index: 100;
+
 }
 
 .left-panel.statistical {
