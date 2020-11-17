@@ -19,7 +19,7 @@
     src: url("../font/Metropolis-SemiBold.otf") format("opentype");
 }
 
-h1 {
+#topTitle {
     font-family: Metropolis_Medium, sans-serif;
 }
 
