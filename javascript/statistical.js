@@ -49,6 +49,19 @@ var sta_satelliteData; // holds the satellite data
 var earthCenter;
 var scale;
 
+const colorOfChart = {
+    china: '#E12200',
+    russia: '#9B56BB',
+    UK: '#0079B8',
+    USA: '#62A420',
+    others: '#FAC400',
+    period: '#FF681C',
+    mass: '#FF8400',
+    ADTE: '#DFA100',
+    arcBackground: '#28333c',
+    rightbar: '#E26C92'
+}
+
 // Tooltip variables
 const tooltipOffset = 15;
 
@@ -141,7 +154,7 @@ function sta_updateChart(refineParam,radioValue) {
     .style("text-anchor", "end")
     .attr('x', -5)
     .attr('y', (-((outerRadius_Dis-innerRadius_Dis)/2 + innerRadius_Dis)))
-    .text('Distance');
+    .text('ADTE');
 
     var mass_label = svg.append('text')
     .style("text-anchor", "end")
@@ -298,7 +311,7 @@ function sta_updateChart(refineParam,radioValue) {
         // }
     }
 
-    //UK, USA, Russia, Others, Multinational, China
+    // UK, USA, Russia, Others, Multinational, China
     var all = USA + UK + China + Russia + Others + Multinational;
     var USA_p = USA / all * radius_range;
     var China_p = China / all * radius_range;
@@ -451,26 +464,26 @@ if(radioValue == 'Country'){
     .append('path')
     .attr('fill',function(d){
         if (d['country'] == 'USA'){
-            return '#919fa8';
+            return colorOfChart.USA;
         }
         else if (d['country'] == 'Russia'){
-            return '#e46c00';
+            return colorOfChart.russia;
         }
         else if(d['country'] =='China'){
-            return '#8939ad';
+            return colorOfChart.china;
         }
         else if(d['country'] == 'Others'){
-            return '#62a420';
+            return colorOfChart.others;
         }
-        else if(d['country'] == 'Multinational'){
-            return '#00ab9a';
-        }
+        // else if(d['country'] == 'Multinational'){
+        //     return '#00ab9a';
+        // }
         else if(d['country'] == 'UK'){
-            return '#0079B8';
+            return colorOfChart.UK;
         }
-        else {
-            return '#28333c';
-        }
+        // else {
+        //     return '#28333c';
+        // }
     })
     .attr('d',d3.arc()
     .innerRadius( function(d) { return y_country(0) })
@@ -517,7 +530,7 @@ if(radioValue == 'Country'){
         }
     });
 }
-else{
+else {
     var CountryBar = svg.append('g')
     .attr("class", "g_main")
     .selectAll('path')
@@ -526,26 +539,26 @@ else{
     .append('path')
     .attr('fill',function(d){
         if (d['new_country'] == 'USA'){
-            return '#919fa8';
+            return colorOfChart.USA;
         }
         else if (d['new_country'] == 'Russia'){
-            return '#e46c00';
+            return colorOfChart.russia;
         }
         else if(d['new_country'] =='China'){
-            return '#8939ad';
+            return colorOfChart.china;
         }
         else if(d['new_country'] == 'Others'){
-            return '#62a420';
+            return colorOfChart.others;
         }
         // else if(d['new_country'] == 'Multinational'){
         //     return '#00ab9a';
         // }
         else if(d['new_country'] == 'UK'){
-            return '#0079B8';
+            return colorOfChart.UK;
         }
-        else {
-            return '#28333c';
-        }
+        // else {
+        //     return '#28333c';
+        // }
     })
     .attr('d',d3.arc()
     .innerRadius( function(d) { return y_country(0) })
@@ -567,7 +580,7 @@ else{
     .enter()
     .append('path')
     .attr("fill-opacity","1")
-    .attr('fill','#28333c')
+    .attr('fill', colorOfChart.arcBackground)
     .attr('d',d3.arc()
         .innerRadius( function(d) { return y_period(0) })
         .outerRadius(function(d){return y_period(maxPeriod);})
@@ -584,7 +597,7 @@ else{
         .data(sta_dataset)
         .enter()
         .append('path')
-        .attr('fill','#e35b4f')
+        .attr('fill', colorOfChart.period)
         .attr('class','arc')
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_period(0); })
@@ -608,7 +621,7 @@ else{
         .enter()
         .append('path')
         .attr("fill-opacity","1")
-        .attr('fill','#28333c')
+        .attr('fill', colorOfChart.arcBackground)
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_mass(0) })
             .outerRadius(function(d){return y_mass(maxMass);})
@@ -623,7 +636,7 @@ else{
         .data(sta_dataset)
         .enter()
         .append('path')
-        .attr('fill','#f08934')
+        .attr('fill', colorOfChart.mass)
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_mass(0) })
             .outerRadius(function(d){return y_mass(d['log_mass']);})
@@ -643,7 +656,7 @@ else{
         .enter()
         .append('path')
         .attr("fill-opacity","1")
-        .attr('fill','#28333c')
+        .attr('fill',colorOfChart.arcBackground)
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_dis(0) })
             .outerRadius(function(d){return y_dis(maxDis);})
@@ -658,7 +671,7 @@ else{
         .data(sta_dataset)
         .enter()
         .append('path')
-        .attr('fill','#ee7137')
+        .attr('fill', colorOfChart.ADTE)
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_dis(0) })
             .outerRadius(function(d){return y_dis(d['log_dis']);})
@@ -692,15 +705,16 @@ else{
 
     console.log('WIDTHHHH'+svgWidth);
 
-    //disArray
+
+    // Avg Distance Array
     var dis_barchart = main_svg.append('g')
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t]  + ')');
     //.attr('transform', 'translate(880,150)');
 
     dis_barchart.append('text')
     .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-15, barchart_height+30]  + ')')
-    .text('Distance');
+    .attr('transform', 'translate('+ [barchart_width/2-50, barchart_height+30]  + ')')
+    .text('Avg Distance to Earth');
 
     min_avgDis = d3.min(disArray);
     max_avgDis = d3.max(disArray);
@@ -760,9 +774,10 @@ else{
             return  barchart_height - y_dis(d.length);
         }
         })
-    .style("fill", "#69b3a2");
+    .style("fill", colorOfChart.rightbar);
 
-    //period array
+
+    // Period array
     var period_barchart = main_svg.append('g')
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height+bar_gap]  + ')');
     //.attr('transform', 'translate(880,' + (150+barchart_height + 25) + ')') ;
@@ -808,9 +823,10 @@ else{
     .attr("transform", function(d) { return "translate("  + x_period(d.x0) + ","  + y_period(d.length) + ")"; })
     .attr("width", function(d) { return x_period(d.x1) - x_period(d.x0) -1 ; })
     .attr("height", function(d) { return barchart_height - y_period(d.length); })
-    .style("fill", "#69b3a2");
+    .style("fill", colorOfChart.rightbar);
 
-    //mass array
+
+    // Mass array
     var mass_barchart = main_svg.append('g')
     //.attr('transform', 'translate(880,' + (150+barchart_height*2 + 25*2) + ')') ;
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height*2 + bar_gap*2]  + ')');
@@ -856,10 +872,10 @@ else{
     .attr("transform", function(d) { return "translate("  + x_mass(d.x0) + ","  + y_mass(d.length) + ")"; })
     .attr("width", function(d) { return x_mass(d.x1) - x_mass(d.x0) -1 ; })
     .attr("height", function(d) { return barchart_height - y_mass(d.length); })
-    .style("fill", "#69b3a2");
+    .style("fill", colorOfChart.rightbar);
 
 
-    //purpose barchart
+    // Purpose barchart
     var purpose_barchart = main_svg.append('g')
     //.attr('transform', 'translate(880,' + (150+barchart_height*3 + 25*3) + ')') ;
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*3+bar_gap*3]  + ')');
@@ -882,7 +898,7 @@ else{
     .attr("width", x_purpose.bandwidth())
     .attr("y", function(d) { return y_purpose(d['count']); })
     .attr("height", function(d) { return barchart_height - y_purpose(d['count']); })
-    .style("fill", "#69b3a2");
+    .style("fill", colorOfChart.rightbar);
 
     purpose_barchart.append("g")
     .attr("transform", "translate(0," + barchart_height + ")")
@@ -894,7 +910,7 @@ else{
     .call(d3.axisLeft(y_purpose).ticks(y_tick));
 
 
-    //country barchart
+    // Country barchart
     var country_barchart = main_svg.append('g')
     //.attr('transform', 'translate(880,' + (150+barchart_height*4 + 25*4) + ')') ;
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*4+bar_gap*4]  + ')');
@@ -919,7 +935,7 @@ else{
     .attr("width", x_country.bandwidth())
     .attr("y", function(d) { return y_country(d['count']); })
     .attr("height", function(d) { return barchart_height - y_country(d['count']); })
-    .style("fill", "#69b3a2");
+    .style("fill", colorOfChart.rightbar);
 
     country_barchart.append("g")
     .attr("transform", "translate(0," + barchart_height + ")")

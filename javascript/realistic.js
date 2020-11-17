@@ -217,7 +217,7 @@ function updateChart_scrolly(controlParams) {
             return getPosY(d);
         })
         .attr('r', d => {
-            return sizeStyle(d)
+            return sizeStyle(d) * 0.75;
         })
         .style('opacity', d => {
             return controlParams.hideSatellites
