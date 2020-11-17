@@ -985,26 +985,14 @@ let orbit_checkBox =  document.getElementById("showOrbits");
 orbit_checkBox.addEventListener('change', function() {
     if(this.checked) {
         d3.select('#realistic-main-vis').selectAll('ellipse')
-            .style("visibility",d => {
-                return "visible";
-            }
-        );
+            .style("opacity", 1);
         d3.select('#realistic-main-vis').selectAll('.orbitLabels')
-            .style("visibility",d => {
-                return "visible";
-            }
-        )
+            .style("opacity", 1);
     } else {
         d3.select('#realistic-main-vis').selectAll('ellipse')
-            .style("visibility",d => {
-                return "hidden";
-            }
-        )
+            .style("opacity", 0);
         d3.select('#realistic-main-vis').selectAll('.orbitLabels')
-            .style("visibility",d => {
-                return "hidden";
-            }
-        )
+            .style("opacity", 0);
         }
 });
 
@@ -1012,14 +1000,10 @@ let satellite_checkBox =  document.getElementById("showSatellites");
 satellite_checkBox.addEventListener('change', function(){
     if(this.checked) {
         d3.select('#realistic-main-vis').selectAll('.satellites')
-        .style("visibility",d => {
-            return "visible";
-        })
+        .style("opacity", 1);
     } else {
         d3.select('#realistic-main-vis').selectAll('.satellites')
-            .style("visibility",d => {
-                return "hidden";
-            })
+        .style("opacity", 0);
         }
 });
 
