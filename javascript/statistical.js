@@ -136,13 +136,37 @@ function sta_updateChart(refineParam,radioValue) {
     .attr("class", "g_main")
     .attr("transform", "translate(" + (width/2-10) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
-    // var svg = d3.select('#statistical-main-vis')
-    // .append('rect')
-    // .attr('x',10)
-    // .attr('y',10)
-    // .attr("width", 50)
-    // .attr("height", 100)
-    // .attr('fill', 'red');
+
+    var dis_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Dis-innerRadius_Dis)/2 + innerRadius_Dis)))
+    .text('Distance');
+
+    var mass_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Mass-innerRadius_Mass)/2 + innerRadius_Mass)))
+    .text('Mass');
+
+    var period_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Period-innerRadius_Period)/2 + innerRadius_Period)))
+    .text('Period');
+
+    var Country_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Country-innerRadius_Country)/2 + innerRadius_Country)))
+    .text('Country');
+
+    var Purpose_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Purpose-innerRadius_Purpose)/2 + innerRadius_Purpose)))
+    .text('Purpose');
+
 
     // *** Create a tooltip when hovering over the chart ***
     var Tooltip = d3.select("#div_template")
