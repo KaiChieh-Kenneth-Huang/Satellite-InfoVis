@@ -37,6 +37,9 @@ const leftControlsWidth = 200;
 const mainVisLeftPadding = 40;
 const mainVisRightPadding = 10;
 
+var real_width = mainVis.clientWidth;
+var real_height = mainVis.clientHeight;
+
 const graphLeftPadding = canvasLeftPadding + leftControlsWidth + mainVisLeftPadding;
 
 // Refine By dropdowns
@@ -116,7 +119,7 @@ function animationSelector(selection, shouldAnimate) {
 // main vis setup
 // REFER TO REALISTIC.JS FOR CODE REFERENCE
 
-// *** Create a function to update chart ***
+// *** Create a function to update chart in scrollytelling ***
 // controlParams: {
 //   zoom: <obj>,
 //   orbitOpacityCoefficient: {
@@ -214,7 +217,7 @@ function updateChart_scrolly(controlParams) {
             return getPosY(d);
         })
         .attr('r', d => {
-            return sizeStyle(d)
+            return sizeStyle(d) * 0.75;
         })
         .style('opacity', d => {
             return controlParams.hideSatellites
@@ -255,6 +258,7 @@ function updateChart_scrolly(controlParams) {
             satByOrbit[satellite[FN_ORBIT]] = [satellite];
         }
     }
+
   
     // Plot satellites
     var satellites = d3.select('#scrolly-main-vis').selectAll('.satellites')
@@ -268,6 +272,7 @@ function updateChart_scrolly(controlParams) {
             return 'satellites ' + d['Class of Orbit'];
         })
         .style('fill', '#ffffff');
+
   
     var svg = d3.select('#scrolly-main-vis');
     // Plot orbit labels
@@ -342,6 +347,7 @@ function updateChart_scrolly(controlParams) {
     }
   }
 
+
 // *** Create a function to update chart ***
 function updateChart(refineParam) {
     // responsive setup
@@ -399,6 +405,50 @@ function updateChart(refineParam) {
     function getPosY(d) {
         return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).y;
     }
+
+        //for hover
+        var real_Tooltip = d3.select("#div_template_real")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("color","black")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
+    
+        var real_mouseover = function(d) {
+            // console.log("Into mouseover");
+            real_Tooltip
+              .style("opacity", 1)
+            d3.select(this)
+              .style("stroke", "black")
+              .style("opacity", 1)
+          }
+        var real_mousemove = function(d) {
+            // console.log("Into mousemove");
+            //console.log("The country is: " + d['new_country']);
+            real_Tooltip
+              .html("Name: " + d['Name of Satellite  Alternate Names']  + "<br>"
+              + "Country: " + d['new_country']  + "<br>" 
+              + "Purpose: " + d['new_purpose']  + "<br>"
+              + "Peroid: " + d['Period (minutes)']  + "mins"+ "<br>"
+              + "Mass: " + d['Launch Mass (kg.)']  + "kg"+ "<br>"
+              + "Average Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
+              .style("left", (d3.mouse(this)[0]+70 + real_width/2) + "px")
+              .style("top", (d3.mouse(this)[1]+70 + real_height/2) + "px")
+          }
+    
+        var real_mouseleave = function(d) {
+            // console.log("Into mouseleave");
+            real_Tooltip
+              .style("opacity", 0)
+            d3.select(this)
+              .style("stroke", "none")
+              .style("opacity", 1)
+          }
 
     // attributes to update
     function updateEarth(earth) {
@@ -542,6 +592,7 @@ function updateChart(refineParam) {
         .attr('r', d => {
             return sizeStyle(d)
         })
+
     }
 
    // Upload the Earth PNG
@@ -896,7 +947,7 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
-    countries.push('All (6)');
+    countries.push('All (5)');
     countries.sort();
 
     let purposes = Object.keys(satelliteData.reduce((options, d) => {

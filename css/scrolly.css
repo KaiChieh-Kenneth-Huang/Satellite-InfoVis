@@ -1,10 +1,11 @@
 /* scrolly telling */
 #scroll-indicator {
     position: sticky;
-    bottom: 100px;
+    bottom: 40px;
     text-align: center;
     font-family: Metropolis_Light;
-    font-size: 22px;
+    font-size: 18px;
+    opacity: 0.5;
 }
 #scroll-indicator svg{
     margin: 10px;
