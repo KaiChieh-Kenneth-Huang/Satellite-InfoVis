@@ -119,7 +119,7 @@ function animationSelector(selection, shouldAnimate) {
 // main vis setup
 // REFER TO REALISTIC.JS FOR CODE REFERENCE
 
-// *** Create a function to update chart ***
+// *** Create a function to update chart in scrollytelling ***
 // controlParams: {
 //   zoom: <obj>,
 //   orbitOpacityCoefficient: {
@@ -259,9 +259,6 @@ function updateChart_scrolly(controlParams) {
         }
     }
 
-
-
-
   
     // Plot satellites
     var satellites = d3.select('#scrolly-main-vis').selectAll('.satellites')
@@ -349,6 +346,7 @@ function updateChart_scrolly(controlParams) {
         }, 200);
     }
   }
+
 
 // *** Create a function to update chart ***
 function updateChart(refineParam) {
@@ -949,7 +947,7 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
         return options;
     }, {})).sort();
-    countries.push('All (6)');
+    countries.push('All (5)');
     countries.sort();
 
     let purposes = Object.keys(satelliteData.reduce((options, d) => {

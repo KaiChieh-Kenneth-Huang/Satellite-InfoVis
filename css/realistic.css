@@ -21,7 +21,7 @@
 /* Legend */
 .legend { 
     list-style: none; 
-    opacity: 0.8;
+    opacity: 0.85;
     margin-bottom: 40px;
 }
 
@@ -112,4 +112,9 @@
 
 .x.label{
     font-size: 18px;
+}
+
+.tooltip {
+    font-family: Metropolis_Light, sans-serif;
+    font-size: 12px;
 }

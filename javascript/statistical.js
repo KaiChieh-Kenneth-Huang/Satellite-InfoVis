@@ -49,6 +49,9 @@ var sta_satelliteData; // holds the satellite data
 var earthCenter;
 var scale;
 
+// Tooltip variables
+const tooltipOffset = 15;
+
 Math.degrees = function(radians) {
 	return radians * 180 / Math.PI;
 }
@@ -141,6 +144,7 @@ function sta_updateChart(refineParam,radioValue) {
     // .attr("height", 100)
     // .attr('fill', 'red');
 
+    // *** Create a tooltip when hovering over the chart ***
     var Tooltip = d3.select("#div_template")
     .append("div")
     .attr("class", "tooltip")
@@ -148,10 +152,10 @@ function sta_updateChart(refineParam,radioValue) {
     .style("position", "absolute")
     .style("background-color", "white")
     .style("color","black")
-    .style("border", "solid")
-    .style("border-width", "2px")
+    // .style("border", "solid")
+    // .style("border-width", "2px")
     .style("border-radius", "5px")
-    .style("padding", "5px")
+    .style("padding", "12px")
 
     var mouseover = function(d) {
         // console.log("Into mouseover");
@@ -171,22 +175,22 @@ function sta_updateChart(refineParam,radioValue) {
           + "Peroid: " + d['Period (minutes)']  + "mins"+ "<br>"
           + "Mass: " + d['Launch Mass (kg.)']  + "kg"+ "<br>"
           + "Average Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
-          .style("left", (d3.mouse(svg.node())[0]+70 + width/2) + "px")
-          .style("top", (d3.mouse(svg.node())[1]+70 + height/2) + "px")
+          .style("left", (d3.mouse(svg.node())[0]+ tooltipOffset + width/2) + "px")
+          .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px")
       }
 
       var country_mousemove = function(d){
         Tooltip
         .html("Country: " + d['country'])
-        .style("left", (d3.mouse(this)[0]+70+ width/2) + "px")
-        .style("top", (d3.mouse(this)[1]+70+ height/2) + "px")
+        .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
+        .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
       }
 
       var purpose_mousemove = function(d){
         Tooltip
         .html("Purpose: " + d['purpose'])
-        .style("left", (d3.mouse(this)[0]+70+ width/2) + "px")
-        .style("top", (d3.mouse(this)[1]+70+ height/2) + "px")
+        .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
+        .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
       }
       var mouseleave = function(d) {
         // console.log("Into mouseleave");
@@ -253,7 +257,7 @@ function sta_updateChart(refineParam,radioValue) {
         if (sta_dataset[i]['new_country'] == 'USA'){
             USA++;
         }
-        else if (sta_dataset[i]['new_country'] == 'United Kingdom'){
+        else if (sta_dataset[i]['new_country'] == 'UK'){
             UK++;
         }
         else if (sta_dataset[i]['new_country'] == 'China'){
@@ -265,9 +269,9 @@ function sta_updateChart(refineParam,radioValue) {
         else if (sta_dataset[i]['new_country'] == 'Others'){
             Others++;
         }
-        else if (sta_dataset[i]['new_country'] == 'Multinational'){
-            Multinational++;
-        }
+        // else if (sta_dataset[i]['new_country'] == 'Multinational'){
+        //     Multinational++;
+        // }
     }
 
     //UK, USA, Russia, Others, Multinational, China
@@ -509,10 +513,10 @@ else{
         else if(d['new_country'] == 'Others'){
             return '#62a420';
         }
-        else if(d['new_country'] == 'Multinational'){
-            return '#00ab9a';
-        }
-        else if(d['new_country'] == 'United Kingdom'){
+        // else if(d['new_country'] == 'Multinational'){
+        //     return '#00ab9a';
+        // }
+        else if(d['new_country'] == 'UK'){
             return '#0079B8';
         }
         else {
@@ -645,7 +649,7 @@ else{
 
 
 
-    // bar charts begin
+    // *** Create bar charts on the right***
     var main_svg = d3.select('#statistical-main-vis');
     let barchart_width = 240;
     let barchart_height = 70;
@@ -900,13 +904,9 @@ else{
     country_barchart.append("g")
     .attr('class','axis')
     .call(d3.axisLeft(y_country).ticks(y_tick));
-
-
-
-
 }
 
-// load CSV
+// *** load CSV ***
 d3.csv('../data/new_data_with_date.csv').then(function(sta_dataset) {
 sta_satelliteData = sta_dataset;
 let countries = Object.keys(sta_dataset.reduce((options, d) => {
