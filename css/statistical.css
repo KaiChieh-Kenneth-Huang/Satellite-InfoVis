@@ -40,7 +40,8 @@
 
 #sta_refineByYear{
     position: relative;
-    font-size: 26px;
+    font-family: Metropolis_SemiBold;
+    font-size: 23px;
     color:white;
     width: 120px;
     height: 40px;

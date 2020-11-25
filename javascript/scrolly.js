@@ -20,16 +20,19 @@ scroller
     let visControlParams = {};
     const display1 = document.querySelector('#display-1');
     const display2 = document.querySelector('#display-2');
+    const display3 = document.querySelector('#display-3');
 
     // change display
     switch (element.dataset.name) {
       case 'intro':
         display1.style.opacity = 1;
         display2.style.opacity = 0;
+        display3.style.opacity = 0;
         break;
       case 'what-is-satellite':
         display1.style.opacity = 0;
         display2.style.opacity = 1;
+        display3.style.opacity = 0;
         break;
       case 'orbit-intro':
       case 'LEO':
@@ -38,8 +41,9 @@ scroller
       case 'HEO':
       case 'your-turn':
       default:
-        display1.style.opacity = 1;
+        display1.style.opacity = 0;
         display2.style.opacity = 0;
+        display3.style.opacity = 1;
     }
 
     // update min vis
