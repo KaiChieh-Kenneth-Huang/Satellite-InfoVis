@@ -69,17 +69,17 @@ var orbitInterval;
 console.log('client', mainVis.clientWidth + 'x' + mainVis.clientHeight);
 
 // Functions to style satellite points
-function sizeStyle(d) { // Size
+function sizeStyle(d) { // Initial Size
     const orbitClass = d['Class of Orbit'];
     switch (orbitClass) {
         case 'LEO':
-            return zoom.satelliteSize * mainVis.clientWidth / 1425;
+            return ZOOM_GEO.satelliteSize * mainVis.clientWidth / 1425;
         case 'MEO':
-            return zoom.satelliteSize * 1.5 * mainVis.clientWidth / 1425;
+            return ZOOM_GEO.satelliteSize * 1.5 * mainVis.clientWidth / 1425;
         case 'GEO':
-            return zoom.satelliteSize * 1.5 * mainVis.clientWidth / 1425;
+            return ZOOM_GEO.satelliteSize * 1.5 * mainVis.clientWidth / 1425;
         case 'Elliptical':
-            return zoom.satelliteSize * 2 * mainVis.clientWidth / 1425;
+            return ZOOM_GEO.satelliteSize * 2 * mainVis.clientWidth / 1425;
     }
 }
 
@@ -111,7 +111,7 @@ function opacityStyle(d) { //Opacity
     }
 }
 
-// helper functions
+// function for animated transition
 function animationSelector(selection, shouldAnimate) {
     return shouldAnimate ? selection.transition().duration(TRANSITION_DURATION) : selection;
 }
@@ -120,17 +120,6 @@ function animationSelector(selection, shouldAnimate) {
 // REFER TO REALISTIC.JS FOR CODE REFERENCE
 
 // *** Create a function to update chart in scrollytelling ***
-// controlParams: {
-//   zoom: <obj>,
-//   orbitOpacityCoefficient: {
-//     LEO: <number>
-//     MEO: <number>
-//     GEO: <number>
-//     Elliptical: <number>
-//   },
-//   hideSatellites: <bool>,
-//   shouldAnimate: <bool>
-// }
 function updateChart_scrolly(controlParams) {
     // patch controlParams
     controlParams = controlParams || {};
@@ -348,7 +337,7 @@ function updateChart_scrolly(controlParams) {
   }
 
 
-// *** Create a function to update chart ***
+// *** Create a function to update the main chart ***
 function updateChart(refineParam) {
     // responsive setup
     kmToWidth = (mainVis.clientWidth - graphLeftPadding - mainVisRightPadding) / (maxApogee + maxPerigee);
@@ -450,13 +439,29 @@ function updateChart(refineParam) {
               .style("opacity", 1)
           }
 
-    // attributes to update
+    // Satellite attributes to update
+    function resizeStyle() { //Resize marks and orbits
+        switch (zoom.mag) {
+            case magOfOverview:
+                return 'scale(' + ZOOM_OVERVIEW.satelliteSize/ZOOM_GEO.satelliteSize + ')';
+            case magOfGEO:
+                return 'scale(1)';
+            case magOfLEO:
+                return 'scale(' + ZOOM_LEO.satelliteSize/ZOOM_GEO.satelliteSize + ')';
+        }
+    }
+    
+    function repositionStyle(d) { //Reposition marks and orbits
+        return 'translate(' + [getPosX(d), getPosY(d)] + ')';
+    }
+
     function updateEarth(earth) {
         earth
         .attr('width', scale(EARTH_RADIUS)*2).attr('height', scale(EARTH_RADIUS)*2)
         .attr('x', earthCenter[0] - scale(EARTH_RADIUS))
         .attr('y', earthCenter[1] - scale(EARTH_RADIUS))
     }
+
     function updateOrbits(orbits) {
         orbits
         .attr('cx', d => {
@@ -484,115 +489,76 @@ function updateChart(refineParam) {
         });
     }
 
-    function updateCivil(satellites) {
-        satellites
-        .attr('x', d => {
-            return getPosX(d) - sizeStyle(d);
+    function updateCivil(satelliteGroup, satellites) {
+        satelliteGroup //update the group's position
+        .attr('transform', function (d){
+            return repositionStyle(d);
         })
-        .attr('y', d => {
-            return getPosY(d) - sizeStyle(d);
-        })
-        .attr('width', d => {
-            return sizeStyle(d)*2
-        })
-        .attr('height', d => {
-            return sizeStyle(d)*2
+
+        satellites //update the mark's scale
+        .attr('transform', function (d){
+            return resizeStyle();
         })
     }
 
-    function updateCommercial(satellites) {
-        satellites
-        .attr('cx', d => {
-            return getPosX(d);
+    function updateCommercial(satelliteGroup, satellites) {
+        satelliteGroup //update the group's position
+        .attr('transform', function (d){
+            return repositionStyle(d);
         })
-        .attr('cy', d => {
-            return getPosY(d);
-        })
-        .attr('r', d => {
-            return sizeStyle(d)
-        })
-        .style('stroke-width', d => {
-            if (zoom.mag == magOfLEO){
-                return '2px';
-             } else if (zoom.mag == magOfGEO) {
-                 return '1.5px';
-             } else {
-                 return '1px';
-             }
+
+        satellites //update the mark's scale
+        .attr('transform', function (d){
+            return resizeStyle();
         })
     }
 
-    function updateGovern(satellites) {
-        satellites
-        .attr('points', d => {
-            const xPos = getPosX(d);
-            const yPos = getPosY(d);
-            return [[(xPos - sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))], [(xPos), (yPos - Math.sqrt(3)/3*2 * sizeStyle(d))], [(xPos + sizeStyle(d)), (yPos + Math.sqrt(3)/3 * sizeStyle(d))]];
+    function updateGovern(satelliteGroup, satellites) {
+        satelliteGroup //update the group's position
+        .attr('transform', function (d){
+            return repositionStyle(d);
+        })
+
+        satellites //update the mark's scale
+        .attr('transform', function (d){
+            return resizeStyle();
         })
     }
 
-    function updateMillitary1(satellites) {
-        satellites
-        .attr('x1', d => {
-            return getPosX(d) - sizeStyle(d);
+    function updateMillitary1(satelliteGroup, satellites) {
+        satelliteGroup //update the group's position
+        .attr('transform', function (d){
+            return repositionStyle(d);
         })
-        .attr('y1', d => {
-            return getPosY(d) - sizeStyle(d);
-        })
-        .attr('x2', d => {
-            return getPosX(d) + sizeStyle(d);
-        })
-        .attr('y2', d => {
-            return getPosY(d) + sizeStyle(d);
-        })
-        .style('stroke-width', d => {
-            if (zoom.mag == magOfLEO){
-                return '2px';
-             } else if (zoom.mag == magOfGEO) {
-                 return '1.7px';
-             } else {
-                 return '1.2px';
-             }
+
+        satellites //update the mark's scale
+        .attr('transform', function (d){
+            return resizeStyle();
         })
     }
 
-    function updateMillitary2(satellites) {
-        satellites
-        .attr('x1', d => {
-            return getPosX(d) - sizeStyle(d);
+    function updateMillitary2(satelliteGroup, satellites) {
+        satelliteGroup //update the group's position
+        .attr('transform', function (d){
+            return repositionStyle(d);
         })
-        .attr('y1', d => {
-            return getPosY(d) + sizeStyle(d);
-        })
-        .attr('x2', d => {
-            return getPosX(d) + sizeStyle(d);
-        })
-        .attr('y2', d => {
-            return getPosY(d) - sizeStyle(d);
-        })
-        .style('stroke-width', d => {
-            if (zoom.mag == magOfLEO){
-                return '2px';
-             } else if (zoom.mag == magOfGEO) {
-                 return '1.7px';
-             } else {
-                 return '1.2px';
-             }
+
+        satellites //update the mark's scale
+        .attr('transform', function (d){
+            return resizeStyle();
         })
     }
 
-    function updateMulti(satellites) {
-        satellites
-        .attr('cx', d => {
-            return getPosX(d);
-        })
-        .attr('cy', d => {
-            return getPosY(d);
-        })
-        .attr('r', d => {
-            return sizeStyle(d)
+    function updateMulti(satelliteGroup, satellites) {
+        satelliteGroup //update the group's position
+        .attr('transform', function (d){
+            return repositionStyle(d);
         })
 
+        satellites //update the mark's scale
+        .attr('transform', function (d){
+            return resizeStyle();
+        })
     }
 
    // Upload the Earth PNG
@@ -659,101 +625,193 @@ function updateChart(refineParam) {
     document.getElementById('NumOfBefore90').innerText =  satCount['Before 1990'] ? satCount['Before 1990'] : 0;
 
     // Plot each type of satellites based on their purposes
+    // Create a function to create groups for satellites of each purpose
+    function groupOfPurpose(purpose, dataset) {
+
+    }
     // Civil
-    var civilSatellites = d3.select('#realistic-main-vis').selectAll('.civil.satellites')
+    var civilSatellites = d3.select('#realistic-main-vis').selectAll('.civil.groups')
         .data(satByPurpose['Civil'] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var civilSatellitesEnter = civilSatellites.enter()
+        .append('g')
+        .attr('class', 'civil groups')
+        .style('opacity', d => {
+            return opacityStyle(d)
+        })
         .append('rect')
         .attr('class', 'civil satellites')
         .style('fill', d => {
             return colorStyle(d)
         })
-        .style('opacity', d => {
-            return opacityStyle(d)
+        .attr('x', d =>{
+            return - sizeStyle(d)
+        })
+        .attr('y', d =>{
+            return - sizeStyle(d)
+        })
+        .attr('width', d => {
+            return sizeStyle(d)*2
+        })
+        .attr('height', d => {
+            return sizeStyle(d)*2
         });
 
     // Commercial
-    var commercialSatellites = d3.select('#realistic-main-vis').selectAll('.commercial.satellites')
+    var commercialSatellites = d3.select('#realistic-main-vis').selectAll('.commercial.groups')
         .data(satByPurpose['Commercial'] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var commercialSatellitesEnter = commercialSatellites.enter()
-        .append('circle')
-        .attr('class', 'commercial satellites')
-        .style('stroke', d => {
-            return colorStyle(d)
-        })
+        .append('g')
+        .attr('class', 'commercial groups')
         .style('stroke-opacity', d => {
             return opacityStyle(d)
         })
-        .style('fill-opacity', 0);
+        .style('fill-opacity', 0)
+        .append('circle')
+        .attr('class', 'commercial satellites')
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .attr('r', d => {
+            return sizeStyle(d)
+        })
+        .style('stroke', d => {
+            return colorStyle(d)
+        })
+        .style('stroke-width', d => {
+            if (zoom.mag == magOfLEO){
+                return '2px';
+             } else if (zoom.mag == magOfGEO) {
+                 return '1.5px';
+             } else {
+                 return '1px';
+             }
+        })
 
     // Government
-    var governSatellites = d3.select('#realistic-main-vis').selectAll('.govern.satellites')
+    var governSatellites = d3.select('#realistic-main-vis').selectAll('.govern.groups')
         .data(satByPurpose['Government'] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var governSatellitesEnter = governSatellites.enter()
+        .append('g')
+        .attr('class', 'govern groups')
+        .style('opacity', d => {
+            return opacityStyle(d)
+        })
         .append('polygon')
         .attr('class', 'govern satellites')
+        .attr('points', d => {
+            return [[-sizeStyle(d), Math.sqrt(3)/3 * sizeStyle(d)], [0, -Math.sqrt(3)/3*2 * sizeStyle(d)], [sizeStyle(d), Math.sqrt(3)/3 * sizeStyle(d)]];
+        })
         .style('fill', d => {
             return colorStyle(d)
         })
-        .style('opacity', d => {
-            return opacityStyle(d)
-        });
 
     // Military
-    var militarySatellites1 = d3.select('#realistic-main-vis').selectAll('.military1.satellites')
+    var militarySatellites1 = d3.select('#realistic-main-vis').selectAll('.military1.groups')
         .data(satByPurpose['Military'] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
 
-    var militarySatellites2 = d3.select('#realistic-main-vis').selectAll('.military2.satellites')
+    var militarySatellites2 = d3.select('#realistic-main-vis').selectAll('.military2.groups')
         .data(satByPurpose['Military'] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var militarySatellitesEnter1 = militarySatellites1.enter()
+        .append('g')
+        .attr('class', 'military1 groups')
+        .style('stroke-opacity', d => {
+            return opacityStyle(d)
+        })
         .append('line')
         .attr('class', 'military1 satellites')
         .style('stroke', d => {
             return colorStyle(d)
         })
-        .style('stroke-opacity', d => {
-            return opacityStyle(d)
-        });
+        .attr('x1', d => {
+            return -sizeStyle(d);
+        })
+        .attr('y1', d => {
+            return -sizeStyle(d);
+        })
+        .attr('x2', d => {
+            return sizeStyle(d);
+        })
+        .attr('y2', d => {
+            return sizeStyle(d);
+        })
+        .style('stroke-width', d => {
+            if (zoom.mag == magOfLEO){
+                return '2px';
+             } else if (zoom.mag == magOfGEO) {
+                 return '1.7px';
+             } else {
+                 return '1.2px';
+             }
+        })
 
     var militarySatellitesEnter2 = militarySatellites2.enter()
+        .append('g')
+        .attr('class', 'military2 groups')
+        .style('stroke-opacity', d => {
+            return opacityStyle(d)
+        })
         .append('line')
         .attr('class', 'military2 satellites')
         .style('stroke', d => {
             return colorStyle(d)
         })
-        .style('stroke-opacity', d => {
-            return opacityStyle(d)
+        .attr('x1', d => {
+            return -sizeStyle(d);
+        })
+        .attr('y1', d => {
+            return sizeStyle(d);
+        })
+        .attr('x2', d => {
+            return sizeStyle(d);
+        })
+        .attr('y2', d => {
+            return -sizeStyle(d);
+        })
+        .style('stroke-width', d => {
+            if (zoom.mag == magOfLEO){
+                return '2px';
+             } else if (zoom.mag == magOfGEO) {
+                 return '1.7px';
+             } else {
+                 return '1.2px';
+             }
         })
 
     // Multi-purpose
-    var multiSatellites = d3.select('#realistic-main-vis').selectAll('.multi.satellites')
+    var multiSatellites = d3.select('#realistic-main-vis').selectAll('.multi.groups')
         .data(satByPurpose['Multi-purpose'] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
     
     var multiSatellitesEnter = multiSatellites.enter()
+        .append('g')
+        .attr('class', 'multi groups')
+        .style('opacity', d => {
+            return opacityStyle(d)
+        })
         .append('circle')
         .attr('class', 'multi satellites')
         .style('fill', d => {
             return colorStyle(d)
         })
-        .style('opacity', d => {
-            return opacityStyle(d)
-        });
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .attr('r', d => {
+            return sizeStyle(d)
+        })
  
 
    // Plot scale axis
@@ -856,12 +914,12 @@ function updateChart(refineParam) {
 
     updateEarth(animationSelector(d3.select('#realistic-main-vis').selectAll('.earth'), shouldAnimate));
     updateOrbits(animationSelector(d3.select('#realistic-main-vis').selectAll('ellipse'), shouldAnimate));
-    updateCivil(animationSelector(d3.select('#realistic-main-vis').selectAll('.civil.satellites'), shouldAnimate));
-    updateCommercial(animationSelector(d3.select('#realistic-main-vis').selectAll('.commercial.satellites'), shouldAnimate));
-    updateGovern(animationSelector(d3.select('#realistic-main-vis').selectAll('.govern.satellites'), shouldAnimate));
-    updateMillitary1(animationSelector(d3.select('#realistic-main-vis').selectAll('.military1.satellites'), shouldAnimate));
-    updateMillitary2(animationSelector(d3.select('#realistic-main-vis').selectAll('.military2.satellites'), shouldAnimate));
-    updateMulti(animationSelector(d3.select('#realistic-main-vis').selectAll('.multi.satellites'), shouldAnimate));
+    updateCivil(animationSelector(d3.select('#realistic-main-vis').selectAll('.civil.groups'), shouldAnimate), animationSelector(d3.select('#realistic-main-vis').selectAll('.civil.satellites'), shouldAnimate));
+    updateCommercial(animationSelector(d3.select('#realistic-main-vis').selectAll('.commercial.groups'), shouldAnimate), animationSelector(d3.select('#realistic-main-vis').selectAll('.commercial.satellites'), shouldAnimate));
+    updateGovern(animationSelector(d3.select('#realistic-main-vis').selectAll('.govern.groups'), shouldAnimate), animationSelector(d3.select('#realistic-main-vis').selectAll('.govern.satellites'), shouldAnimate));
+    updateMillitary1(animationSelector(d3.select('#realistic-main-vis').selectAll('.military1.groups'), shouldAnimate), animationSelector(d3.select('#realistic-main-vis').selectAll('.military1.satellites'), shouldAnimate));
+    updateMillitary2(animationSelector(d3.select('#realistic-main-vis').selectAll('.military2.groups'), shouldAnimate), animationSelector(d3.select('#realistic-main-vis').selectAll('.military2.satellites'), shouldAnimate));
+    updateMulti(animationSelector(d3.select('#realistic-main-vis').selectAll('.multi.groups'), shouldAnimate), animationSelector(d3.select('#realistic-main-vis').selectAll('.multi.satellites'), shouldAnimate));
     
     // test orbit animation
     // const satToAnimate = d3.select('#realistic-main-vis').selectAll('.commercial.satellites');
