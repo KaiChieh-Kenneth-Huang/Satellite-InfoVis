@@ -450,7 +450,7 @@ function updateChart(refineParam) {
           }
 
     // Satellite attributes to update
-    function resizeSatellites() { //Resize marks and orbits
+    function resizeSatellites() { //Resize datamarks
         switch (zoom.mag) {
             case magOfOverview:
                 return 'scale(' + ZOOM_OVERVIEW.satelliteSize/ZOOM_GEO.satelliteSize + ')';
@@ -461,7 +461,7 @@ function updateChart(refineParam) {
         }
     }
     
-    function transformDataMark(d) { //Reposition marks and orbits
+    function transformDataMark(d) { //Reposition datamarks
         return 'translate(' + [getPosX(d), getPosY(d)] + ') ' + resizeSatellites();
     }
 
@@ -659,57 +659,55 @@ function updateChart(refineParam) {
         })
 
     // Military
-    var militarySatellites1 = d3.select('#realistic-main-vis').selectAll('.military1.dataMark')
+    var militarySatellites1 = d3.select('#realistic-main-vis').selectAll('.military.dataMark')
         .data(satByPurpose['Military'] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
 
-    var militarySatellites2 = d3.select('#realistic-main-vis').selectAll('.military2.dataMark')
-        .data(satByPurpose['Military'] || [], function(d){
-            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
-        });
+    // var militarySatellites2 = d3.select('#realistic-main-vis').selectAll('.military2.dataMark')
+    //     .data(satByPurpose['Military'] || [], function(d){
+    //         return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+    //     });
     
     var militarySatellitesEnter1 = militarySatellites1.enter()
         .append('g')
-        .attr('class', 'military1 dataMark')
-        .style('stroke-opacity', d => {
-            return opacityStyle(d)
-        })
+        .attr('class', 'military dataMark')
         .append('line')
         .attr('class', 'military1 satellites')
-        .style('stroke', d => {
-            return colorStyle(d)
-        })
-        .attr('x1', d => {
-            return -sizeStyle(d);
-        })
-        .attr('y1', d => {
-            return -sizeStyle(d);
-        })
-        .attr('x2', d => {
-            return sizeStyle(d);
-        })
-        .attr('y2', d => {
-            return sizeStyle(d);
-        })
-        .style('stroke-width', d => {
-            if (zoom.mag == magOfLEO){
-                return '2px';
-             } else if (zoom.mag == magOfGEO) {
-                 return '1.7px';
-             } else {
-                 return '1.2px';
-             }
-        })
-
-    var militarySatellitesEnter2 = militarySatellites2.enter()
-        .append('g')
-        .attr('class', 'military2 dataMark')
         .style('stroke-opacity', d => {
             return opacityStyle(d)
         })
+        .style('stroke', d => {
+            return colorStyle(d)
+        })
+        .attr('x1', d => {
+            return -sizeStyle(d);
+        })
+        .attr('y1', d => {
+            return -sizeStyle(d);
+        })
+        .attr('x2', d => {
+            return sizeStyle(d);
+        })
+        .attr('y2', d => {
+            return sizeStyle(d);
+        })
+        .style('stroke-width', d => {
+            if (zoom.mag == magOfLEO){
+                return '2px';
+             } else if (zoom.mag == magOfGEO) {
+                 return '1.7px';
+             } else {
+                 return '1.2px';
+             }
+        })
+        
+    militarySatellitesEnter1.selectAll('.military.dataMark')
         .append('line')
         .attr('class', 'military2 satellites')
+        .style('stroke-opacity', d => {
+            return opacityStyle(d)
+        })
         .style('stroke', d => {
             return colorStyle(d)
         })
@@ -734,6 +732,39 @@ function updateChart(refineParam) {
                  return '1.2px';
              }
         })
+        
+    // var militarySatellitesEnter2 = militarySatellites2.enter()
+    //     .append('g')
+    //     .attr('class', 'military2 dataMark')
+    //     .style('stroke-opacity', d => {
+    //         return opacityStyle(d)
+    //     })
+    //     .append('line')
+    //     .attr('class', 'military2 satellites')
+    //     .style('stroke', d => {
+    //         return colorStyle(d)
+    //     })
+    //     .attr('x1', d => {
+    //         return -sizeStyle(d);
+    //     })
+    //     .attr('y1', d => {
+    //         return sizeStyle(d);
+    //     })
+    //     .attr('x2', d => {
+    //         return sizeStyle(d);
+    //     })
+    //     .attr('y2', d => {
+    //         return -sizeStyle(d);
+    //     })
+    //     .style('stroke-width', d => {
+    //         if (zoom.mag == magOfLEO){
+    //             return '2px';
+    //          } else if (zoom.mag == magOfGEO) {
+    //              return '1.7px';
+    //          } else {
+    //              return '1.2px';
+    //          }
+    //     })
 
     // Multi-purpose
     var multiSatellites = d3.select('#realistic-main-vis').selectAll('.multi.dataMark')
@@ -840,8 +871,8 @@ function updateChart(refineParam) {
     militarySatellites1.merge(militarySatellitesEnter1)
         .transition();
 
-    militarySatellites2.merge(militarySatellitesEnter2)
-        .transition();
+    // militarySatellites2.merge(militarySatellitesEnter2)
+    //     .transition();
 
     multiSatellites.merge(multiSatellitesEnter)
         .transition();
@@ -854,12 +885,12 @@ function updateChart(refineParam) {
     commercialSatellites.exit().remove();
     governSatellites.exit().remove();
     militarySatellites1.exit().remove();
-    militarySatellites2.exit().remove();
+    // militarySatellites2.exit().remove();
     multiSatellites.exit().remove();
 
     updateEarth(animationSelector(d3.select('#realistic-main-vis').selectAll('.earth'), shouldAnimate));
     updateOrbits(animationSelector(d3.select('#realistic-main-vis').selectAll('ellipse'), shouldAnimate));
-    updateSatelliteGroup(animationSelector(d3.select('#realistic-main-vis').selectAll('.dataMark'), shouldAnimate), animationSelector(d3.select('#realistic-main-vis').selectAll('.civil.satellites'), shouldAnimate));
+    updateSatelliteGroup(animationSelector(d3.select('#realistic-main-vis').selectAll('.dataMark'), shouldAnimate));
     
     // test orbit animation
     // const satToAnimate = d3.select('#realistic-main-vis').selectAll('.commercial.satellites');
