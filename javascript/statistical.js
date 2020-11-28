@@ -309,7 +309,7 @@ function sta_updateChart(refineParam,radioValue) {
         else if (sta_dataset[i]['new_purpose'] == 'Military'){
             Military++;
         }
-        else if (sta_dataset[i]['new_purpose'] == 'Governmental'){
+        else if (sta_dataset[i]['new_purpose'] == 'Government'){
             Governmental++;
         }
         else if (sta_dataset[i]['new_purpose'] == 'Multi-purpose'){
@@ -364,21 +364,19 @@ function sta_updateChart(refineParam,radioValue) {
     }
 
     // UK, USA, Russia, Others, Multinational, China
-    var all = USA + UK + China + Russia + Others + Multinational;
+    var all = USA + UK + China + Russia + Others;
     var USA_p = USA / all * radius_range;
     var China_p = China / all * radius_range;
     var Russia_p = Russia / all * radius_range;
     var UK_p = UK / all * radius_range;
     var Others_p = Others / all * radius_range;
-    var Multinational_p = Multinational / all * radius_range;
 
     var country = [
         { country: 'USA', start_angle : 0, angle : USA_p },
-        { country: 'China', start_angle : USA_p + UK_p + Russia_p + Others_p + Multinational_p, angle : China_p },
+        { country: 'China', start_angle : USA_p + UK_p + Russia_p + Others_p, angle : China_p },
         { country: 'UK', start_angle : USA_p, angle : UK_p },
         { country: 'Russia', start_angle : USA_p + UK_p, angle : Russia_p },
-        { country: 'Others', start_angle : USA_p + UK_p + Russia_p, angle : Others_p },
-        { country: 'Multinational', start_angle : USA_p + UK_p + Russia_p + Others_p, angle : Multinational_p}
+        { country: 'Others', start_angle : USA_p + UK_p + Russia_p, angle : Others_p }
     ]
 
     var country_statistical = [
@@ -387,7 +385,6 @@ function sta_updateChart(refineParam,radioValue) {
         { country: 'UK', count : UK },
         { country: 'Russia', count : Russia},
         { country: 'Others', count : Others },
-        { country: 'Multinational', count : Multinational }
     ]
     
     // If 'Purpose' is selected in Sort By
@@ -438,10 +435,20 @@ function sta_updateChart(refineParam,radioValue) {
 
      })
     .text(function(d){
-        if (d['angle'] > 0.05){
+        if (d['angle'] > 0.05 && d['purpose'] != 'Multi_purpose' && d['purpose'] != 'Governmental'){
+            console.log(d['purpose']);
             return d['purpose'];
         }
+        else if((d['angle'] > 0.15 && d['purpose'] == 'Multi_purpose')){
+            console.log(d['purpose']);
+            return "Multi-Purpose";
+        }
+        else if((d['angle'] > 0.15 && d['purpose'] == 'Governmental')){
+            console.log(d['purpose']);
+            return "Governmental";
+        }
         else{
+            console.log(d['purpose']);
             return '';
         }
     });
