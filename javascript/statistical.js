@@ -122,7 +122,6 @@ Math.degrees = function(radians) {
 }
 
 // TODO: sizing code needs to be inside resize listener
-
 function sta_updateChart(refineParam,radioValue) {
     var sta_filteredSatellites = sta_satelliteData.filter(function(d){
         let match = true;
@@ -292,13 +291,13 @@ function sta_updateChart(refineParam,radioValue) {
           .style("stroke", "none")
           .style("opacity", colorOpacity)
     }
-    
 
     var Civil = 0;
     var Commercial = 0;
     var Military = 0;
     var Governmental = 0;
     var Multi_purpose = 0;
+
     for (var i = 0; i < sta_dataset.length; i++) {
         if (sta_dataset[i]['new_purpose'] == 'Civil'){
             Civil++;
@@ -345,6 +344,7 @@ function sta_updateChart(refineParam,radioValue) {
     var Russia = 0;
     var Others = 0;
     var Multinational = 0;
+    
     for (var i = 0; i < sta_dataset.length; i++) {
         if (sta_dataset[i]['new_country'] == 'USA'){
             USA++;
