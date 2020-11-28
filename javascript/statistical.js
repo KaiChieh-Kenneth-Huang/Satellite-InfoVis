@@ -393,6 +393,8 @@ function sta_updateChart(refineParam,radioValue) {
     
     // If 'Purpose' is selected in Sort By
     if (radioValue == 'Purpose'){
+        document.getElementById("country_legend").classList.remove('no-display');
+        document.getElementById("purpose_legend").classList.add('no-display');
         var purposeBar = svg.append('g')
         .attr("class", "g_main")
         .selectAll('path')
@@ -478,6 +480,8 @@ function sta_updateChart(refineParam,radioValue) {
 
 // If 'Country' is selected in Sort By
 if (radioValue == 'Country'){
+    document.getElementById("country_legend").classList.add('no-display');
+    document.getElementById("purpose_legend").classList.remove('no-display');
     var CountryBar = svg
     .append('g')
     .attr("class", "g_main")
@@ -956,8 +960,20 @@ let countries = Object.keys(sta_dataset.reduce((options, d) => {
     }
     return options;
 }, {})).sort();
-countries.push('All (5)');
-countries.sort();
+countries.sort(
+    function (a,b){
+        if (a =='Others'){
+            return 1;
+        }
+        else if (b == 'Others'){
+            return -1
+        }
+        else{
+            return b-a;
+        }
+    }
+);
+countries.unshift('All (5)');
 
 let purposes = Object.keys(sta_dataset.reduce((options, d) => {
     const fieldName = STA_FN_PURPOSE;
