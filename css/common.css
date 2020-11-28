@@ -189,3 +189,7 @@ g text {
     padding-top: 1px;
 }
 
+.no-display{
+    display: none;
+}
+
