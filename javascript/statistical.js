@@ -4,6 +4,8 @@
 
 const sta_mainVis = document.getElementById('statistical-main-vis');
 const radius_range = 1.8 * Math.PI;
+const backgroundOpacity = 0.85;
+const colorOpacity = 0.9;
 
 var width = sta_mainVis.clientWidth;
 var height = sta_mainVis.clientHeight;
@@ -57,11 +59,55 @@ const colorOfChart = {
     UK: '#0079B8',
     USA: '#62A420',
     others: '#FAC400',
-    period: '#FF681C',
-    mass: '#FF8400',
-    ADTE: '#DFA100',
+    civil: '#A92D38',
+    commercial: '#FC4A34',
+    government: '#CE5C30',
+    military: '#D9883D',
+    multi: '#FBD9B2',
+    period: '#F46CA5',
+    mass: '#B681CF',
+    ADTE: '#6870C4',
     arcBackground: '#28333c',
     rightbar: '#E26C92'
+}
+
+function colorOfCountryStyle (d, name) {
+    if (d[name] == 'USA'){
+        return colorOfChart.USA;
+    }
+    else if (d[name] == 'Russia'){
+        return colorOfChart.russia;
+    }
+    else if(d[name] =='China'){
+        return colorOfChart.china;
+    }
+    else if(d[name] == 'Others'){
+        return colorOfChart.others;
+    }
+    else if(d[name] == 'UK'){
+        return colorOfChart.UK;
+    }
+}
+
+function colorOfPurposeStyle (d, name) {
+    if (d[name] == 'Civil'){
+        return colorOfChart.civil;
+    }
+    else if (d[name] == 'Military'){
+        return colorOfChart.military;
+    }
+    else if(d[name] =='Government'){
+        return colorOfChart.government;
+    }
+    else if(d[name] == 'Multi-purpose'){
+        return colorOfChart.multi;
+    }
+    else if(d[name] == 'Commercial'){
+        return colorOfChart.commercial;
+    }
+    else {
+        return colorOfChart.multi;
+    }
 }
 
 // Tooltip variables
@@ -128,6 +174,7 @@ function sta_updateChart(refineParam,radioValue) {
         .range([0, radius_range])    // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
         .align(0)                  // This does nothing ?
         .domain( sta_dataset.map(function(d) { return d['Name of Satellite  Alternate Names']; }) ); // The domain of the X axis is the list of states.
+
     var y_period = d3.scaleRadial()
     .range([outerRadius_Period,innerRadius_Period])
     .domain([0,maxPeriod]);
@@ -151,7 +198,7 @@ function sta_updateChart(refineParam,radioValue) {
     var svg = d3.select('#statistical-main-vis')
     .append("g")
     .attr("class", "g_main")
-    .attr("transform", "translate(" + (width/2-10) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
+    .attr("transform", "translate(" + (width/2-10) + "," + ( height/2 + 20)+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
     main_frame = svg;
 
@@ -350,7 +397,8 @@ function sta_updateChart(refineParam,radioValue) {
         { country: 'Others', count : Others },
         { country: 'Multinational', count : Multinational }
     ]
-
+    
+    // If 'Purpose' is selected in Sort By
     if(radioValue == 'Purpose'){
         var title = document.getElementById("purpose_title");
         var legend1 = document.getElementById("purpose_1");
@@ -372,25 +420,8 @@ function sta_updateChart(refineParam,radioValue) {
         .data(purpose)
         .enter()
         .append('path')
-        .attr('fill',function(d){
-            if (d['purpose'] == 'Civil'){
-                return '#f54f47';
-            }
-            else if (d['purpose'] == 'Military'){
-                return '#edb200';
-            }
-            else if(d['purpose'] =='Government'){
-                return '#f1428a';
-            }
-            else if(d['purpose'] == 'Multi-purpose'){
-                return '#ad73c8';
-            }
-            else if(d['purpose'] == 'Commercial'){
-                return '#f57600';
-            }
-            else {
-                return '#28333c';
-            }
+        .attr('fill', function(d){
+            return colorOfPurposeStyle(d, 'purpose');
         })
         .attr('d',d3.arc()
         .innerRadius( function(d) { return y_purpose(0) })
@@ -403,6 +434,7 @@ function sta_updateChart(refineParam,radioValue) {
         .on('mouseover', mouseover)
         .on('mousemove', purpose_mousemove)
         .on('mouseout', mouseleave);
+
     var purpose_caption_radius = innerRadius_Purpose + (outerRadius_Purpose - innerRadius_Purpose)/2 - 5;
 
     var purpose_caption = svg.append('g')
@@ -432,8 +464,7 @@ function sta_updateChart(refineParam,radioValue) {
             return '';
         }
     });
-}
-    else{
+} else {
     var purposeBar = svg.append('g')
     .attr("class", "g_main")
     .selectAll('path')
@@ -441,26 +472,9 @@ function sta_updateChart(refineParam,radioValue) {
     .enter()
     .append('path')
     .attr('fill',function(d){
-        if (d['new_purpose'] == 'Civil'){
-            return '#f54f47';
-        }
-        else if (d['new_purpose'] == 'Military'){
-            return '#edb200';
-        }
-        else if(d['new_purpose'] =='Government'){
-            return '#f1428a';
-        }
-        else if(d['new_purpose'] == 'Multi-purpose'){
-            return '#ad73c8';
-        }
-        else if(d['new_purpose'] == 'Commercial'){
-            return '#f57600';
-        }
-        else {
-            return '#28333c';
-        }
+        return colorOfPurposeStyle(d, 'new_purpose');
     })
-    .attr("fill-opacity",function(d){
+    .attr("fill-opacity", function(d){
         if (d['new_purpose']==''){
             return 1;
         }
@@ -502,28 +516,8 @@ if(radioValue == 'Country'){
     .data(country)
     .enter()
     .append('path')
-    .attr('fill',function(d){
-        if (d['country'] == 'USA'){
-            return colorOfChart.USA;
-        }
-        else if (d['country'] == 'Russia'){
-            return colorOfChart.russia;
-        }
-        else if(d['country'] =='China'){
-            return colorOfChart.china;
-        }
-        else if(d['country'] == 'Others'){
-            return colorOfChart.others;
-        }
-        // else if(d['country'] == 'Multinational'){
-        //     return '#00ab9a';
-        // }
-        else if(d['country'] == 'UK'){
-            return colorOfChart.UK;
-        }
-        // else {
-        //     return '#28333c';
-        // }
+    .attr('fill', function(d){
+        return colorOfCountryStyle (d, 'country')
     })
     .attr('d',d3.arc()
     .innerRadius( function(d) { return y_country(0) })
@@ -559,7 +553,6 @@ if(radioValue == 'Country'){
         console.log(country_caption_radius * Math.sin(degree));
         console.log(country_caption_radius * Math.cos(degree));
          return ("translate(" +(country_caption_radius * Math.sin(radians)) + "," + (-country_caption_radius * Math.cos(radians)) +") rotate(" + (degree)  +")")
-
      })
     .text(function(d){
         if (d['angle'] > 0.1){
@@ -569,36 +562,16 @@ if(radioValue == 'Country'){
             return '';
         }
     });
-}
-else {
-    var CountryBar = svg.append('g')
+} else {
+    // 1. Plot the ring of Country when Purpose is selected in Sort By
+    var CountryBar = svg.append('g')  
     .attr("class", "g_main")
     .selectAll('path')
     .data(sta_dataset)
     .enter()
     .append('path')
     .attr('fill',function(d){
-        if (d['new_country'] == 'USA'){
-            return colorOfChart.USA;
-        }
-        else if (d['new_country'] == 'Russia'){
-            return colorOfChart.russia;
-        }
-        else if(d['new_country'] =='China'){
-            return colorOfChart.china;
-        }
-        else if(d['new_country'] == 'Others'){
-            return colorOfChart.others;
-        }
-        // else if(d['new_country'] == 'Multinational'){
-        //     return '#00ab9a';
-        // }
-        else if(d['new_country'] == 'UK'){
-            return colorOfChart.UK;
-        }
-        // else {
-        //     return '#28333c';
-        // }
+        return colorOfCountryStyle (d, 'new_country')
     })
     .attr('d',d3.arc()
     .innerRadius( function(d) { return y_country(0) })
@@ -613,13 +586,14 @@ else {
     .on('mouseout', mouseleave);
     }
 
-    var periodBar_background = svg.append('g')
+    // 2. Plot the ring of Period when Purpose is selected in Sort By
+    var periodBar_background = svg.append('g') 
     .attr("class", "g_main")
     .selectAll('path')
     .data(sta_dataset)
     .enter()
     .append('path')
-    .attr("fill-opacity","1")
+    .attr("fill-opacity", backgroundOpacity)
     .attr('fill', colorOfChart.arcBackground)
     .attr('d',d3.arc()
         .innerRadius( function(d) { return y_period(0) })
@@ -654,13 +628,14 @@ else {
         .on('mousemove', mousemove)
         .on('mouseout', mouseleave);
 
+    // 3. Plot the ring of Mass when Purpose is selected in Sort By
     var massBar_background = svg.append('g')
     .attr("class", "g_main")
         .selectAll('path')
         .data(sta_dataset)
         .enter()
         .append('path')
-        .attr("fill-opacity","1")
+        .attr("fill-opacity", backgroundOpacity)
         .attr('fill', colorOfChart.arcBackground)
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_mass(0) })
@@ -689,14 +664,14 @@ else {
         .on('mousemove', mousemove)
         .on('mouseout', mouseleave);
 
-
+    // 4. Plot the ring of Distance when Purpose is selected in Sort By
     var disBar_background = svg.append('g')
         .selectAll('path')
         .data(sta_dataset)
         .enter()
         .append('path')
-        .attr("fill-opacity","1")
-        .attr('fill',colorOfChart.arcBackground)
+        .attr("fill-opacity", backgroundOpacity)
+        .attr('fill', colorOfChart.arcBackground)
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_dis(0) })
             .outerRadius(function(d){return y_dis(maxDis);})
@@ -724,15 +699,15 @@ else {
         .on('mousemove', mousemove)
         .on('mouseout', mouseleave);
 
+    // Plot the central circle when Purpose is selected in Sort By
     var central_circle = svg.append('g')
         .append('circle')
-        .attr('r',radius_central_circle )
-        .attr("fill-opacity","1")
-        .attr('fill',colorOfChart.arcBackground);
+        .attr('r', radius_central_circle )
+        .attr("fill-opacity", backgroundOpacity)
+        .attr('fill', colorOfChart.arcBackground);
 
 
-
-    // *** Create bar charts on the right***
+    // *** Create bar charts on the right ***
     var main_svg = d3.select('#statistical-main-vis');
     let barchart_width = 240;
     let barchart_height = 70;
