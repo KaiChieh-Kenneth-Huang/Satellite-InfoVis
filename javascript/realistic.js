@@ -1026,9 +1026,18 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
     }
 
+    // setup virtual elements for data binding. This will be used for elements on the canvas
+    scrollyMainVisContext = mainVis_scrolly.getContext('2d');
+    
+    // Create an in memory only element of type 'custom'
+    virtualDataContainer = document.createElement("custom");
+
+
     updateChart(refineByParamsRealistic);
     updateChart_scrolly();
 });
+var scrollyMainVisContext;
+var virtualDataContainer
 
 // *** Filter By Listeners ***
 // Drop downs
