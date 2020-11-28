@@ -833,7 +833,7 @@ if (radioValue == 'Country'){
     .domain(x_period.domain())
     .thresholds(x_period.ticks(bin_period));
     
-    var period_bins = period_histogram(disArray);
+    var period_bins = period_histogram(periodArray);
 
     var y_period = d3.scaleLinear()
     .range([barchart_height, 0]);
@@ -877,11 +877,11 @@ if (radioValue == 'Country'){
     .attr('transform', 'translate(0,' +barchart_height + ')')
     .call(d3.axisBottom(x_mass).ticks(bin_mass));
 
-    var period_histogram = d3.histogram()
+    var mass_histogram = d3.histogram()
     .domain(x_mass.domain())
     .thresholds(x_mass.ticks(bin_mass));
     
-    var mass_bins = period_histogram(massArray);
+    var mass_bins = mass_histogram(massArray);
 
     var y_mass = d3.scaleLinear()
     .range([barchart_height, 0]);
