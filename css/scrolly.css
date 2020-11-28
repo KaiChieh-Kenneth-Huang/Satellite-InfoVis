@@ -1,7 +1,7 @@
 /* scrolly telling */
 #scroll-indicator {
     position: sticky;
-    bottom: 40px;
+    bottom: 20px;
     text-align: center;
     font-family: Metropolis_Light;
     font-size: 18px;
@@ -30,6 +30,7 @@
     min-height: 100vh;
     margin-bottom: 1rem;
     opacity: 0.2;
+    left: 35px;
     transition: 1000ms ease-in-out;
 }
 
@@ -42,6 +43,11 @@
 #scrolly-side .scrolly article .step > div > h2{
     font-family: Metropolis_Medium;
     font-size: 24px;
+    padding-bottom: 8px;
+}
+
+#scrolly-side .scrolly article .step .bold{
+    font-family: Metropolis_SemiBold;
 }
 
 #scrolly-side .scrolly article .step.is-active {
@@ -71,5 +77,10 @@
     position: absolute;
     top: 50%;
     left: 50%;
+    width: 80%;
     transform: translate(-50%, -50%);
+}
+
+#display-1 > img{ 
+    opacity: 1;
 }
