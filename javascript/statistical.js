@@ -4,8 +4,6 @@
 
 const sta_mainVis = document.getElementById('statistical-main-vis');
 const radius_range = 1.8 * Math.PI;
-const backgroundOpacity = 0.85;
-const colorOpacity = 0.9;
 
 var width = sta_mainVis.clientWidth;
 var height = sta_mainVis.clientHeight;
@@ -66,10 +64,13 @@ const colorOfChart = {
     multi: '#FBD9B2',
     period: '#F46CA5',
     mass: '#B681CF',
-    ADTE: '#6870C4',
+    distance: '#6870C4',
     arcBackground: '#28333c',
-    rightbar: '#E26C92'
+    rightbar: '#49AFD9'
 }
+
+const backgroundOpacity = 0.85;
+const colorOpacity = 0.9;
 
 function colorOfCountryStyle (d, name) {
     if (d[name] == 'USA'){
@@ -198,12 +199,12 @@ function sta_updateChart(refineParam,radioValue) {
     .attr("class", "g_main")
     .attr("transform", "translate(" + (width/2-10) + "," + ( height/2 + 20)+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
-
+    // *** Create labels for rings ***
     var dis_label = svg.append('text')
     .style("text-anchor", "end")
     .attr('x', -5)
     .attr('y', (-((outerRadius_Dis-innerRadius_Dis)/2 + innerRadius_Dis)))
-    .text('ADTE');
+    .text('Distance');
 
     var mass_label = svg.append('text')
     .style("text-anchor", "end")
@@ -248,10 +249,12 @@ function sta_updateChart(refineParam,radioValue) {
         Tooltip
           .style("opacity", 1)
         d3.select(this)
-          .style("stroke", "black")
+          .style("stroke", "white")
+          .style("stroke-width", '1px')
           .style("opacity", 1)
       }
-      var mousemove = function(d) {
+
+    var mousemove = function(d) {
         // console.log("Into mousemove");
         //console.log("The country is: " + d['new_country']);
         Tooltip
@@ -263,29 +266,30 @@ function sta_updateChart(refineParam,radioValue) {
           + "Average Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
           .style("left", (d3.mouse(svg.node())[0]+ tooltipOffset + width/2) + "px")
           .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px")
-      }
+    }
 
-      var country_mousemove = function(d){
+    var country_mousemove = function(d){
         Tooltip
         .html("Country: " + d['country'])
         .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
         .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
-      }
+    }
 
-      var purpose_mousemove = function(d){
+    var purpose_mousemove = function(d){
         Tooltip
         .html("Purpose: " + d['purpose'])
         .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
         .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
-      }
-      var mouseleave = function(d) {
+    }
+
+    var mouseleave = function(d) {
         // console.log("Into mouseleave");
         Tooltip
           .style("opacity", 0)
         d3.select(this)
           .style("stroke", "none")
-          .style("opacity", 1)
-      }
+          .style("opacity", colorOpacity)
+    }
     
 
     var Civil = 0;
@@ -398,6 +402,7 @@ function sta_updateChart(refineParam,radioValue) {
         .attr('fill', function(d){
             return colorOfPurposeStyle(d, 'purpose');
         })
+        .attr("opacity", colorOpacity)
         .attr('d',d3.arc()
         .innerRadius( function(d) { return y_purpose(0) })
         .outerRadius(function(d){return y_purpose(1);})
@@ -449,14 +454,15 @@ function sta_updateChart(refineParam,radioValue) {
     .attr('fill',function(d){
         return colorOfPurposeStyle(d, 'new_purpose');
     })
-    .attr("fill-opacity", function(d){
-        if (d['new_purpose']==''){
-            return 1;
-        }
-        else{
-            return 10;
-        }
-    })
+    .attr("opacity", colorOpacity)
+    // .attr("fill-opacity", function(d){
+    //     if (d['new_purpose']==''){
+    //         return 1;
+    //     }
+    //     else{
+    //         return 10;
+    //     }
+    // })
     .attr('d',d3.arc()
     .innerRadius( function(d) { return y_purpose(0) })
     .outerRadius(function(d){return y_purpose(1);})
@@ -482,6 +488,7 @@ if (radioValue == 'Country'){
     .attr('fill', function(d){
         return colorOfCountryStyle (d, 'country')
     })
+    .attr("opacity", colorOpacity)
     .attr('d',d3.arc()
     .innerRadius( function(d) { return y_country(0) })
     .outerRadius(function(d){return y_country(1);})
@@ -536,6 +543,7 @@ if (radioValue == 'Country'){
     .attr('fill',function(d){
         return colorOfCountryStyle (d, 'new_country')
     })
+    .attr("opacity", colorOpacity)
     .attr('d',d3.arc()
     .innerRadius( function(d) { return y_country(0) })
     .outerRadius(function(d){return y_country(1);})
@@ -575,6 +583,7 @@ if (radioValue == 'Country'){
         .enter()
         .append('path')
         .attr('fill', colorOfChart.period)
+        .attr("opacity", colorOpacity)
         .attr('class','arc')
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_period(0); })
@@ -615,6 +624,7 @@ if (radioValue == 'Country'){
         .enter()
         .append('path')
         .attr('fill', colorOfChart.mass)
+        .attr("opacity", colorOpacity)
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_mass(0) })
             .outerRadius(function(d){return y_mass(d['log_mass']);})
@@ -649,7 +659,8 @@ if (radioValue == 'Country'){
         .data(sta_dataset)
         .enter()
         .append('path')
-        .attr('fill', colorOfChart.ADTE)
+        .attr('fill', colorOfChart.distance)
+        .attr("opacity", colorOpacity)
         .attr('d',d3.arc()
             .innerRadius( function(d) { return y_dis(0) })
             .outerRadius(function(d){return y_dis(d['log_dis']);})
@@ -690,15 +701,15 @@ if (radioValue == 'Country'){
     console.log('WIDTHHHH'+svgWidth);
 
 
-    // Avg Distance Array
+    // *** Barchart of Distance to Earth ***
     var dis_barchart = main_svg.append('g')
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t]  + ')');
     //.attr('transform', 'translate(880,150)');
 
     dis_barchart.append('text')
     .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-50, barchart_height+30]  + ')')
-    .text('Avg Distance to Earth');
+    .attr('transform', 'translate('+ [barchart_width/2-40, barchart_height+30]  + ')')
+    .text('Distance to Earth');
 
     min_avgDis = d3.min(disArray);
     max_avgDis = d3.max(disArray);
@@ -736,7 +747,7 @@ if (radioValue == 'Country'){
     // console.log(y_dis(10000));
     // console.log(y_dis(0));
 
-    dis_barchart.selectAll("rect")
+    dis_barchart.selectAll("rect") 
     .data(bins)
     .enter()
     .append("rect")
@@ -758,10 +769,11 @@ if (radioValue == 'Country'){
             return  barchart_height - y_dis(d.length);
         }
         })
-    .style("fill", colorOfChart.rightbar);
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
 
 
-    // Period array
+    // *** Barchart of Period ***
     var period_barchart = main_svg.append('g')
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height+bar_gap]  + ')');
     //.attr('transform', 'translate(880,' + (150+barchart_height + 25) + ')') ;
@@ -807,10 +819,11 @@ if (radioValue == 'Country'){
     .attr("transform", function(d) { return "translate("  + x_period(d.x0) + ","  + y_period(d.length) + ")"; })
     .attr("width", function(d) { return x_period(d.x1) - x_period(d.x0) -1 ; })
     .attr("height", function(d) { return barchart_height - y_period(d.length); })
-    .style("fill", colorOfChart.rightbar);
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
 
 
-    // Mass array
+    // *** Barchart of Period ***
     var mass_barchart = main_svg.append('g')
     //.attr('transform', 'translate(880,' + (150+barchart_height*2 + 25*2) + ')') ;
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height*2 + bar_gap*2]  + ')');
@@ -856,10 +869,11 @@ if (radioValue == 'Country'){
     .attr("transform", function(d) { return "translate("  + x_mass(d.x0) + ","  + y_mass(d.length) + ")"; })
     .attr("width", function(d) { return x_mass(d.x1) - x_mass(d.x0) -1 ; })
     .attr("height", function(d) { return barchart_height - y_mass(d.length); })
-    .style("fill", colorOfChart.rightbar);
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
 
 
-    // Purpose barchart
+    // *** Barchart of Purpose ***
     var purpose_barchart = main_svg.append('g')
     //.attr('transform', 'translate(880,' + (150+barchart_height*3 + 25*3) + ')') ;
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*3+bar_gap*3]  + ')');
@@ -882,7 +896,8 @@ if (radioValue == 'Country'){
     .attr("width", x_purpose.bandwidth())
     .attr("y", function(d) { return y_purpose(d['count']); })
     .attr("height", function(d) { return barchart_height - y_purpose(d['count']); })
-    .style("fill", colorOfChart.rightbar);
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
 
     purpose_barchart.append("g")
     .attr("transform", "translate(0," + barchart_height + ")")
@@ -894,7 +909,7 @@ if (radioValue == 'Country'){
     .call(d3.axisLeft(y_purpose).ticks(y_tick));
 
 
-    // Country barchart
+    // *** Barchart of Country ***
     var country_barchart = main_svg.append('g')
     //.attr('transform', 'translate(880,' + (150+barchart_height*4 + 25*4) + ')') ;
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*4+bar_gap*4]  + ')');
@@ -919,7 +934,8 @@ if (radioValue == 'Country'){
     .attr("width", x_country.bandwidth())
     .attr("y", function(d) { return y_country(d['count']); })
     .attr("height", function(d) { return barchart_height - y_country(d['count']); })
-    .style("fill", colorOfChart.rightbar);
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
 
     country_barchart.append("g")
     .attr("transform", "translate(0," + barchart_height + ")")
