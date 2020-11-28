@@ -61,12 +61,22 @@
     width:200px;
 }
 
+/* Legend */
+.legend {
+    opacity: 0.85;
+}
 
-.legend .s_Civil { background-color: #f54f47;}
-.legend .s_Commercial { background-color: #f57600; }
-.legend .s_Government { background-color: #f1428a; }
-.legend .s_Millitary { background-color: #edb200; }
-.legend .s_Multi-purpose { background-color: #ad73c8; }
+.legend .s_Civil { background-color: #A92D38;}
+.legend .s_Commercial { background-color: #FC4A34; }
+.legend .s_Government { background-color: #CE5C30; }
+.legend .s_Millitary { background-color: #D9883D; }
+.legend .s_Multi-purpose { background-color: #FBD9B2; }
+
+.legend .s_China { background-color: #E12200;}
+.legend .s_Russia { background-color: #9B56BB; }
+.legend .s_UK { background-color: #0079B8; }
+.legend .s_USA { background-color: #62A420; }
+.legend .s_Others { background-color: #FAC400; }
 
 /* D3 */
 .regular-ellipse {

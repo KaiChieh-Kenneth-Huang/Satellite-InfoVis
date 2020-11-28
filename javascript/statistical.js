@@ -7,25 +7,28 @@ const radius_range = 1.8 * Math.PI;
 
 var width = sta_mainVis.clientWidth;
 var height = sta_mainVis.clientHeight;
+const responsiveWidth = width / 1425;
+const responsiveHeight = height / 750;
 
-var scaleup = width/800;
+var scaleup = width / 800;
+const thinknessTweak = 1.5;
 
-var outerRadius_Mass = 95*scaleup;
-var innerRadius_Mass = 65*scaleup;
+var outerRadius_Country = 170 * scaleup;
+var innerRadius_Country = (155 - thinknessTweak) * scaleup;
 
-var outerRadius_Dis = 60*scaleup;
-var innerRadius_Dis = 30*scaleup;
+var outerRadius_Purpose = 150 * scaleup;
+var innerRadius_Purpose = (135 - thinknessTweak) * scaleup;
 
-var outerRadius_Period = 130*scaleup;
-var innerRadius_Period = 100*scaleup;
+var outerRadius_Period = 130 * scaleup;
+var innerRadius_Period = (100 - thinknessTweak) * scaleup;
 
-var outerRadius_Purpose = 150*scaleup;
-var innerRadius_Purpose = 135*scaleup;
+var outerRadius_Mass = 95 * scaleup;
+var innerRadius_Mass = (65 - thinknessTweak) * scaleup;
 
-var innerRadius_Country = 155*scaleup;
-var outerRadius_Country = 170*scaleup;
+var outerRadius_Dis = 60 * scaleup;
+var innerRadius_Dis = (30 - thinknessTweak) * scaleup;
 
-var radius_central_circle = 25*scaleup;
+var radius_central_circle = 25 * scaleup;
 
 var padAngle = 0.003;
 
@@ -119,7 +122,6 @@ Math.degrees = function(radians) {
 }
 
 // TODO: sizing code needs to be inside resize listener
-
 function sta_updateChart(refineParam,radioValue) {
     var sta_filteredSatellites = sta_satelliteData.filter(function(d){
         let match = true;
@@ -137,21 +139,22 @@ function sta_updateChart(refineParam,radioValue) {
     //console.log(radioValue);
     sta_dataset = sta_filteredSatellites;
     d3.select('#statistical-main-vis').selectAll('g').remove();
-    //Sort
+
+    // Sort all bar charts in the main vis
     if (radioValue =='Country'){
-        sta_dataset = sta_dataset.sort((a,b)=>d3.descending(a['new_country'],b['new_country']));
+        sta_dataset = sta_dataset.sort((a,b)=>d3.ascending(a['new_country'],b['new_country']));
     }
     else if(radioValue =='Purpose'){
-        sta_dataset = sta_dataset.sort((a,b)=>d3.descending(a['new_purpose'],b['new_purpose']));
+        sta_dataset = sta_dataset.sort((a,b)=>d3.ascending(a['new_purpose'],b['new_purpose']));
     }
     else if(radioValue =='Period'){
-        sta_dataset = sta_dataset.sort((a,b)=>d3.descending(parseFloat(a['Period (minutes)']),parseFloat(b['Period (minutes)'])));
+        sta_dataset = sta_dataset.sort((a,b)=>d3.ascending(parseFloat(a['Period (minutes)']),parseFloat(b['Period (minutes)'])));
     }
     else if(radioValue == 'Mass'){
-        sta_dataset = sta_dataset.sort((a,b)=>d3.descending(parseFloat(a['Launch Mass (kg.)']),parseFloat(b['Launch Mass (kg.)'])));
+        sta_dataset = sta_dataset.sort((a,b)=>d3.ascending(parseFloat(a['Launch Mass (kg.)']),parseFloat(b['Launch Mass (kg.)'])));
     }
     else if(radioValue == 'Dis'){
-        sta_dataset = sta_dataset.sort((a,b)=>d3.descending(parseFloat(a['avgDis']),parseFloat(b['avgDis'])));
+        sta_dataset = sta_dataset.sort((a,b)=>d3.ascending(parseFloat(a['avgDis']),parseFloat(b['avgDis'])));
     }
     else{
         
@@ -197,27 +200,10 @@ function sta_updateChart(refineParam,radioValue) {
     var svg = d3.select('#statistical-main-vis')
     .append("g")
     .attr("class", "g_main")
-    .attr("transform", "translate(" + (width/2-10) + "," + ( height/2 + 20)+ ")"); // Add 100 on Y translation, cause upper bars are longer;
+    .attr("transform", "translate(" + (width/2 - 20) + "," + ( height/2 + 30)+ ")"); // Add 100 on Y translation, cause upper bars are longer;
+
 
     // *** Create labels for rings ***
-    var dis_label = svg.append('text')
-    .style("text-anchor", "end")
-    .attr('x', -5)
-    .attr('y', (-((outerRadius_Dis-innerRadius_Dis)/2 + innerRadius_Dis)))
-    .text('Distance');
-
-    var mass_label = svg.append('text')
-    .style("text-anchor", "end")
-    .attr('x', -5)
-    .attr('y', (-((outerRadius_Mass-innerRadius_Mass)/2 + innerRadius_Mass)))
-    .text('Mass');
-
-    var period_label = svg.append('text')
-    .style("text-anchor", "end")
-    .attr('x', -5)
-    .attr('y', (-((outerRadius_Period-innerRadius_Period)/2 + innerRadius_Period)))
-    .text('Period');
-
     var Country_label = svg.append('text')
     .style("text-anchor", "end")
     .attr('x', -5)
@@ -230,73 +216,32 @@ function sta_updateChart(refineParam,radioValue) {
     .attr('y', (-((outerRadius_Purpose-innerRadius_Purpose)/2 + innerRadius_Purpose)))
     .text('Purpose');
 
+    var period_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Period-innerRadius_Period)/2 + innerRadius_Period)))
+    .text('Period (min)');
 
-    // *** Create a tooltip when hovering over the chart ***
-    var Tooltip = d3.select("#div_template")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0)
-    .style("position", "absolute")
-    .style("background-color", "white")
-    .style("color","black")
-    // .style("border", "solid")
-    // .style("border-width", "2px")
-    .style("border-radius", "5px")
-    .style("padding", "12px")
+    var mass_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Mass-innerRadius_Mass)/2 + innerRadius_Mass)))
+    .text('Mass (kg)');
 
-    var mouseover = function(d) {
-        // console.log("Into mouseover");
-        Tooltip
-          .style("opacity", 1)
-        d3.select(this)
-          .style("stroke", "white")
-          .style("stroke-width", '1px')
-          .style("opacity", 1)
-      }
+    var dis_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Dis-innerRadius_Dis)/2 + innerRadius_Dis)))
+    .text('Dis (km)');
 
-    var mousemove = function(d) {
-        // console.log("Into mousemove");
-        //console.log("The country is: " + d['new_country']);
-        Tooltip
-          .html("Name: " + d['Name of Satellite  Alternate Names']  + "<br>"
-          + "Country: " + d['new_country']  + "<br>" 
-          + "Purpose: " + d['new_purpose']  + "<br>"
-          + "Peroid: " + d['Period (minutes)']  + "mins"+ "<br>"
-          + "Mass: " + d['Launch Mass (kg.)']  + "kg"+ "<br>"
-          + "Average Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
-          .style("left", (d3.mouse(svg.node())[0]+ tooltipOffset + width/2) + "px")
-          .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px")
-    }
 
-    var country_mousemove = function(d){
-        Tooltip
-        .html("Country: " + d['country'])
-        .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
-        .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
-    }
-
-    var purpose_mousemove = function(d){
-        Tooltip
-        .html("Purpose: " + d['purpose'])
-        .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
-        .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
-    }
-
-    var mouseleave = function(d) {
-        // console.log("Into mouseleave");
-        Tooltip
-          .style("opacity", 0)
-        d3.select(this)
-          .style("stroke", "none")
-          .style("opacity", colorOpacity)
-    }
-    
-
+    // Count the number for each purpose
     var Civil = 0;
     var Commercial = 0;
     var Military = 0;
-    var Governmental = 0;
+    var Government = 0;
     var Multi_purpose = 0;
+
     for (var i = 0; i < sta_dataset.length; i++) {
         if (sta_dataset[i]['new_purpose'] == 'Civil'){
             Civil++;
@@ -307,42 +252,53 @@ function sta_updateChart(refineParam,radioValue) {
         else if (sta_dataset[i]['new_purpose'] == 'Military'){
             Military++;
         }
-        else if (sta_dataset[i]['new_purpose'] == 'Governmental'){
-            Governmental++;
+        else if (sta_dataset[i]['new_purpose'] == 'Government'){
+            Government++;
         }
         else if (sta_dataset[i]['new_purpose'] == 'Multi-purpose'){
             Multi_purpose++;
         }
     }
-    var all = Civil + Commercial + Military + Governmental + Multi_purpose;
+
+    // Set angles for each part in the ring of Purpose
+    var all = Civil + Commercial + Military + Government + Multi_purpose;
     var Civil_p = Civil / all * radius_range;
     var Commercial_p = Commercial / all * radius_range;
     var Military_p = Military / all * radius_range;
-    var Governmental_p = Governmental / all * radius_range;
+    var Government_p = Government / all * radius_range;
     var Multi_purpose_p = Multi_purpose / all * radius_range;
     
-    var purpose = [
+    var purpose = [  //Set the sequence for the ring of Purpose
         { purpose: 'Civil', start_angle : 0, angle : Civil_p },
         { purpose: 'Commercial', start_angle : Civil_p, angle : Commercial_p },
-        { purpose: 'Military', start_angle : Commercial_p + Civil_p, angle : Military_p },
-        { purpose: 'Governmental', start_angle : Commercial_p + Civil_p + Military_p, angle : Governmental_p },
-        { purpose: 'Multi_purpose', start_angle : Commercial_p + Civil_p + Military_p + Governmental_p, angle : Multi_purpose_p }
+        { purpose: 'Government', start_angle : Commercial_p + Civil_p, angle : Government_p },
+        { purpose: 'Military', start_angle : Commercial_p + Civil_p + Government_p, angle : Military_p },
+        { purpose: 'Multi_purpose', start_angle : Commercial_p + Civil_p + Military_p + Government_p, angle : Multi_purpose_p }
     ]
 
     var purpose_statistical = [
         { purpose: 'Civil', count : Civil},
         { purpose: 'Commercial', count : Commercial},
+        { purpose: 'Government', count : Government},
         { purpose: 'Military', count : Military },
-        { purpose: 'Governmental', count : Governmental},
         { purpose: 'Multi_purpose', count : Multi_purpose }
     ]
 
+    var purpose_tooltip = { //Count only for tooltip
+        'Civil': Civil,
+        'Commercial': Commercial,
+        'Government': Government,
+        'Military': Military,
+        'Multi_purpose': Multi_purpose
+    }
+
+    // Count the number for each country
     var USA = 0;
     var China = 0;
     var UK = 0;
     var Russia = 0;
     var Others = 0;
-    var Multinational = 0;
+    
     for (var i = 0; i < sta_dataset.length; i++) {
         if (sta_dataset[i]['new_country'] == 'USA'){
             USA++;
@@ -359,42 +315,109 @@ function sta_updateChart(refineParam,radioValue) {
         else if (sta_dataset[i]['new_country'] == 'Others'){
             Others++;
         }
-        // else if (sta_dataset[i]['new_country'] == 'Multinational'){
-        //     Multinational++;
-        // }
     }
 
-    // UK, USA, Russia, Others, Multinational, China
-    var all = USA + UK + China + Russia + Others + Multinational;
+    // Set angles for each part in the ring of Country
+    var all = USA + UK + China + Russia + Others;
     var USA_p = USA / all * radius_range;
     var China_p = China / all * radius_range;
     var Russia_p = Russia / all * radius_range;
     var UK_p = UK / all * radius_range;
     var Others_p = Others / all * radius_range;
-    var Multinational_p = Multinational / all * radius_range;
 
-    var country = [
-        { country: 'USA', start_angle : 0, angle : USA_p },
-        { country: 'China', start_angle : USA_p + UK_p + Russia_p + Others_p + Multinational_p, angle : China_p },
-        { country: 'UK', start_angle : USA_p, angle : UK_p },
-        { country: 'Russia', start_angle : USA_p + UK_p, angle : Russia_p },
-        { country: 'Others', start_angle : USA_p + UK_p + Russia_p, angle : Others_p },
-        { country: 'Multinational', start_angle : USA_p + UK_p + Russia_p + Others_p, angle : Multinational_p}
+    var country = [  //Set the sequence for the ring of Country
+        { country: 'China', start_angle: 0, angle : China_p },
+        { country: 'Others', start_angle: China_p, angle : Others_p },
+        { country: 'Russia', start_angle: China_p + Others_p, angle : Russia_p },
+        { country: 'UK', start_angle: China_p + Others_p + Russia_p, angle : UK_p },
+        { country: 'USA', start_angle: China_p + Others_p + Russia_p + UK_p, angle : USA_p },
     ]
 
     var country_statistical = [
-        { country: 'USA', count : USA},
         { country: 'China', count : China},
-        { country: 'UK', count : UK },
         { country: 'Russia', count : Russia},
+        { country: 'USA', count : USA},
+        { country: 'UK', count : UK },
         { country: 'Others', count : Others },
-        { country: 'Multinational', count : Multinational }
     ]
+
+    var country_tooltip = { //Count only for tooltip
+        'China': China,
+        'Others': Others,
+        'Russia': Russia,
+        'UK': UK,
+        'USA': USA
+    }
     
-    // If 'Purpose' is selected in Sort By
+
+    // *** Create a tooltip when hovering over the chart ***
+    var Tooltip = d3.select("#div_template")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("background-color", "white")
+    .style("color","black")
+    .style("border-radius", "5px")
+    .style("padding", "12px")
+
+    var mouseover = function(d) {
+        // console.log("Into mouseover");
+        Tooltip
+          .style("opacity", 1)
+
+        d3.select(this)
+          .style("stroke", "white")
+          .style("stroke-width", '1px')
+          .style("opacity", 1)
+      }
+
+    var mousemove = function(d) {
+        // console.log("Into mousemove");
+        //console.log("The country is: " + d['new_country']);
+        Tooltip
+          .html("Satellite Name: " + d['Name of Satellite  Alternate Names']  + "<br>"
+          + "Country: " + d['new_country']  + "<br>" 
+          + "Purpose: " + d['new_purpose']  + "<br>"
+          + "Orbit Peroid: " + d['Period (minutes)']  + "min"+ "<br>"
+          + "Mass: " + d['Launch Mass (kg.)']  + "kg"+ "<br>"
+          + "Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
+          .attr('class', 'tooltip')
+          .style("left", (d3.mouse(svg.node())[0]+ tooltipOffset + width/2) + "px")
+          .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px")
+    }
+
+    var country_mousemove = function(d){
+        Tooltip
+        .html("Country: " + d['country'] + "<br>"
+        + "Number of satellites: " + country_tooltip[d['country']])
+        .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
+        .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
+    }
+
+    var purpose_mousemove = function(d){
+        Tooltip
+        .html("Purpose: " + d['purpose'] + "<br>"
+        + "Number of satellites: " + purpose_tooltip[d['purpose']])
+        .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
+        .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
+    }
+
+    var mouseleave = function(d) {
+        // console.log("Into mouseleave");
+        Tooltip
+          .style("opacity", 0)
+        d3.select(this)
+          .style("stroke", "none")
+          .style("opacity", colorOpacity)
+    }
+
+    
+    // *** If 'Purpose' is selected in Sort By ***
     if (radioValue == 'Purpose'){
         document.getElementById("country_legend").classList.remove('no-display');
         document.getElementById("purpose_legend").classList.add('no-display');
+
         var purposeBar = svg.append('g')
         .attr("class", "g_main")
         .selectAll('path')
@@ -427,7 +450,6 @@ function sta_updateChart(refineParam,radioValue) {
     .append('text')
     .style("text-anchor", "middle")
     .attr('x', 0)
-    //.attr('y', -purpose_caption_radius)
     .attr('y', 0)
     .attr("transform", function(d) {
         var degree = Math.degrees( d['start_angle'] + d['angle']/2);
@@ -439,10 +461,20 @@ function sta_updateChart(refineParam,radioValue) {
 
      })
     .text(function(d){
-        if (d['angle'] > 0.05){
+        if (d['angle'] > 0.05 && d['purpose'] != 'Multi_purpose' && d['purpose'] != 'Government'){ // Set the minimum angle to display government and multipurpose
+            console.log(d['purpose']);
             return d['purpose'];
         }
+        else if((d['angle'] > 0.15 && d['purpose'] == 'Multi_purpose')){
+            console.log(d['purpose']);
+            return "Multi-Purpose";
+        }
+        else if((d['angle'] > 0.15 && d['purpose'] == 'Government')){
+            console.log(d['purpose']);
+            return "Government";
+        }
         else{
+            console.log(d['purpose']);
             return '';
         }
     });
@@ -687,8 +719,8 @@ if (radioValue == 'Country'){
 
     // *** Create bar charts on the right ***
     var main_svg = d3.select('#statistical-main-vis');
-    let barchart_width = 240;
-    let barchart_height = 70;
+    let barchart_width = 240 * responsiveWidth;
+    let barchart_height = 65 * responsiveHeight;
     let disArray = sta_dataset.map(d => parseFloat(d['avgDis']));
     let periodArray = sta_dataset.map(d => parseFloat(d['Period (minutes)']));
     let massArray = sta_dataset.map(d => parseFloat(d['Launch Mass (kg.)']));
@@ -698,22 +730,188 @@ if (radioValue == 'Country'){
     let y_tick = 4;
 
     var svgWidth = mainVis.clientWidth;
-    var svgHeight = mainVis.clientHeight;
-    var pad = {t: 100, r: 280, b: 40, l: 40};
-    var bar_gap = 50;
+    var pad = {t: 115, r: 300 * responsiveWidth, b: 40, l: 40};
+    var bar_gap = 55;
 
-    console.log('WIDTHHHH'+svgWidth);
+
+    // *** Barchart of Country ***
+    var country_barchart = main_svg.append('g')
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t]  + ')');
+
+    country_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-12, barchart_height+30]  + ')')
+    .text('Country');
+    
+    var x_country = d3.scaleBand()
+                    .range([0, barchart_width])
+                    .padding(0.1);
+                    
+    var y_country = d3.scaleLinear().range([barchart_height, 0]);
+
+    x_country.domain(country_statistical.map(function(d) { return d['country']; }));
+    y_country.domain([0, d3.max(country_statistical, function(d) { return d['count']; })]);
+
+    country_barchart.selectAll("rect")
+    .data(country_statistical)
+    .enter().append("rect")
+    .attr("x", function(d) { return x_country(d['country']); })
+    .attr("width", x_country.bandwidth())
+    .attr("y", function(d) { return y_country(d['count']); })
+    .attr("height", function(d) { return barchart_height - y_country(d['count']); })
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
+
+    country_barchart.append("g")
+    .attr("transform", "translate(0," + barchart_height + ")")
+    .attr('class','axis')
+    .call(d3.axisBottom(x_country));
+
+    country_barchart.append("g")
+    .attr('class','axis')
+    .call(d3.axisLeft(y_country).ticks(y_tick));
+
+
+    // *** Barchart of Purpose ***
+    var purpose_barchart = main_svg.append('g')
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height + bar_gap]  + ')');
+
+    purpose_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-15, barchart_height+30]  + ')')
+    .text('Purpose');
+    
+    var x_purpose = d3.scaleBand()
+                    .range([0, barchart_width])
+                    .padding(0.1);
+
+    var y_purpose = d3.scaleLinear().range([barchart_height, 0]);
+
+    x_purpose.domain(purpose_statistical.map(function(d) { return d['purpose']; }));
+    y_purpose.domain([0, d3.max(purpose_statistical, function(d) { return d['count']; })]);
+
+    purpose_barchart.selectAll("rect")
+    .data(purpose_statistical)
+    .enter().append("rect")
+    .attr("x", function(d) { return x_purpose(d['purpose']); })
+    .attr("width", x_purpose.bandwidth())
+    .attr("y", function(d) { return y_purpose(d['count']); })
+    .attr("height", function(d) { return barchart_height - y_purpose(d['count']); })
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
+
+    purpose_barchart.append("g")
+    .attr("transform", "translate(0," + barchart_height + ")")
+    .attr('class','axis')
+    .call(d3.axisBottom(x_purpose));
+
+    purpose_barchart.append("g")
+    .attr('class','axis')
+    .call(d3.axisLeft(y_purpose).ticks(y_tick));
+
+    // *** Barchart of Period ***
+    var period_barchart = main_svg.append('g')
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height * 2 + bar_gap * 2]  + ')');
+
+    period_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-40, barchart_height+30]  + ')')
+    .text('Orbit Period (min)');
+
+    min_period = d3.min(periodArray);
+    max_period = d3.max(periodArray);
+    var x_period = d3.scaleLinear()
+    .domain([min_period,max_period])
+    .range([0,barchart_width]);
+
+    period_barchart.append('g')
+    .attr('class','axis')
+    .attr('transform', 'translate(0,' +barchart_height + ')')
+    .call(d3.axisBottom(x_period).ticks(bin_period));
+
+    var period_histogram = d3.histogram()
+    .domain(x_period.domain())
+    .thresholds(x_period.ticks(bin_period));
+    
+    var period_bins = period_histogram(periodArray);
+
+    var y_period = d3.scaleLinear()
+    .range([barchart_height, 0]);
+
+    y_period.domain([0, d3.max(period_bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
+    
+    period_barchart.append("g")
+    .attr('class','axis')
+    .call(d3.axisLeft(y_period).ticks(y_tick));
+
+    period_barchart.selectAll("rect")
+    .data(period_bins)
+    .enter()
+    .append("rect")
+    .attr("x", 1)
+    .attr("transform", function(d) { return "translate("  + x_period(d.x0) + ","  + y_period(d.length) + ")"; })
+    .attr("width", function(d) { return x_period(d.x1) - x_period(d.x0) -1 ; })
+    .attr("height", function(d) { return barchart_height - y_period(d.length); })
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
+
+
+    // *** Barchart of Mass ***
+    var mass_barchart = main_svg.append('g')
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height * 3  + bar_gap * 3]  + ')');
+
+    mass_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-15, barchart_height+30]  + ')')
+    .text('Mass (kg)');
+
+    min_mass = d3.min(massArray);
+    max_mass = d3.max(massArray);
+
+    var x_mass = d3.scaleLinear()
+    .domain([min_mass,max_mass])
+    .range([0,barchart_width]);
+
+    mass_barchart.append('g')
+    .attr('class','axis')
+    .attr('transform', 'translate(0,' +barchart_height + ')')
+    .call(d3.axisBottom(x_mass).ticks(bin_mass));
+
+    var mass_histogram = d3.histogram()
+    .domain(x_mass.domain())
+    .thresholds(x_mass.ticks(bin_mass));
+    
+    var mass_bins = mass_histogram(massArray);
+
+    var y_mass = d3.scaleLinear()
+    .range([barchart_height, 0]);
+
+    y_mass.domain([0, d3.max(mass_bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
+    
+    mass_barchart.append("g")
+    .attr('class','axis')
+    .call(d3.axisLeft(y_mass).ticks(y_tick));
+
+    mass_barchart.selectAll("rect")
+    .data(mass_bins)
+    .enter()
+    .append("rect")
+    .attr("x", 1)
+    .attr("transform", function(d) { return "translate("  + x_mass(d.x0) + ","  + y_mass(d.length) + ")"; })
+    .attr("width", function(d) { return x_mass(d.x1) - x_mass(d.x0) -1 ; })
+    .attr("height", function(d) { return barchart_height - y_mass(d.length); })
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
 
 
     // *** Barchart of Distance to Earth ***
     var dis_barchart = main_svg.append('g')
-    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t]  + ')');
-    //.attr('transform', 'translate(880,150)');
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height * 4 + bar_gap * 4]  + ')');
 
     dis_barchart.append('text')
     .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-40, barchart_height+30]  + ')')
-    .text('Distance to Earth');
+    .attr('transform', 'translate('+ [barchart_width/2-55, barchart_height+30]  + ')')
+    .text('Distance to Earth (km)');
 
     min_avgDis = d3.min(disArray);
     max_avgDis = d3.max(disArray);
@@ -733,9 +931,6 @@ if (radioValue == 'Country'){
     
     var bins = dis_histogram(disArray) ;
 
-    // var y_dis = d3.scaleLinear()
-    // .range([barchart_height, 0]);
-
     var y_dis = d3.scaleLog()
     .range([0, barchart_height]);
 
@@ -747,9 +942,6 @@ if (radioValue == 'Country'){
     dis_barchart.append("g")
     .attr('class','axis')
     .call(d3.axisLeft(y_dis).ticks(y_tick));
-
-    // console.log(y_dis(10000));
-    // console.log(y_dis(0));
 
     dis_barchart.selectAll("rect") 
     .data(bins)
@@ -775,184 +967,13 @@ if (radioValue == 'Country'){
         })
     .style("fill", colorOfChart.rightbar)
     .style('opacity', colorOpacity);
-
-
-    // *** Barchart of Period ***
-    var period_barchart = main_svg.append('g')
-    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height+bar_gap]  + ')');
-    //.attr('transform', 'translate(880,' + (150+barchart_height + 25) + ')') ;
-
-    period_barchart.append('text')
-    .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-15, barchart_height+30]  + ')')
-    .text('Period');
-
-    min_period = d3.min(periodArray);
-    max_period = d3.max(periodArray);
-    var x_period = d3.scaleLinear()
-    .domain([min_period,max_period])
-    .range([0,barchart_width]);
-
-    period_barchart.append('g')
-    .attr('class','axis')
-    .attr('transform', 'translate(0,' +barchart_height + ')')
-    .call(d3.axisBottom(x_period).ticks(bin_period));
-
-    var period_histogram = d3.histogram()
-    .domain(x_period.domain())
-    .thresholds(x_period.ticks(bin_period));
-    
-    var period_bins = period_histogram(disArray);
-
-    var y_period = d3.scaleLinear()
-    .range([barchart_height, 0]);
-
-    y_period.domain([0, d3.max(period_bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
-    
-    period_barchart.append("g")
-    .attr('class','axis')
-    //.attr('transform', 'translate(625,100)')
-    .call(d3.axisLeft(y_period).ticks(y_tick));
-
-
-    period_barchart.selectAll("rect")
-    .data(period_bins)
-    .enter()
-    .append("rect")
-    .attr("x", 1)
-    .attr("transform", function(d) { return "translate("  + x_period(d.x0) + ","  + y_period(d.length) + ")"; })
-    .attr("width", function(d) { return x_period(d.x1) - x_period(d.x0) -1 ; })
-    .attr("height", function(d) { return barchart_height - y_period(d.length); })
-    .style("fill", colorOfChart.rightbar)
-    .style('opacity', colorOpacity);
-
-
-    // *** Barchart of Period ***
-    var mass_barchart = main_svg.append('g')
-    //.attr('transform', 'translate(880,' + (150+barchart_height*2 + 25*2) + ')') ;
-    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height*2 + bar_gap*2]  + ')');
-
-    mass_barchart.append('text')
-    .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-10, barchart_height+30]  + ')')
-    .text('Mass');
-
-    min_mass = d3.min(massArray);
-    max_mass = d3.max(massArray);
-    var x_mass = d3.scaleLinear()
-    .domain([min_mass,max_mass])
-    .range([0,barchart_width]);
-
-    mass_barchart.append('g')
-    .attr('class','axis')
-    .attr('transform', 'translate(0,' +barchart_height + ')')
-    .call(d3.axisBottom(x_mass).ticks(bin_mass));
-
-    var period_histogram = d3.histogram()
-    .domain(x_mass.domain())
-    .thresholds(x_mass.ticks(bin_mass));
-    
-    var mass_bins = period_histogram(massArray);
-
-    var y_mass = d3.scaleLinear()
-    .range([barchart_height, 0]);
-
-    y_mass.domain([0, d3.max(mass_bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
-    
-    mass_barchart.append("g")
-    .attr('class','axis')
-    //.attr('transform', 'translate(625,100)')
-    .call(d3.axisLeft(y_mass).ticks(y_tick));
-
-
-    mass_barchart.selectAll("rect")
-    .data(mass_bins)
-    .enter()
-    .append("rect")
-    .attr("x", 1)
-    .attr("transform", function(d) { return "translate("  + x_mass(d.x0) + ","  + y_mass(d.length) + ")"; })
-    .attr("width", function(d) { return x_mass(d.x1) - x_mass(d.x0) -1 ; })
-    .attr("height", function(d) { return barchart_height - y_mass(d.length); })
-    .style("fill", colorOfChart.rightbar)
-    .style('opacity', colorOpacity);
-
-
-    // *** Barchart of Purpose ***
-    var purpose_barchart = main_svg.append('g')
-    //.attr('transform', 'translate(880,' + (150+barchart_height*3 + 25*3) + ')') ;
-    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*3+bar_gap*3]  + ')');
-
-    purpose_barchart.append('text')
-    .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-10, barchart_height+30]  + ')')
-    .text('Purpose');
-    
-    var x_purpose = d3.scaleBand()
-                    .range([0, barchart_width])
-                    .padding(0.1);
-    var y_purpose = d3.scaleLinear().range([barchart_height, 0]);
-    x_purpose.domain(purpose_statistical.map(function(d) { return d['purpose']; }));
-    y_purpose.domain([0, d3.max(purpose_statistical, function(d) { return d['count']; })]);
-    purpose_barchart.selectAll("rect")
-    .data(purpose_statistical)
-    .enter().append("rect")
-    .attr("x", function(d) { return x_purpose(d['purpose']); })
-    .attr("width", x_purpose.bandwidth())
-    .attr("y", function(d) { return y_purpose(d['count']); })
-    .attr("height", function(d) { return barchart_height - y_purpose(d['count']); })
-    .style("fill", colorOfChart.rightbar)
-    .style('opacity', colorOpacity);
-
-    purpose_barchart.append("g")
-    .attr("transform", "translate(0," + barchart_height + ")")
-    .attr('class','axis')
-    .call(d3.axisBottom(x_purpose));
-
-    purpose_barchart.append("g")
-    .attr('class','axis')
-    .call(d3.axisLeft(y_purpose).ticks(y_tick));
-
-
-    // *** Barchart of Country ***
-    var country_barchart = main_svg.append('g')
-    //.attr('transform', 'translate(880,' + (150+barchart_height*4 + 25*4) + ')') ;
-    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*4+bar_gap*4]  + ')');
-
-    country_barchart.append('text')
-    .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-10, barchart_height+30]  + ')')
-    .text('Country');
-    
-    var x_country = d3.scaleBand()
-                    .range([0, barchart_width])
-                    .padding(0.1);
-    var y_country = d3.scaleLinear().range([barchart_height, 0]);
-
-    x_country.domain(country_statistical.map(function(d) { return d['country']; }));
-    y_country.domain([0, d3.max(country_statistical, function(d) { return d['count']; })]);
-
-    country_barchart.selectAll("rect")
-    .data(country_statistical)
-    .enter().append("rect")
-    .attr("x", function(d) { return x_country(d['country']); })
-    .attr("width", x_country.bandwidth())
-    .attr("y", function(d) { return y_country(d['count']); })
-    .attr("height", function(d) { return barchart_height - y_country(d['count']); })
-    .style("fill", colorOfChart.rightbar)
-    .style('opacity', colorOpacity);
-
-    country_barchart.append("g")
-    .attr("transform", "translate(0," + barchart_height + ")")
-    .attr('class','axis')
-    .call(d3.axisBottom(x_country));
-    country_barchart.append("g")
-    .attr('class','axis')
-    .call(d3.axisLeft(y_country).ticks(y_tick));
 }
 
 // *** load CSV ***
 d3.csv('../data/new_data_with_date.csv').then(function(sta_dataset) {
 sta_satelliteData = sta_dataset;
+
+// Acquire and sort options for Refine By dropdowns
 let countries = Object.keys(sta_dataset.reduce((options, d) => {
     const fieldName = STA_FN_COUNTRY;
     if (!options[d[fieldName]]) {
@@ -960,6 +981,7 @@ let countries = Object.keys(sta_dataset.reduce((options, d) => {
     }
     return options;
 }, {})).sort();
+
 countries.sort(
     function (a,b){
         if (a =='Others'){
@@ -1006,6 +1028,7 @@ refineByParams[STA_FN_YEAR] = '2020';
 refineByParams[STA_FN_PURPOSE] = 'All (5)';
 sta_updateChart(refineByParams,radioValue);
 });
+
 
 // Filter By Listeners
 document.querySelector('#sta_refineByCountry').addEventListener('change', (event) => {
