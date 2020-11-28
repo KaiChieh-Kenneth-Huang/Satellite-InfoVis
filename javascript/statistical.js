@@ -67,6 +67,8 @@ const colorOfChart = {
 // Tooltip variables
 const tooltipOffset = 15;
 
+var main_frame = null;
+
 Math.degrees = function(radians) {
 	return radians * 180 / Math.PI;
 }
@@ -151,6 +153,7 @@ function sta_updateChart(refineParam,radioValue) {
     .attr("class", "g_main")
     .attr("transform", "translate(" + (width/2-10) + "," + ( height/2 )+ ")"); // Add 100 on Y translation, cause upper bars are longer;
 
+    main_frame = svg;
 
     var dis_label = svg.append('text')
     .style("text-anchor", "end")
@@ -207,6 +210,7 @@ function sta_updateChart(refineParam,radioValue) {
       var mousemove = function(d) {
         // console.log("Into mousemove");
         //console.log("The country is: " + d['new_country']);
+        data = d;
         Tooltip
           .html("Name: " + d['Name of Satellite  Alternate Names']  + "<br>"
           + "Country: " + d['new_country']  + "<br>" 
@@ -215,7 +219,14 @@ function sta_updateChart(refineParam,radioValue) {
           + "Mass: " + d['Launch Mass (kg.)']  + "kg"+ "<br>"
           + "Average Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
           .style("left", (d3.mouse(svg.node())[0]+ tooltipOffset + width/2) + "px")
-          .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px")
+          .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px");
+
+        //   main_frame.selectAll("rect")
+        //   .filter(function(d){
+        //       console.log(d);
+        //     //return (d['x0']<=data) & (d['x1']>=data); 
+        // })
+        //   .style("fill", "orange");
       }
 
       var country_mousemove = function(d){
@@ -341,6 +352,20 @@ function sta_updateChart(refineParam,radioValue) {
     ]
 
     if(radioValue == 'Purpose'){
+        var title = document.getElementById("purpose_title");
+        var legend1 = document.getElementById("purpose_1");
+        var legend2 = document.getElementById("purpose_2");
+        var legend3 = document.getElementById("purpose_3");
+        var legend4 = document.getElementById("purpose_4");
+        var legend5 = document.getElementById("purpose_5");
+        //var h2 = legend.getElementsByTagName("h2");
+        title.textContent = "Country";
+        legend1.textContent = " China"
+        legend2.textContent = " Russia"
+        legend3.textContent = " UK"
+        legend4.textContent = " USA"
+        legend5.textContent = " Others"
+        //console.log(h2);
         var purposeBar = svg.append('g')
         .attr("class", "g_main")
         .selectAll('path')
@@ -400,7 +425,7 @@ function sta_updateChart(refineParam,radioValue) {
 
      })
     .text(function(d){
-        if (d['angle'] > 0.05){
+        if (d['angle'] > 0.1){
             return d['purpose'];
         }
         else{
@@ -457,6 +482,19 @@ function sta_updateChart(refineParam,radioValue) {
 }
 
 if(radioValue == 'Country'){
+    var title = document.getElementById("purpose_title");
+    var legend1 = document.getElementById("purpose_1");
+    var legend2 = document.getElementById("purpose_2");
+    var legend3 = document.getElementById("purpose_3");
+    var legend4 = document.getElementById("purpose_4");
+    var legend5 = document.getElementById("purpose_5");
+    //var h2 = legend.getElementsByTagName("h2");
+    title.textContent = "Purpose";
+    legend1.textContent = " Civil"
+    legend2.textContent = " Commercial"
+    legend3.textContent = " Government"
+    legend4.textContent = " Millitary"
+    legend5.textContent = " Multi-purpose"
     var CountryBar = svg
     .append('g')
     .attr("class", "g_main")
@@ -524,7 +562,7 @@ if(radioValue == 'Country'){
 
      })
     .text(function(d){
-        if (d['angle'] > 0.05){
+        if (d['angle'] > 0.1){
             return d['country'];
         }
         else{
@@ -964,8 +1002,22 @@ let countries = Object.keys(sta_dataset.reduce((options, d) => {
     }
     return options;
 }, {})).sort();
-countries.push('All (5)');
-countries.sort();
+//countries.push('All (5)');
+countries.sort(
+    function (a,b){
+        if (a =='Others'){
+            return 1;
+        }
+        else if (b == 'Others'){
+            return -1
+        }
+        else{
+            return b-a;
+        }
+    }
+);
+countries.unshift('All (5)');
+
 
 let purposes = Object.keys(sta_dataset.reduce((options, d) => {
     const fieldName = STA_FN_PURPOSE;
