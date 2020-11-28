@@ -779,8 +779,8 @@ if (radioValue == 'Country'){
 
     period_barchart.append('text')
     .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-20, barchart_height+30]  + ')')
-    .text('Period (min)');
+    .attr('transform', 'translate('+ [barchart_width/2-40, barchart_height+30]  + ')')
+    .text('Orbit Period (min)');
 
     min_period = d3.min(periodArray);
     max_period = d3.max(periodArray);
@@ -831,7 +831,7 @@ if (radioValue == 'Country'){
 
     min_mass = d3.min(massArray);
     max_mass = d3.max(massArray);
-    
+
     var x_mass = d3.scaleLinear()
     .domain([min_mass,max_mass])
     .range([0,barchart_width]);
