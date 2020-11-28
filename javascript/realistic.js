@@ -52,6 +52,7 @@ const FN_COUNTRY = 'new_country';
 const FN_PURPOSE = 'new_purpose';
 const FN_PERIOD = 'new_period';
 const FN_ORBIT = 'Class of Orbit';
+const ORBIT_NAMES = ['LEO', 'MEO', 'GEO', 'Elliptical'];
 
 var refineByParamsRealistic = {};
 
@@ -64,9 +65,7 @@ var maxApogee, maxPerigee, maxLEOApogee, maxMEOApogee, maxGEOApogee;
 
 // animation variables
 var orbitInterval;
-
-// TODO: sizing code needs to be inside resize listener
-console.log('client', mainVis.clientWidth + 'x' + mainVis.clientHeight);
+const orbitSpeeds = {LEO: 0.6, MEO: 0.5, GEO: 0.3}
 
 // Functions to style satellite points
 function sizeStyle(d) { // Initial Size
@@ -129,8 +128,10 @@ function animationSelector(selection, shouldAnimate) {
 //   },
 //   hideSatellites: <bool>,
 //   shouldAnimate: <bool>
+//   orbitClassToRevolve: <string>
 // }
 function updateChart_scrolly(controlParams) {
+    const scrollyMainVisD3 = d3.select('#scrolly-main-vis');
     // patch controlParams
     controlParams = controlParams || {};
     controlParams.zoom = controlParams.zoom === undefined ? ZOOM_OVERVIEW : controlParams.zoom;
@@ -150,18 +151,18 @@ function updateChart_scrolly(controlParams) {
         ? (mainVis_scrolly.clientWidth) / 2
         : kmToWidth_scrolly * maxPerigee + 100;
   
-    const earthCenter = [earthCenterX, mainVis.clientHeight / 2];
+    const earthCenter = [earthCenterX, mainVis_scrolly.clientHeight / 2];
   
     // Define the relative position of satellite points
     const getPointOnEllipse = (apogee, perigee, angle) => {
       const tangent = Math.tan(angle);
-      const centerX = earthCenter[0] + scale_scrolly((apogee - perigee) / 2);
+      const centerX = scale_scrolly((apogee - perigee) / 2);
       const a = ((apogee + EARTH_RADIUS) + (perigee + EARTH_RADIUS)) / 2;
       const bSq = (apogee + EARTH_RADIUS) * (perigee + EARTH_RADIUS);
       const xAbs = 1.0 / Math.sqrt(1.0 / (a * a) + Math.pow(tangent, 2) / bSq);
   
       const x = Math.abs(angle) < Math.PI / 2 ? centerX + scale_scrolly(xAbs) : centerX - scale_scrolly(xAbs);
-      const y = angle < 0 ? earthCenter[1] - scale_scrolly(xAbs * Math.abs(tangent)) : earthCenter[1] + scale_scrolly(xAbs * Math.abs(tangent)); // minus because +y direction is actually down on svg
+      const y = angle < 0 ? -scale_scrolly(xAbs * Math.abs(tangent)) : scale_scrolly(xAbs * Math.abs(tangent)); // minus because +y direction is actually down on svg
       return {x: x, y: y};
     }
   
@@ -179,12 +180,19 @@ function updateChart_scrolly(controlParams) {
         .attr('x', earthCenter[0] - scale_scrolly(EARTH_RADIUS))
         .attr('y', earthCenter[1] - scale_scrolly(EARTH_RADIUS))
     }
+
+    function updateOrbitGroup(orbitClass) {
+        animationSelector(scrollyMainVisD3.select('g.' + orbitClass), controlParams.shouldAnimate)
+            .attr('transform', d => {
+                return 'translate(' + [earthCenter[0], earthCenter[1]] + ') rotate('+ d.rotation +' 0, 0)';
+            });
+    }
     function updateOrbits(orbits) {
         orbits
         .attr('cx', d => {
-            return earthCenter[0] + scale_scrolly((+d['Apogee (km)'] - +d['Perigee (km)']) / 2);
+            return scale_scrolly((+d['Apogee (km)'] - +d['Perigee (km)']) / 2);
         })
-        .attr('cy', earthCenter[1])
+        .attr('cy', 0)
         .attr('rx', d => scale_scrolly(((+d['Apogee (km)'] + EARTH_RADIUS) + (+d['Perigee (km)'] + EARTH_RADIUS)) / 2) )
         .attr('ry', d => scale_scrolly(Math.sqrt((+d['Apogee (km)'] + EARTH_RADIUS) * (+d['Perigee (km)'] + EARTH_RADIUS))) )
         .style('stroke', d => {
@@ -224,30 +232,7 @@ function updateChart_scrolly(controlParams) {
             : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
         });
     }
-  
-   // Upload the Earth PNG
-   var earth = d3.select('#scrolly-main-vis').selectAll('.earth')
-        .data([0], function(d) {return 'earth';});
-    var earthEnter = earth.enter()
-        .append('image')
-        .attr('class', 'earth')
-        .attr('href', '../data/Flat Earth Map.png')
-        .style('stroke', 'white')
-        .style('stroke-width', 2)
-        .style('opacity', 0.75);
-  
-  
-    // plot orbits
-    var orbits = d3.select('#scrolly-main-vis').selectAll('ellipse')
-        .data(satelliteData, function(d){
-            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
-        });
-  
-    var orbitsEnter = orbits.enter()
-        .append('ellipse')
-        .attr('class', 'regular-ellipse')
-        .style('opacity', 0.7);
-    
+
     let satByOrbit = {};
     for (const satellite of satelliteData) {
         // Put all data points into different groups based on orbit
@@ -257,27 +242,61 @@ function updateChart_scrolly(controlParams) {
             satByOrbit[satellite[FN_ORBIT]] = [satellite];
         }
     }
-
   
-    // Plot satellites
-    var satellites = d3.select('#scrolly-main-vis').selectAll('.satellites')
-        .data(satelliteData || [], function(d){
+   // Upload the Earth PNG
+    var earth = scrollyMainVisD3.selectAll('.earth')
+        .data([0], function(d) {return 'earth';});
+    var earthEnter = earth.enter()
+        .append('image')
+        .attr('class', 'earth')
+        .attr('href', '../data/Flat Earth Map.png')
+        .style('stroke', 'white')
+        .style('stroke-width', 2)
+        .style('opacity', 0.75);
+  
+    for (const orbitClass of ORBIT_NAMES) {
+        // plot orbits
+        let orbit = scrollyMainVisD3.select('g.' + orbitClass).selectAll('ellipse')
+        .data(satByOrbit[orbitClass], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
-    
-    var satellitesEnter = satellites.enter()
-        .append('circle')
-        .attr('class', d => {
-            return 'satellites ' + d['Class of Orbit'];
-        })
-        .style('fill', '#ffffff');
 
-  
-    var svg = d3.select('#scrolly-main-vis');
+        let orbitEnter = orbit.enter()
+            .append('ellipse')
+            .attr('class', 'regular-ellipse')
+            .style('opacity', 0.7);
+            
+        orbit.merge(orbitEnter)
+            .transition();
+        orbit.exit().remove();
+
+        updateOrbits(animationSelector(orbit, controlParams.shouldAnimate));
+
+        // Plot satellites
+        let satellites = scrollyMainVisD3.select('g.' + orbitClass).selectAll('.satellites')
+        .data(satByOrbit[orbitClass] || [], function(d){
+            return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
+        });
+
+        let satellitesEnter = satellites.enter()
+            .append('circle')
+            .attr('class', d => {
+                return 'satellites ' + d['Class of Orbit'];
+            })
+            .style('fill', '#ffffff');
+        
+        satellites.merge(satellitesEnter)
+            .transition();
+        satellites.exit().remove();
+        updateSatellite(animationSelector(satellites, controlParams.shouldAnimate));
+
+        updateOrbitGroup(orbitClass);
+    }
+
     // Plot orbit labels
     var orbitLabels = d3.select('.orbitLabels_scrolly');
     if (orbitLabels.empty()) {
-        svg.append('g').attr('class', 'orbitLabels_scrolly');
+        scrollyMainVisD3.append('g').attr('class', 'orbitLabels_scrolly');
         orbitLabels = d3.select('.orbitLabels_scrolly');
   
         orbitLabels.append('text')
@@ -297,6 +316,7 @@ function updateChart_scrolly(controlParams) {
         .text('HEO');
     }
     
+    // update labels
     animationSelector(orbitLabels, controlParams.shouldAnimate).attr('transform', 'translate(' + [earthCenter[0], earthCenter[1]] + ')');
     animationSelector(orbitLabels.select('.LEO'), controlParams.shouldAnimate)
         .attr('y', function(d) {
@@ -317,31 +337,27 @@ function updateChart_scrolly(controlParams) {
         .attr('x', scale_scrolly(EARTH_RADIUS) * 7.7)
         .style('opacity', controlParams.orbitOpacityCoefficient.Elliptical === 1 ? 1 : 0.2);
   
-  
-    // Create an UPDATE + ENTER selection
-    // Selects all data-bound elements that are in SVG or just added to SVG
-    satellites.merge(satellitesEnter)
-        .transition();
-    
-    // Use the EXIT selection to remove all bars that have been filtered out
-    // Using a key-function in the data() method is crucial to a proper EXIT
-    orbits.exit().remove();
-  
-    satellites.exit().remove();
-  
-    updateEarth(animationSelector(d3.select('#scrolly-main-vis').selectAll('.earth'), controlParams.shouldAnimate));
-    updateOrbits(animationSelector(d3.select('#scrolly-main-vis').selectAll('ellipse'), controlParams.shouldAnimate));
-    updateSatellite(animationSelector(d3.select('#scrolly-main-vis').selectAll('.satellites'), controlParams.shouldAnimate));
+    updateEarth(animationSelector(scrollyMainVisD3.selectAll('.earth'), controlParams.shouldAnimate));
 
-    // animate HEO
+    // animate revolving satellites
     clearInterval(orbitInterval);
-    if (controlParams.animateHEOOribit) {
+    if (controlParams.orbitClassToRevolve === 'HEO') {
         orbitInterval = setInterval(() => {
             satByOrbit['Elliptical'].forEach(function(d) {
-                const nextAngle = d['Angle'] + 1000 * (Math.abs(d['Angle']) + 1) / (d['Perigee (km)'] + d['Apogee (km)']);
+                const nextAngle = d['Angle'] + 500 * (Math.abs(d['Angle']) + 1) / (d['Perigee (km)'] + d['Apogee (km)']);
                 d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
             })
-            updateSatellite(d3.select('#scrolly-main-vis').selectAll('.satellites.Elliptical'));
+            updateSatellite(scrollyMainVisD3.selectAll('.satellites.Elliptical'));
+        }, 200);
+    } else if (controlParams.orbitClassToRevolve){
+        orbitInterval = setInterval(() => {
+            scrollyMainVisD3.select('g.' + controlParams.orbitClassToRevolve)
+            .attr('transform', d => {
+                const orbitSpeed = orbitSpeeds[controlParams.orbitClassToRevolve];
+                d.rotation += orbitSpeed;
+                d.rotation = d.rotation >= 360 ? d.rotation - 360 : d.rotation;
+                return 'translate(' + [earthCenter[0], earthCenter[1]] + ') rotate('+ d.rotation +' 0, 0)';
+            });
         }, 200);
     }
   }
@@ -999,6 +1015,16 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
     });
 
     kmToWidth_scrolly = mainVis_scrolly.clientWidth / (maxApogee + maxPerigee);
+
+    // create groups for holding satellites of different orbits
+    for (const mainVis of [d3.select('#scrolly-main-vis'), d3.select('#realistic-main-vis')]) {
+        for (const orbitClass of ORBIT_NAMES) {
+            mainVis
+                .append('g')
+                .data([{rotation: 0}])
+                .attr('class', orbitClass);
+        }
+    }
 
     updateChart(refineByParamsRealistic);
     updateChart_scrolly();
