@@ -25,6 +25,8 @@ var innerRadius_Purpose = 135*scaleup;
 var innerRadius_Country = 155*scaleup;
 var outerRadius_Country = 170*scaleup;
 
+var radius_central_circle = 25*scaleup;
+
 var padAngle = 0.003;
 
 // Refine By dropdowns
@@ -321,9 +323,9 @@ function sta_updateChart(refineParam,radioValue) {
     var Multinational_p = Multinational / all * radius_range;
 
     var country = [
-        { country: 'USA', start_angle : UK_p, angle : USA_p },
+        { country: 'USA', start_angle : 0, angle : USA_p },
         { country: 'China', start_angle : USA_p + UK_p + Russia_p + Others_p + Multinational_p, angle : China_p },
-        { country: 'UK', start_angle : 0, angle : UK_p },
+        { country: 'UK', start_angle : USA_p, angle : UK_p },
         { country: 'Russia', start_angle : USA_p + UK_p, angle : Russia_p },
         { country: 'Others', start_angle : USA_p + UK_p + Russia_p, angle : Others_p },
         { country: 'Multinational', start_angle : USA_p + UK_p + Russia_p + Others_p, angle : Multinational_p}
@@ -398,7 +400,7 @@ function sta_updateChart(refineParam,radioValue) {
 
      })
     .text(function(d){
-        if (d['angle'] > 0.5){
+        if (d['angle'] > 0.05){
             return d['purpose'];
         }
         else{
@@ -522,7 +524,7 @@ if(radioValue == 'Country'){
 
      })
     .text(function(d){
-        if (d['angle'] > 0.5){
+        if (d['angle'] > 0.05){
             return d['country'];
         }
         else{
@@ -683,6 +685,12 @@ else {
         .on('mouseover', mouseover)
         .on('mousemove', mousemove)
         .on('mouseout', mouseleave);
+
+    var central_circle = svg.append('g')
+        .append('circle')
+        .attr('r',radius_central_circle )
+        .attr("fill-opacity","1")
+        .attr('fill',colorOfChart.arcBackground);
 
 
 
