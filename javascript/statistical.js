@@ -295,7 +295,7 @@ function sta_updateChart(refineParam,radioValue) {
     var Civil = 0;
     var Commercial = 0;
     var Military = 0;
-    var Governmental = 0;
+    var Government = 0;
     var Multi_purpose = 0;
 
     for (var i = 0; i < sta_dataset.length; i++) {
@@ -309,32 +309,32 @@ function sta_updateChart(refineParam,radioValue) {
             Military++;
         }
         else if (sta_dataset[i]['new_purpose'] == 'Government'){
-            Governmental++;
+            Government++;
         }
         else if (sta_dataset[i]['new_purpose'] == 'Multi-purpose'){
             Multi_purpose++;
         }
     }
-    var all = Civil + Commercial + Military + Governmental + Multi_purpose;
+    var all = Civil + Commercial + Military + Government + Multi_purpose;
     var Civil_p = Civil / all * radius_range;
     var Commercial_p = Commercial / all * radius_range;
     var Military_p = Military / all * radius_range;
-    var Governmental_p = Governmental / all * radius_range;
+    var Government_p = Government / all * radius_range;
     var Multi_purpose_p = Multi_purpose / all * radius_range;
     
     var purpose = [
         { purpose: 'Civil', start_angle : 0, angle : Civil_p },
         { purpose: 'Commercial', start_angle : Civil_p, angle : Commercial_p },
         { purpose: 'Military', start_angle : Commercial_p + Civil_p, angle : Military_p },
-        { purpose: 'Governmental', start_angle : Commercial_p + Civil_p + Military_p, angle : Governmental_p },
-        { purpose: 'Multi_purpose', start_angle : Commercial_p + Civil_p + Military_p + Governmental_p, angle : Multi_purpose_p }
+        { purpose: 'Government', start_angle : Commercial_p + Civil_p + Military_p, angle : Government_p },
+        { purpose: 'Multi_purpose', start_angle : Commercial_p + Civil_p + Military_p + Government_p, angle : Multi_purpose_p }
     ]
 
     var purpose_statistical = [
         { purpose: 'Civil', count : Civil},
         { purpose: 'Commercial', count : Commercial},
         { purpose: 'Military', count : Military },
-        { purpose: 'Governmental', count : Governmental},
+        { purpose: 'Government', count : Government},
         { purpose: 'Multi_purpose', count : Multi_purpose }
     ]
 
@@ -435,7 +435,7 @@ function sta_updateChart(refineParam,radioValue) {
 
      })
     .text(function(d){
-        if (d['angle'] > 0.05 && d['purpose'] != 'Multi_purpose' && d['purpose'] != 'Governmental'){
+        if (d['angle'] > 0.05 && d['purpose'] != 'Multi_purpose' && d['purpose'] != 'Government'){
             console.log(d['purpose']);
             return d['purpose'];
         }
@@ -443,9 +443,9 @@ function sta_updateChart(refineParam,radioValue) {
             console.log(d['purpose']);
             return "Multi-Purpose";
         }
-        else if((d['angle'] > 0.15 && d['purpose'] == 'Governmental')){
+        else if((d['angle'] > 0.15 && d['purpose'] == 'Government')){
             console.log(d['purpose']);
-            return "Governmental";
+            return "Government";
         }
         else{
             console.log(d['purpose']);
