@@ -63,6 +63,7 @@ scroller
         visControlParams = {
           orbitOpacityCoefficient: {LEO: 1, MEO: DIMMING_COEFFICIENT_MEO, GEO: DIMMING_COEFFICIENT_GEO, Elliptical: DIMMING_COEFFICIENT_HEO},
           shouldAnimate: true,
+          orbitClassToRevolve: 'LEO',
           zoom: ZOOM_LEO
         };
         break;
@@ -70,6 +71,7 @@ scroller
         visControlParams = {
           orbitOpacityCoefficient: {LEO: DIMMING_COEFFICIENT_LEO, MEO: 1, GEO: DIMMING_COEFFICIENT_GEO, Elliptical: DIMMING_COEFFICIENT_HEO},
           shouldAnimate: true,
+          orbitClassToRevolve: 'MEO',
           zoom: ZOOM_GEO
         };
         break;
@@ -77,6 +79,7 @@ scroller
         visControlParams = {
           orbitOpacityCoefficient: {LEO: DIMMING_COEFFICIENT_LEO, MEO: DIMMING_COEFFICIENT_MEO, GEO: 1, Elliptical: DIMMING_COEFFICIENT_HEO},
           shouldAnimate: true,
+          orbitClassToRevolve: 'GEO',
           zoom: ZOOM_GEO
         };
         break;
@@ -84,7 +87,7 @@ scroller
         visControlParams = {
           orbitOpacityCoefficient: {LEO: DIMMING_COEFFICIENT_LEO, MEO: DIMMING_COEFFICIENT_MEO, GEO: DIMMING_COEFFICIENT_GEO, Elliptical: 1},
           shouldAnimate: true,
-          animateHEOOribit: true,
+          orbitClassToRevolve: 'HEO',
           zoom: ZOOM_OVERVIEW
         };
         break;
