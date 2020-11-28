@@ -659,19 +659,17 @@ function updateChart(refineParam) {
         })
 
     // Military
-    var militarySatellites1 = d3.select('#realistic-main-vis').selectAll('.military.dataMark')
+    var militarySatellites = d3.select('#realistic-main-vis').selectAll('.military.dataMark')
         .data(satByPurpose['Military'] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
-
-    // var militarySatellites2 = d3.select('#realistic-main-vis').selectAll('.military2.dataMark')
-    //     .data(satByPurpose['Military'] || [], function(d){
-    //         return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
-    //     });
     
-    var militarySatellitesEnter1 = militarySatellites1.enter()
+    var militarySatellitesEnter = militarySatellites.enter()
         .append('g')
-        .attr('class', 'military dataMark')
+        .attr('class', 'military dataMark');
+    
+    // put two lines in the group to make an x
+    militarySatellitesEnter
         .append('line')
         .attr('class', 'military1 satellites')
         .style('stroke-opacity', d => {
@@ -702,7 +700,7 @@ function updateChart(refineParam) {
              }
         })
         
-    militarySatellitesEnter1.selectAll('.military.dataMark')
+    militarySatellitesEnter
         .append('line')
         .attr('class', 'military2 satellites')
         .style('stroke-opacity', d => {
@@ -732,39 +730,6 @@ function updateChart(refineParam) {
                  return '1.2px';
              }
         })
-        
-    // var militarySatellitesEnter2 = militarySatellites2.enter()
-    //     .append('g')
-    //     .attr('class', 'military2 dataMark')
-    //     .style('stroke-opacity', d => {
-    //         return opacityStyle(d)
-    //     })
-    //     .append('line')
-    //     .attr('class', 'military2 satellites')
-    //     .style('stroke', d => {
-    //         return colorStyle(d)
-    //     })
-    //     .attr('x1', d => {
-    //         return -sizeStyle(d);
-    //     })
-    //     .attr('y1', d => {
-    //         return sizeStyle(d);
-    //     })
-    //     .attr('x2', d => {
-    //         return sizeStyle(d);
-    //     })
-    //     .attr('y2', d => {
-    //         return -sizeStyle(d);
-    //     })
-    //     .style('stroke-width', d => {
-    //         if (zoom.mag == magOfLEO){
-    //             return '2px';
-    //          } else if (zoom.mag == magOfGEO) {
-    //              return '1.7px';
-    //          } else {
-    //              return '1.2px';
-    //          }
-    //     })
 
     // Multi-purpose
     var multiSatellites = d3.select('#realistic-main-vis').selectAll('.multi.dataMark')
@@ -868,11 +833,8 @@ function updateChart(refineParam) {
     governSatellites.merge(governSatellitesEnter)
         .transition();
 
-    militarySatellites1.merge(militarySatellitesEnter1)
+    militarySatellites.merge(militarySatellitesEnter)
         .transition();
-
-    // militarySatellites2.merge(militarySatellitesEnter2)
-    //     .transition();
 
     multiSatellites.merge(multiSatellitesEnter)
         .transition();
@@ -884,8 +846,7 @@ function updateChart(refineParam) {
     civilSatellites.exit().remove();
     commercialSatellites.exit().remove();
     governSatellites.exit().remove();
-    militarySatellites1.exit().remove();
-    // militarySatellites2.exit().remove();
+    militarySatellites.exit().remove();
     multiSatellites.exit().remove();
 
     updateEarth(animationSelector(d3.select('#realistic-main-vis').selectAll('.earth'), shouldAnimate));
