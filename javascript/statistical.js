@@ -400,19 +400,19 @@ function sta_updateChart(refineParam,radioValue) {
 
     // If 'Purpose' is selected in Sort By
     if(radioValue == 'Purpose'){
-        var title = document.getElementById("purpose_title");
-        var legend1 = document.getElementById("purpose_1");
-        var legend2 = document.getElementById("purpose_2");
-        var legend3 = document.getElementById("purpose_3");
-        var legend4 = document.getElementById("purpose_4");
-        var legend5 = document.getElementById("purpose_5");
-        //var h2 = legend.getElementsByTagName("h2");
-        title.textContent = "Country";
-        legend1.textContent = " China"
-        legend2.textContent = " Russia"
-        legend3.textContent = " UK"
-        legend4.textContent = " USA"
-        legend5.textContent = " Others"
+        // var title = document.getElementById("purpose_title");
+        // var legend1 = document.getElementById("purpose_1");
+        // var legend2 = document.getElementById("purpose_2");
+        // var legend3 = document.getElementById("purpose_3");
+        // var legend4 = document.getElementById("purpose_4");
+        // var legend5 = document.getElementById("purpose_5");
+        // //var h2 = legend.getElementsByTagName("h2");
+        // title.textContent = "Country";
+        // legend1.textContent = " China"
+        // legend2.textContent = " Russia"
+        // legend3.textContent = " UK"
+        // legend4.textContent = " USA"
+        // legend5.textContent = " Others"
         //console.log(h2);
         var purposeBar = svg.append('g')
         .attr("class", "g_main")
@@ -498,19 +498,19 @@ function sta_updateChart(refineParam,radioValue) {
 
 // If 'Country' is selected in Sort By
 if(radioValue == 'Country'){
-    var title = document.getElementById("purpose_title");
-    var legend1 = document.getElementById("purpose_1");
-    var legend2 = document.getElementById("purpose_2");
-    var legend3 = document.getElementById("purpose_3");
-    var legend4 = document.getElementById("purpose_4");
-    var legend5 = document.getElementById("purpose_5");
-    //var h2 = legend.getElementsByTagName("h2");
-    title.textContent = "Purpose";
-    legend1.textContent = " Civil"
-    legend2.textContent = " Commercial"
-    legend3.textContent = " Government"
-    legend4.textContent = " Millitary"
-    legend5.textContent = " Multi-purpose"
+    // var title = document.getElementById("purpose_title");
+    // var legend1 = document.getElementById("purpose_1");
+    // var legend2 = document.getElementById("purpose_2");
+    // var legend3 = document.getElementById("purpose_3");
+    // var legend4 = document.getElementById("purpose_4");
+    // var legend5 = document.getElementById("purpose_5");
+    // //var h2 = legend.getElementsByTagName("h2");
+    // title.textContent = "Purpose";
+    // legend1.textContent = " Civil"
+    // legend2.textContent = " Commercial"
+    // legend3.textContent = " Government"
+    // legend4.textContent = " Millitary"
+    // legend5.textContent = " Multi-purpose"
     var CountryBar = svg
     .append('g')
     .attr("class", "g_main")
