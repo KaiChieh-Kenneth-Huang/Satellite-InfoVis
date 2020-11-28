@@ -100,7 +100,7 @@ function colorOfPurposeStyle (d, name) {
     else if (d[name] == 'Military'){
         return colorOfChart.military;
     }
-    else if(d[name] =='Government'){
+    else if(d[name] =='Governmental'){
         return colorOfChart.government;
     }
     else if(d[name] == 'Multi-purpose'){
