@@ -397,7 +397,7 @@ function sta_updateChart(refineParam,radioValue) {
         { country: 'Others', count : Others },
         { country: 'Multinational', count : Multinational }
     ]
-    
+
     // If 'Purpose' is selected in Sort By
     if(radioValue == 'Purpose'){
         var title = document.getElementById("purpose_title");
@@ -495,6 +495,8 @@ function sta_updateChart(refineParam,radioValue) {
     .on('mouseout', mouseleave);
 }
 
+
+// If 'Country' is selected in Sort By
 if(radioValue == 'Country'){
     var title = document.getElementById("purpose_title");
     var legend1 = document.getElementById("purpose_1");
