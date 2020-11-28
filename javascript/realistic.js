@@ -39,6 +39,7 @@ const mainVisRightPadding = 10;
 
 var real_width = mainVis.clientWidth;
 var real_height = mainVis.clientHeight;
+console.log("width = " + real_width + ", height = " + real_height)
 
 const graphLeftPadding = canvasLeftPadding + leftControlsWidth + mainVisLeftPadding;
 
@@ -117,19 +118,6 @@ function animationSelector(selection, shouldAnimate) {
 }
 
 // *** Create a function to update chart in scrollytelling ***
-// controlParams are passed from: scrolly.js
-// controlParams: {
-//   zoom: <obj>,
-//   orbitOpacityCoefficient: {
-//     LEO: <number>
-//     MEO: <number>
-//     GEO: <number>
-//     Elliptical: <number>
-//   },
-//   hideSatellites: <bool>,
-//   shouldAnimate: <bool>
-//   orbitClassToRevolve: <string>
-// }
 function updateChart_scrolly(controlParams) {
     const scrollyMainVisD3 = d3.select('#scrolly-main-vis');
     // patch controlParams
@@ -945,7 +933,7 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         d['new_year'] = +d['new_year'];
     });
     
-    // acquire options for refine by dropdowns
+// Acquire and sort options for Refine By dropdowns
     let countries = Object.keys(satelliteData.reduce((options, d) => {
         const fieldName = FN_COUNTRY;
         if (!options[d[fieldName]]) {
@@ -955,6 +943,19 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
     }, {})).sort();
     countries.push('All (5)');
     countries.sort();
+    countries.sort(
+        function (a,b){
+            if (a =='Others'){
+                return 1;
+            }
+            else if (b == 'Others'){
+                return -1
+            }
+            else{
+                return b-a;
+            }
+        }
+    );
 
     let purposes = Object.keys(satelliteData.reduce((options, d) => {
         const fieldName = FN_PURPOSE;

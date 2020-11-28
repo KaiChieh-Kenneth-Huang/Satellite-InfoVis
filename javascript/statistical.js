@@ -7,25 +7,28 @@ const radius_range = 1.8 * Math.PI;
 
 var width = sta_mainVis.clientWidth;
 var height = sta_mainVis.clientHeight;
+const responsiveWidth = width / 1425;
+const responsiveHeight = height / 750;
 
-var scaleup = width/800;
+var scaleup = width / 800;
+const thinknessTweak = 1.5;
 
-var outerRadius_Mass = 95*scaleup;
-var innerRadius_Mass = 65*scaleup;
+var outerRadius_Country = 170 * scaleup;
+var innerRadius_Country = (155 - thinknessTweak) * scaleup;
 
-var outerRadius_Dis = 60*scaleup;
-var innerRadius_Dis = 30*scaleup;
+var outerRadius_Purpose = 150 * scaleup;
+var innerRadius_Purpose = (135 - thinknessTweak) * scaleup;
 
-var outerRadius_Period = 130*scaleup;
-var innerRadius_Period = 100*scaleup;
+var outerRadius_Period = 130 * scaleup;
+var innerRadius_Period = (100 - thinknessTweak) * scaleup;
 
-var outerRadius_Purpose = 150*scaleup;
-var innerRadius_Purpose = 135*scaleup;
+var outerRadius_Mass = 95 * scaleup;
+var innerRadius_Mass = (65 - thinknessTweak) * scaleup;
 
-var innerRadius_Country = 155*scaleup;
-var outerRadius_Country = 170*scaleup;
+var outerRadius_Dis = 60 * scaleup;
+var innerRadius_Dis = (30 - thinknessTweak) * scaleup;
 
-var radius_central_circle = 25*scaleup;
+var radius_central_circle = 25 * scaleup;
 
 var padAngle = 0.003;
 
@@ -197,27 +200,10 @@ function sta_updateChart(refineParam,radioValue) {
     var svg = d3.select('#statistical-main-vis')
     .append("g")
     .attr("class", "g_main")
-    .attr("transform", "translate(" + (width/2-10) + "," + ( height/2 + 20)+ ")"); // Add 100 on Y translation, cause upper bars are longer;
+    .attr("transform", "translate(" + (width/2 - 20) + "," + ( height/2 + 30)+ ")"); // Add 100 on Y translation, cause upper bars are longer;
+
 
     // *** Create labels for rings ***
-    var dis_label = svg.append('text')
-    .style("text-anchor", "end")
-    .attr('x', -5)
-    .attr('y', (-((outerRadius_Dis-innerRadius_Dis)/2 + innerRadius_Dis)))
-    .text('Distance');
-
-    var mass_label = svg.append('text')
-    .style("text-anchor", "end")
-    .attr('x', -5)
-    .attr('y', (-((outerRadius_Mass-innerRadius_Mass)/2 + innerRadius_Mass)))
-    .text('Mass');
-
-    var period_label = svg.append('text')
-    .style("text-anchor", "end")
-    .attr('x', -5)
-    .attr('y', (-((outerRadius_Period-innerRadius_Period)/2 + innerRadius_Period)))
-    .text('Period');
-
     var Country_label = svg.append('text')
     .style("text-anchor", "end")
     .attr('x', -5)
@@ -230,6 +216,24 @@ function sta_updateChart(refineParam,radioValue) {
     .attr('y', (-((outerRadius_Purpose-innerRadius_Purpose)/2 + innerRadius_Purpose)))
     .text('Purpose');
 
+    var period_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Period-innerRadius_Period)/2 + innerRadius_Period)))
+    .text('Period (min)');
+
+    var mass_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Mass-innerRadius_Mass)/2 + innerRadius_Mass)))
+    .text('Mass (kg)');
+
+    var dis_label = svg.append('text')
+    .style("text-anchor", "end")
+    .attr('x', -5)
+    .attr('y', (-((outerRadius_Dis-innerRadius_Dis)/2 + innerRadius_Dis)))
+    .text('Dis (km)');
+
 
     // *** Create a tooltip when hovering over the chart ***
     var Tooltip = d3.select("#div_template")
@@ -239,8 +243,6 @@ function sta_updateChart(refineParam,radioValue) {
     .style("position", "absolute")
     .style("background-color", "white")
     .style("color","black")
-    // .style("border", "solid")
-    // .style("border-width", "2px")
     .style("border-radius", "5px")
     .style("padding", "12px")
 
@@ -359,9 +361,6 @@ function sta_updateChart(refineParam,radioValue) {
         else if (sta_dataset[i]['new_country'] == 'Others'){
             Others++;
         }
-        // else if (sta_dataset[i]['new_country'] == 'Multinational'){
-        //     Multinational++;
-        // }
     }
 
     // UK, USA, Russia, Others, Multinational, China
@@ -687,8 +686,8 @@ if (radioValue == 'Country'){
 
     // *** Create bar charts on the right ***
     var main_svg = d3.select('#statistical-main-vis');
-    let barchart_width = 240;
-    let barchart_height = 70;
+    let barchart_width = 240 * responsiveWidth;
+    let barchart_height = 65 * responsiveHeight;
     let disArray = sta_dataset.map(d => parseFloat(d['avgDis']));
     let periodArray = sta_dataset.map(d => parseFloat(d['Period (minutes)']));
     let massArray = sta_dataset.map(d => parseFloat(d['Launch Mass (kg.)']));
@@ -698,189 +697,51 @@ if (radioValue == 'Country'){
     let y_tick = 4;
 
     var svgWidth = mainVis.clientWidth;
-    var svgHeight = mainVis.clientHeight;
-    var pad = {t: 100, r: 280, b: 40, l: 40};
-    var bar_gap = 50;
-
-    console.log('WIDTHHHH'+svgWidth);
+    var pad = {t: 115, r: 300 * responsiveWidth, b: 40, l: 40};
+    var bar_gap = 55;
 
 
-    // *** Barchart of Distance to Earth ***
-    var dis_barchart = main_svg.append('g')
+    // *** Barchart of Country ***
+    var country_barchart = main_svg.append('g')
     .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t]  + ')');
-    //.attr('transform', 'translate(880,150)');
 
-    dis_barchart.append('text')
-    .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-40, barchart_height+30]  + ')')
-    .text('Distance to Earth');
-
-    min_avgDis = d3.min(disArray);
-    max_avgDis = d3.max(disArray);
-
-    var x_dis = d3.scaleLinear()
-    .domain([min_avgDis,max_avgDis])
-    .range([0,barchart_width]);
-
-    dis_barchart.append('g')
-    .attr('class','axis')
-    .attr('transform', 'translate(0,' +barchart_height + ')')
-    .call(d3.axisBottom(x_dis).ticks(bin_dis));
-
-    var dis_histogram = d3.histogram() 
-    .domain(x_dis.domain())
-    .thresholds(x_dis.ticks(bin_dis));
-    
-    var bins = dis_histogram(disArray) ;
-
-    // var y_dis = d3.scaleLinear()
-    // .range([barchart_height, 0]);
-
-    var y_dis = d3.scaleLog()
-    .range([0, barchart_height]);
-
-    console.log(bins);
-
-    //y_dis.domain([0, d3.max(bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
-    y_dis.domain([1000, 1]);
-
-    dis_barchart.append("g")
-    .attr('class','axis')
-    .call(d3.axisLeft(y_dis).ticks(y_tick));
-
-    // console.log(y_dis(10000));
-    // console.log(y_dis(0));
-
-    dis_barchart.selectAll("rect") 
-    .data(bins)
-    .enter()
-    .append("rect")
-    .attr("x", 1)
-    .attr("transform", function(d) { 
-        if (d.length == 0){
-            return "translate("  + x_dis(d.x0) + ","  + 0 + ")";
-        }
-        else{
-            return "translate("  + x_dis(d.x0) + ","  + (y_dis(d.length)) + ")"; 
-        }
-    })
-    .attr("width", function(d) { return x_dis(d.x1) - x_dis(d.x0) -1 ; })
-    .attr("height", function(d) { 
-        if(d.length ==0){
-            return 0;
-        }
-        else{
-            return  barchart_height - y_dis(d.length);
-        }
-        })
-    .style("fill", colorOfChart.rightbar)
-    .style('opacity', colorOpacity);
-
-
-    // *** Barchart of Period ***
-    var period_barchart = main_svg.append('g')
-    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height+bar_gap]  + ')');
-    //.attr('transform', 'translate(880,' + (150+barchart_height + 25) + ')') ;
-
-    period_barchart.append('text')
-    .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-15, barchart_height+30]  + ')')
-    .text('Period');
-
-    min_period = d3.min(periodArray);
-    max_period = d3.max(periodArray);
-    var x_period = d3.scaleLinear()
-    .domain([min_period,max_period])
-    .range([0,barchart_width]);
-
-    period_barchart.append('g')
-    .attr('class','axis')
-    .attr('transform', 'translate(0,' +barchart_height + ')')
-    .call(d3.axisBottom(x_period).ticks(bin_period));
-
-    var period_histogram = d3.histogram()
-    .domain(x_period.domain())
-    .thresholds(x_period.ticks(bin_period));
-    
-    var period_bins = period_histogram(disArray);
-
-    var y_period = d3.scaleLinear()
-    .range([barchart_height, 0]);
-
-    y_period.domain([0, d3.max(period_bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
-    
-    period_barchart.append("g")
-    .attr('class','axis')
-    //.attr('transform', 'translate(625,100)')
-    .call(d3.axisLeft(y_period).ticks(y_tick));
-
-
-    period_barchart.selectAll("rect")
-    .data(period_bins)
-    .enter()
-    .append("rect")
-    .attr("x", 1)
-    .attr("transform", function(d) { return "translate("  + x_period(d.x0) + ","  + y_period(d.length) + ")"; })
-    .attr("width", function(d) { return x_period(d.x1) - x_period(d.x0) -1 ; })
-    .attr("height", function(d) { return barchart_height - y_period(d.length); })
-    .style("fill", colorOfChart.rightbar)
-    .style('opacity', colorOpacity);
-
-
-    // *** Barchart of Period ***
-    var mass_barchart = main_svg.append('g')
-    //.attr('transform', 'translate(880,' + (150+barchart_height*2 + 25*2) + ')') ;
-    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height*2 + bar_gap*2]  + ')');
-
-    mass_barchart.append('text')
+    country_barchart.append('text')
     .attr('class', 'bar_label')
     .attr('transform', 'translate('+ [barchart_width/2-10, barchart_height+30]  + ')')
-    .text('Mass');
-
-    min_mass = d3.min(massArray);
-    max_mass = d3.max(massArray);
-    var x_mass = d3.scaleLinear()
-    .domain([min_mass,max_mass])
-    .range([0,barchart_width]);
-
-    mass_barchart.append('g')
-    .attr('class','axis')
-    .attr('transform', 'translate(0,' +barchart_height + ')')
-    .call(d3.axisBottom(x_mass).ticks(bin_mass));
-
-    var period_histogram = d3.histogram()
-    .domain(x_mass.domain())
-    .thresholds(x_mass.ticks(bin_mass));
+    .text('Country');
     
-    var mass_bins = period_histogram(massArray);
+    var x_country = d3.scaleBand()
+                    .range([0, barchart_width])
+                    .padding(0.1);
+                    
+    var y_country = d3.scaleLinear().range([barchart_height, 0]);
 
-    var y_mass = d3.scaleLinear()
-    .range([barchart_height, 0]);
+    x_country.domain(country_statistical.map(function(d) { return d['country']; }));
+    y_country.domain([0, d3.max(country_statistical, function(d) { return d['count']; })]);
 
-    y_mass.domain([0, d3.max(mass_bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
-    
-    mass_barchart.append("g")
-    .attr('class','axis')
-    //.attr('transform', 'translate(625,100)')
-    .call(d3.axisLeft(y_mass).ticks(y_tick));
-
-
-    mass_barchart.selectAll("rect")
-    .data(mass_bins)
-    .enter()
-    .append("rect")
-    .attr("x", 1)
-    .attr("transform", function(d) { return "translate("  + x_mass(d.x0) + ","  + y_mass(d.length) + ")"; })
-    .attr("width", function(d) { return x_mass(d.x1) - x_mass(d.x0) -1 ; })
-    .attr("height", function(d) { return barchart_height - y_mass(d.length); })
+    country_barchart.selectAll("rect")
+    .data(country_statistical)
+    .enter().append("rect")
+    .attr("x", function(d) { return x_country(d['country']); })
+    .attr("width", x_country.bandwidth())
+    .attr("y", function(d) { return y_country(d['count']); })
+    .attr("height", function(d) { return barchart_height - y_country(d['count']); })
     .style("fill", colorOfChart.rightbar)
     .style('opacity', colorOpacity);
+
+    country_barchart.append("g")
+    .attr("transform", "translate(0," + barchart_height + ")")
+    .attr('class','axis')
+    .call(d3.axisBottom(x_country));
+
+    country_barchart.append("g")
+    .attr('class','axis')
+    .call(d3.axisLeft(y_country).ticks(y_tick));
 
 
     // *** Barchart of Purpose ***
     var purpose_barchart = main_svg.append('g')
-    //.attr('transform', 'translate(880,' + (150+barchart_height*3 + 25*3) + ')') ;
-    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*3+bar_gap*3]  + ')');
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height + bar_gap]  + ')');
 
     purpose_barchart.append('text')
     .attr('class', 'bar_label')
@@ -912,47 +773,171 @@ if (radioValue == 'Country'){
     .attr('class','axis')
     .call(d3.axisLeft(y_purpose).ticks(y_tick));
 
+    // *** Barchart of Period ***
+    var period_barchart = main_svg.append('g')
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height * 2 + bar_gap * 2]  + ')');
 
-    // *** Barchart of Country ***
-    var country_barchart = main_svg.append('g')
-    //.attr('transform', 'translate(880,' + (150+barchart_height*4 + 25*4) + ')') ;
-    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t+barchart_height*4+bar_gap*4]  + ')');
-
-    country_barchart.append('text')
+    period_barchart.append('text')
     .attr('class', 'bar_label')
-    .attr('transform', 'translate('+ [barchart_width/2-10, barchart_height+30]  + ')')
-    .text('Country');
+    .attr('transform', 'translate('+ [barchart_width/2-20, barchart_height+30]  + ')')
+    .text('Period (min)');
+
+    min_period = d3.min(periodArray);
+    max_period = d3.max(periodArray);
+    var x_period = d3.scaleLinear()
+    .domain([min_period,max_period])
+    .range([0,barchart_width]);
+
+    period_barchart.append('g')
+    .attr('class','axis')
+    .attr('transform', 'translate(0,' +barchart_height + ')')
+    .call(d3.axisBottom(x_period).ticks(bin_period));
+
+    var period_histogram = d3.histogram()
+    .domain(x_period.domain())
+    .thresholds(x_period.ticks(bin_period));
     
-    var x_country = d3.scaleBand()
-                    .range([0, barchart_width])
-                    .padding(0.1);
-    var y_country = d3.scaleLinear().range([barchart_height, 0]);
+    var period_bins = period_histogram(disArray);
 
-    x_country.domain(country_statistical.map(function(d) { return d['country']; }));
-    y_country.domain([0, d3.max(country_statistical, function(d) { return d['count']; })]);
+    var y_period = d3.scaleLinear()
+    .range([barchart_height, 0]);
 
-    country_barchart.selectAll("rect")
-    .data(country_statistical)
-    .enter().append("rect")
-    .attr("x", function(d) { return x_country(d['country']); })
-    .attr("width", x_country.bandwidth())
-    .attr("y", function(d) { return y_country(d['count']); })
-    .attr("height", function(d) { return barchart_height - y_country(d['count']); })
+    y_period.domain([0, d3.max(period_bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
+    
+    period_barchart.append("g")
+    .attr('class','axis')
+    .call(d3.axisLeft(y_period).ticks(y_tick));
+
+    period_barchart.selectAll("rect")
+    .data(period_bins)
+    .enter()
+    .append("rect")
+    .attr("x", 1)
+    .attr("transform", function(d) { return "translate("  + x_period(d.x0) + ","  + y_period(d.length) + ")"; })
+    .attr("width", function(d) { return x_period(d.x1) - x_period(d.x0) -1 ; })
+    .attr("height", function(d) { return barchart_height - y_period(d.length); })
     .style("fill", colorOfChart.rightbar)
     .style('opacity', colorOpacity);
 
-    country_barchart.append("g")
-    .attr("transform", "translate(0," + barchart_height + ")")
+
+    // *** Barchart of Mass ***
+    var mass_barchart = main_svg.append('g')
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height * 3  + bar_gap * 3]  + ')');
+
+    mass_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-15, barchart_height+30]  + ')')
+    .text('Mass (kg)');
+
+    min_mass = d3.min(massArray);
+    max_mass = d3.max(massArray);
+    
+    var x_mass = d3.scaleLinear()
+    .domain([min_mass,max_mass])
+    .range([0,barchart_width]);
+
+    mass_barchart.append('g')
     .attr('class','axis')
-    .call(d3.axisBottom(x_country));
-    country_barchart.append("g")
+    .attr('transform', 'translate(0,' +barchart_height + ')')
+    .call(d3.axisBottom(x_mass).ticks(bin_mass));
+
+    var period_histogram = d3.histogram()
+    .domain(x_mass.domain())
+    .thresholds(x_mass.ticks(bin_mass));
+    
+    var mass_bins = period_histogram(massArray);
+
+    var y_mass = d3.scaleLinear()
+    .range([barchart_height, 0]);
+
+    y_mass.domain([0, d3.max(mass_bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
+    
+    mass_barchart.append("g")
     .attr('class','axis')
-    .call(d3.axisLeft(y_country).ticks(y_tick));
+    .call(d3.axisLeft(y_mass).ticks(y_tick));
+
+    mass_barchart.selectAll("rect")
+    .data(mass_bins)
+    .enter()
+    .append("rect")
+    .attr("x", 1)
+    .attr("transform", function(d) { return "translate("  + x_mass(d.x0) + ","  + y_mass(d.length) + ")"; })
+    .attr("width", function(d) { return x_mass(d.x1) - x_mass(d.x0) -1 ; })
+    .attr("height", function(d) { return barchart_height - y_mass(d.length); })
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
+
+
+    // *** Barchart of Distance to Earth ***
+    var dis_barchart = main_svg.append('g')
+    .attr('transform', 'translate('+ [svgWidth - pad.r, pad.t + barchart_height * 4 + bar_gap * 4]  + ')');
+
+    dis_barchart.append('text')
+    .attr('class', 'bar_label')
+    .attr('transform', 'translate('+ [barchart_width/2-50, barchart_height+30]  + ')')
+    .text('Distance to Earth (km)');
+
+    min_avgDis = d3.min(disArray);
+    max_avgDis = d3.max(disArray);
+
+    var x_dis = d3.scaleLinear()
+    .domain([min_avgDis,max_avgDis])
+    .range([0,barchart_width]);
+
+    dis_barchart.append('g')
+    .attr('class','axis')
+    .attr('transform', 'translate(0,' +barchart_height + ')')
+    .call(d3.axisBottom(x_dis).ticks(bin_dis));
+
+    var dis_histogram = d3.histogram() 
+    .domain(x_dis.domain())
+    .thresholds(x_dis.ticks(bin_dis));
+    
+    var bins = dis_histogram(disArray) ;
+
+    var y_dis = d3.scaleLog()
+    .range([0, barchart_height]);
+
+    console.log(bins);
+
+    //y_dis.domain([0, d3.max(bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
+    y_dis.domain([1000, 1]);
+
+    dis_barchart.append("g")
+    .attr('class','axis')
+    .call(d3.axisLeft(y_dis).ticks(y_tick));
+
+    dis_barchart.selectAll("rect") 
+    .data(bins)
+    .enter()
+    .append("rect")
+    .attr("x", 1)
+    .attr("transform", function(d) { 
+        if (d.length == 0){
+            return "translate("  + x_dis(d.x0) + ","  + 0 + ")";
+        }
+        else{
+            return "translate("  + x_dis(d.x0) + ","  + (y_dis(d.length)) + ")"; 
+        }
+    })
+    .attr("width", function(d) { return x_dis(d.x1) - x_dis(d.x0) -1 ; })
+    .attr("height", function(d) { 
+        if(d.length ==0){
+            return 0;
+        }
+        else{
+            return  barchart_height - y_dis(d.length);
+        }
+        })
+    .style("fill", colorOfChart.rightbar)
+    .style('opacity', colorOpacity);
 }
 
 // *** load CSV ***
 d3.csv('../data/new_data_with_date.csv').then(function(sta_dataset) {
 sta_satelliteData = sta_dataset;
+
+// Acquire and sort options for Refine By dropdowns
 let countries = Object.keys(sta_dataset.reduce((options, d) => {
     const fieldName = STA_FN_COUNTRY;
     if (!options[d[fieldName]]) {
@@ -960,6 +945,7 @@ let countries = Object.keys(sta_dataset.reduce((options, d) => {
     }
     return options;
 }, {})).sort();
+
 countries.sort(
     function (a,b){
         if (a =='Others'){
@@ -1006,6 +992,7 @@ refineByParams[STA_FN_YEAR] = '2020';
 refineByParams[STA_FN_PURPOSE] = 'All (5)';
 sta_updateChart(refineByParams,radioValue);
 });
+
 
 // Filter By Listeners
 document.querySelector('#sta_refineByCountry').addEventListener('change', (event) => {
