@@ -80,6 +80,7 @@ const colorOfChart = {
 
 const backgroundOpacity = 0.85;
 const colorOpacity = 0.9;
+const fadeOpacity = 0.3;
 
 function colorOfCountryStyle (d, name) {
     if (d[name] == 'USA'){
@@ -378,10 +379,9 @@ function sta_updateChart(refineParam,radioValue) {
           .style("opacity", 1)
       }
 
-    var mousemove = function(d) {
-        // console.log("Into mousemove");
-        //console.log("The country is: " + d['new_country']);
-        Tooltip
+    var mousemove = function(d) { // Create tooltips and highlighting effect when hovering over bars
+
+        Tooltip // Add tooltip to bars when hovered
           .html("Satellite Name: " + d['Name of Satellite  Alternate Names']  + "<br>"
           + "Country: " + d['new_country']  + "<br>" 
           + "Purpose: " + d['new_purpose']  + "<br>"
@@ -393,17 +393,13 @@ function sta_updateChart(refineParam,radioValue) {
           .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px");
 
           d3.selectAll("rect")
-          .style("opacity",0.3);
+          .style("opacity", fadeOpacity);
         
           d3.selectAll("rect." + d['new_country'])
-          .style("opacity",1);
-          //.style("fill", colorOfChart.hightlight);
+          .style("opacity", colorOpacity);
 
           d3.selectAll("rect." + d['new_purpose'])
-          .style("opacity",1);
-          //.style("fill", colorOfChart.hightlight);
-
-          //console.log(disBins);
+          .style("opacity", colorOpacity);
 
           disBins.forEach(function (bin){
               var x0 = bin.x0;
@@ -412,8 +408,7 @@ function sta_updateChart(refineParam,radioValue) {
                   console.log(x0);
                   console.log(d['avgDis']);
                 d3.selectAll("rect.dis" + Math.round(x0))
-                .style("opacity",1);
-                //.style("fill", colorOfChart.hightlight);
+                .style("opacity", colorOpacity);
               }
           });
 
@@ -422,8 +417,7 @@ function sta_updateChart(refineParam,radioValue) {
             var x1 = bin.x1;
             if(d['Launch Mass (kg.)']>=x0 && d['Launch Mass (kg.)']<=x1){
               d3.selectAll("rect.mass" + Math.round(x0))
-              .style("opacity",1);
-              //.style("fill", colorOfChart.hightlight);
+              .style("opacity", colorOpacity);
             }
         });
 
@@ -432,8 +426,7 @@ function sta_updateChart(refineParam,radioValue) {
             var x1 = bin.x1;
             if(d['Period (minutes)']>=x0 && d['Period (minutes)']<=x1){
               d3.selectAll("rect.period" + Math.round(x0))
-              .style("opacity",1);
-              //.style("fill", colorOfChart.hightlight);
+              .style("opacity", colorOpacity);
             }
         });
     }
@@ -455,7 +448,6 @@ function sta_updateChart(refineParam,radioValue) {
     }
 
     var mouseleave = function(d) {
-        // console.log("Into mouseleave");
         Tooltip
           .style("opacity", 0)
         d3.select(this)
