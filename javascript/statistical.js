@@ -391,12 +391,17 @@ function sta_updateChart(refineParam,radioValue) {
           .attr('class', 'tooltip')
           .style("left", (d3.mouse(svg.node())[0]+ tooltipOffset + width/2) + "px")
           .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px");
+
+          d3.selectAll("rect")
+          .style("opacity",0.3);
         
           d3.selectAll("rect." + d['new_country'])
-          .style("fill", colorOfChart.hightlight);
+          .style("opacity",1);
+          //.style("fill", colorOfChart.hightlight);
 
           d3.selectAll("rect." + d['new_purpose'])
-          .style("fill", colorOfChart.hightlight);
+          .style("opacity",1);
+          //.style("fill", colorOfChart.hightlight);
 
           //console.log(disBins);
 
@@ -407,7 +412,8 @@ function sta_updateChart(refineParam,radioValue) {
                   console.log(x0);
                   console.log(d['avgDis']);
                 d3.selectAll("rect.dis" + Math.round(x0))
-                .style("fill", colorOfChart.hightlight);
+                .style("opacity",1);
+                //.style("fill", colorOfChart.hightlight);
               }
           });
 
@@ -416,7 +422,8 @@ function sta_updateChart(refineParam,radioValue) {
             var x1 = bin.x1;
             if(d['Launch Mass (kg.)']>=x0 && d['Launch Mass (kg.)']<=x1){
               d3.selectAll("rect.mass" + Math.round(x0))
-              .style("fill", colorOfChart.hightlight);
+              .style("opacity",1);
+              //.style("fill", colorOfChart.hightlight);
             }
         });
 
@@ -425,7 +432,8 @@ function sta_updateChart(refineParam,radioValue) {
             var x1 = bin.x1;
             if(d['Period (minutes)']>=x0 && d['Period (minutes)']<=x1){
               d3.selectAll("rect.period" + Math.round(x0))
-              .style("fill", colorOfChart.hightlight);
+              .style("opacity",1);
+              //.style("fill", colorOfChart.hightlight);
             }
         });
     }
@@ -454,38 +462,41 @@ function sta_updateChart(refineParam,radioValue) {
           .style("stroke", "none")
           .style("opacity", colorOpacity)
 
-        d3.selectAll("rect." + d['new_country'])
-          .style("fill", colorOfChart.rightbar);
+          d3.selectAll("rect")
+          .style("opacity",1);
 
-        d3.selectAll("rect." + d['new_purpose'])
-          .style("fill", colorOfChart.rightbar);
+    //     d3.selectAll("rect." + d['new_country'])
+    //       .style("fill", colorOfChart.rightbar);
 
-          disBins.forEach(function (bin){
-            var x0 = bin.x0;
-            var x1 = bin.x1;
-            if(d['avgDis']>=x0 && d['avgDis']<=x1){
-              d3.selectAll("rect.dis" + Math.round(x0))
-              .style("fill", colorOfChart.rightbar);
-            }
-        });
+    //     d3.selectAll("rect." + d['new_purpose'])
+    //       .style("fill", colorOfChart.rightbar);
 
-        massBins.forEach(function (bin){
-          var x0 = bin.x0;
-          var x1 = bin.x1;
-          if(d['Launch Mass (kg.)']>=x0 && d['Launch Mass (kg.)']<=x1){
-            d3.selectAll("rect.mass" + Math.round(x0))
-            .style("fill", colorOfChart.rightbar);
-          }
-      });
+    //       disBins.forEach(function (bin){
+    //         var x0 = bin.x0;
+    //         var x1 = bin.x1;
+    //         if(d['avgDis']>=x0 && d['avgDis']<=x1){
+    //           d3.selectAll("rect.dis" + Math.round(x0))
+    //           .style("fill", colorOfChart.rightbar);
+    //         }
+    //     });
 
-      periodBins.forEach(function (bin){
-          var x0 = bin.x0;
-          var x1 = bin.x1;
-          if(d['Period (minutes)']>=x0 && d['Period (minutes)']<=x1){
-            d3.selectAll("rect.period" + Math.round(x0))
-            .style("fill", colorOfChart.rightbar);
-          }
-      });
+    //     massBins.forEach(function (bin){
+    //       var x0 = bin.x0;
+    //       var x1 = bin.x1;
+    //       if(d['Launch Mass (kg.)']>=x0 && d['Launch Mass (kg.)']<=x1){
+    //         d3.selectAll("rect.mass" + Math.round(x0))
+    //         .style("fill", colorOfChart.rightbar);
+    //       }
+    //   });
+
+    //   periodBins.forEach(function (bin){
+    //       var x0 = bin.x0;
+    //       var x1 = bin.x1;
+    //       if(d['Period (minutes)']>=x0 && d['Period (minutes)']<=x1){
+    //         d3.selectAll("rect.period" + Math.round(x0))
+    //         .style("fill", colorOfChart.rightbar);
+    //       }
+    //   });
     }
 
     
