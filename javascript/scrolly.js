@@ -92,6 +92,9 @@ scroller
         };
         break;
       case 'your-turn':
+        visControlParams = {
+          shouldAnimate: true,
+        };
         break;
       default:
     }
