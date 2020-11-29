@@ -65,7 +65,7 @@ var maxApogee, maxPerigee, maxLEOApogee, maxMEOApogee, maxGEOApogee;
 
 // animation variables
 var orbitInterval;
-const orbitSpeeds = {LEO: 0.6, MEO: 0.5, GEO: 0.3}
+const orbitSpeeds = {LEO: 1.2, MEO: 0.5, GEO: 0.3}
 
 // Functions to style satellite points
 function sizeStyle(d) { // Initial Size
@@ -144,11 +144,13 @@ function drawCanvas(virtualDataContainer, context) {
     );
     context.restore();
 
+    const orbitLabels = virtualDataContainer.select('.orbitLabels_scrolly');
     // draw satellites
     for (const orbitClass of ORBIT_NAMES) {
         // handle translation and rotation
         const orbitGroup = virtualDataContainer.select('g.' + orbitClass);
         context.translate(orbitGroup.attr('x')*dpi, orbitGroup.attr('y')*dpi);
+        context.rotate(orbitGroup.attr('rotation') / 180 * Math.PI);
 
         // draw satellites and their orbits in the group
         const satellites = virtualDataContainer.select('g.' + orbitClass).selectAll('.satellites');
@@ -187,6 +189,24 @@ function drawCanvas(virtualDataContainer, context) {
             context.restore();
         });
 
+        // end rotation
+        context.rotate(-orbitGroup.attr('rotation') / 180 * Math.PI);
+
+        // draw labels
+        const labelName = orbitClass === 'Elliptical' ? 'HEO' : orbitClass;
+        const orbitLabel = orbitLabels.select('.' + labelName);
+        orbitLabel.each(function(d) {
+            const node = d3.select(this);
+            context.save();
+            context.globalAlpha = node.style('opacity');
+            context.font="26px Metropolis_Medium";
+            context.fillStyle = '#FFFFFF';
+            context.textAlign = 'center';
+            context.fillText(labelName, node.attr('x') * dpi || 0, node.attr('y') * dpi || 0);
+            context.restore();
+        });
+        
+        // reset origin
         context.translate(-orbitGroup.attr('x')*dpi, -orbitGroup.attr('y')*dpi);
     }
 }
@@ -265,7 +285,7 @@ function updateChart_scrolly(controlParams) {
             // });
             .attr('x', earthCenter[0])
             .attr('y', earthCenter[1])
-            .attr('rotation', d => d.rotation);
+            // .attr('rotation', d => d.rotation);
     }
     function updateOrbits(orbits) {
         orbits
@@ -347,8 +367,8 @@ function updateChart_scrolly(controlParams) {
             .attr('class', 'regular-ellipse')
             .style('opacity', 0.7);
             
-        orbit.merge(orbitEnter)
-            .transition();
+        // orbit.merge(orbitEnter)
+        //     .transition();
         orbit.exit().remove();
 
         updateOrbits(animationSelector(orbit, controlParams.shouldAnimate));
@@ -366,8 +386,8 @@ function updateChart_scrolly(controlParams) {
             })
             .style('fill', '#ffffff');
         
-        satellites.merge(satellitesEnter)
-            .transition();
+        // satellites.merge(satellitesEnter)
+        //     .transition();
         satellites.exit().remove();
         updateSatellite(animationSelector(satellites, controlParams.shouldAnimate));
 
@@ -375,10 +395,10 @@ function updateChart_scrolly(controlParams) {
     }
 
     // Plot orbit labels
-    var orbitLabels = d3.select('.orbitLabels_scrolly');
+    var orbitLabels = virtualDataContainer.select('.orbitLabels_scrolly');
     if (orbitLabels.empty()) {
         virtualDataContainer.append('g').attr('class', 'orbitLabels_scrolly');
-        orbitLabels = d3.select('.orbitLabels_scrolly');
+        orbitLabels = virtualDataContainer.select('.orbitLabels_scrolly');
   
         orbitLabels.append('text')
         .attr('class', 'LEO label')
@@ -404,7 +424,7 @@ function updateChart_scrolly(controlParams) {
             if (controlParams.zoom.mag == magOfLEO){
             return -scale_scrolly(maxLEOApogee) - 15;
             } else {
-                return -scale_scrolly(maxLEOApogee) - 6;
+                return -scale_scrolly(maxLEOApogee) - 3;
             }
         })
         .style('opacity', controlParams.orbitOpacityCoefficient.LEO === 1 ? 1 : 0.2);
@@ -415,7 +435,7 @@ function updateChart_scrolly(controlParams) {
         .attr('y', -scale_scrolly(maxGEOApogee) - 12)
         .style('opacity', controlParams.orbitOpacityCoefficient.GEO === 1 ? 1 : 0.2);
     animationSelector(orbitLabels.select('.HEO'), controlParams.shouldAnimate)
-        .attr('x', scale_scrolly(EARTH_RADIUS) * 7.7)
+        .attr('x', scale_scrolly(EARTH_RADIUS) * 8.5)
         .style('opacity', controlParams.orbitOpacityCoefficient.Elliptical === 1 ? 1 : 0.2);
   
     updateEarth(animationSelector(virtualDataContainer.selectAll('.earth'), controlParams.shouldAnimate));
@@ -426,7 +446,7 @@ function updateChart_scrolly(controlParams) {
     if(controlParams.shouldAnimate) {
         const transitionAnimation = setInterval(()=> {
             drawCanvas(virtualDataContainer, scrollyMainVisContext);
-        }, 50);
+        }, 100);
         setTimeout(() => {
             clearInterval(transitionAnimation);
             animateSatelliteOrbits();
@@ -438,18 +458,38 @@ function updateChart_scrolly(controlParams) {
     // animate revolving satellites
     function animateSatelliteOrbits() {
         clearInterval(orbitInterval);
-        if (controlParams.orbitClassToRevolve) {
-            const orbitClass = controlParams.orbitClassToRevolve === 'HEO' ? 'Elliptical' : controlParams.orbitClassToRevolve;
-            orbitInterval = setInterval(() => {
-                satByOrbit[orbitClass].forEach(function(d) {
-                    const p = d['Perigee (km)'];
-                    const a = d['Apogee (km)'];
-                    const nextAngle = d['Angle'] + 100 / (a - (a - p) * (Math.abs(d['Angle'])) / Math.PI);
-                    d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
-                })
-                updateSatellite(virtualDataContainer.selectAll('.satellites.' + orbitClass + ''));
-                drawCanvas(virtualDataContainer, scrollyMainVisContext);
-            }, 100);
+        switch (controlParams.orbitClassToRevolve) {
+            case 'HEO':
+            case 'MEO':
+                // case 'GEO':
+                //     case 'LEO':
+                const orbitClass = controlParams.orbitClassToRevolve === 'HEO' ? 'Elliptical' : controlParams.orbitClassToRevolve;
+                orbitInterval = setInterval(() => {
+                    satByOrbit[orbitClass].forEach(function(d) {
+                        const p = d['Perigee (km)'];
+                        const a = d['Apogee (km)'];
+                        const nextAngle = d['Angle'] + 200 / (a + EARTH_RADIUS - (a - p) * (Math.abs(d['Angle'])) / Math.PI);
+                        d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
+                    })
+                    updateSatellite(virtualDataContainer.selectAll('.satellites.' + orbitClass + ''));
+                    drawCanvas(virtualDataContainer, scrollyMainVisContext);
+                }, 100);
+                break;
+            case 'GEO':
+            case 'LEO':
+                orbitInterval = setInterval(() => {
+                    virtualDataContainer.select('g.' + controlParams.orbitClassToRevolve)
+                    .attr('rotation', d => {
+                        const orbitSpeed = orbitSpeeds[controlParams.orbitClassToRevolve];
+                        d.rotation += orbitSpeed;
+                        d.rotation = d.rotation >= 360 ? d.rotation - 360 : d.rotation;
+                        return d.rotation;
+                    });
+                    drawCanvas(virtualDataContainer, scrollyMainVisContext);
+                }, 100);
+                break;
+            default:
+                break;
         }
     }
   }
@@ -1135,7 +1175,8 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         virtualDataContainer
             .append('g')
             .data([{rotation: 0}])
-            .attr('class', orbitClass);
+            .attr('class', orbitClass)
+            .attr('rotation', d => d.rotation);
     }
 
     updateChart(refineByParamsRealistic);
