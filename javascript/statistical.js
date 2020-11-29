@@ -561,14 +561,6 @@ function sta_updateChart(refineParam,radioValue) {
         return colorOfPurposeStyle(d, 'new_purpose');
     })
     .attr("opacity", colorOpacity)
-    // .attr("fill-opacity", function(d){
-    //     if (d['new_purpose']==''){
-    //         return 1;
-    //     }
-    //     else{
-    //         return 10;
-    //     }
-    // })
     .attr('d',d3.arc()
     .innerRadius( function(d) { return y_purpose(0) })
     .outerRadius(function(d){return y_purpose(1);})
