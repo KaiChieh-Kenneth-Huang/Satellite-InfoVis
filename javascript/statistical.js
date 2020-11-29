@@ -74,7 +74,8 @@ const colorOfChart = {
     mass: '#B681CF',
     distance: '#6870C4',
     arcBackground: '#28333c',
-    rightbar: '#49AFD9'
+    rightbar: '#49AFD9',
+    hightlight: 'white'
 }
 
 const backgroundOpacity = 0.85;
@@ -392,10 +393,10 @@ function sta_updateChart(refineParam,radioValue) {
           .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px");
         
           d3.selectAll("rect." + d['new_country'])
-          .style("fill", "white");
+          .style("fill", colorOfChart.hightlight);
 
           d3.selectAll("rect." + d['new_purpose'])
-          .style("fill", "white");
+          .style("fill", colorOfChart.hightlight);
 
           //console.log(disBins);
 
@@ -406,7 +407,7 @@ function sta_updateChart(refineParam,radioValue) {
                   console.log(x0);
                   console.log(d['avgDis']);
                 d3.selectAll("rect.dis" + Math.round(x0))
-                .style("fill", "white");
+                .style("fill", colorOfChart.hightlight);
               }
           });
 
@@ -415,7 +416,7 @@ function sta_updateChart(refineParam,radioValue) {
             var x1 = bin.x1;
             if(d['Launch Mass (kg.)']>=x0 && d['Launch Mass (kg.)']<=x1){
               d3.selectAll("rect.mass" + Math.round(x0))
-              .style("fill", "white");
+              .style("fill", colorOfChart.hightlight);
             }
         });
 
@@ -424,7 +425,7 @@ function sta_updateChart(refineParam,radioValue) {
             var x1 = bin.x1;
             if(d['Period (minutes)']>=x0 && d['Period (minutes)']<=x1){
               d3.selectAll("rect.period" + Math.round(x0))
-              .style("fill", "white");
+              .style("fill", colorOfChart.hightlight);
             }
         });
     }
