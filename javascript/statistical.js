@@ -405,8 +405,8 @@ function sta_updateChart(refineParam,radioValue) {
               var x0 = bin.x0;
               var x1 = bin.x1;
               if(d['avgDis']>=x0 && d['avgDis']<=x1){
-                  console.log(x0);
-                  console.log(d['avgDis']);
+                //   console.log(x0);
+                //   console.log(d['avgDis']);
                 d3.selectAll("rect.dis" + Math.round(x0))
                 .style("opacity", colorOpacity);
               }

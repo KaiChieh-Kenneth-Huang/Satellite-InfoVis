@@ -4,8 +4,8 @@
     pointer-events: none;
 }
 
-.main-display.realistic * {
-    pointer-events:all;
+.main-display.realistic > .left-panel * {
+    pointer-events: all;
 }
 
 .left-panel.realistic > .options {
