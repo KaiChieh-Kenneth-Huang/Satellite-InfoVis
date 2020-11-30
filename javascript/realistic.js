@@ -1051,21 +1051,24 @@ $('#realistic-main-vis').mousemove(function(event){
 
     if (hoverChanged) {
         const hoveredOrbitName = hoveredOrbit === 'HEO' ? 'Elliptical' : hoveredOrbit;
-        console.log(hoveredOrbitName)
         for (const orbitName of ORBIT_NAMES) {
             const mainVis = d3.select('#realistic-main-vis');
-            mainVis.selectAll('.dataMark.' + orbitName).transition().duration(500).style('opacity', d => {
-                return hoveredOrbitName === orbitName || !hoveredOrbitName
-                ? opacityStyle(d)
-                : orbitName === 'LEO' ? 0.01 : 0.1;
-            })
-            mainVis.selectAll('ellipse.' + orbitName).transition().duration(500).style('opacity', d => {
-                return hoveredOrbitName === orbitName || !hoveredOrbitName
-                    ? 0.7
-                    : orbitName === 'LEO'
-                        ? 0.01
-                        : orbitName === 'Elliptical' ? 0.1 : 0.05;
-            })
+            if (satellite_checkBox.checked) {
+                mainVis.selectAll('.dataMark.' + orbitName).transition().duration(500).style('opacity', d => {
+                    return hoveredOrbitName === orbitName || !hoveredOrbitName
+                    ? opacityStyle(d)
+                    : orbitName === 'LEO' ? 0.01 : 0.1;
+                })
+            }
+            if (orbit_checkBox.checked) {
+                mainVis.selectAll('ellipse.' + orbitName).transition().duration(500).style('opacity', d => {
+                    return hoveredOrbitName === orbitName || !hoveredOrbitName
+                        ? 0.7
+                        : orbitName === 'LEO'
+                            ? 0.01
+                            : orbitName === 'Elliptical' ? 0.1 : 0.05;
+                })
+            }
         }
     }
 });
@@ -1209,14 +1212,14 @@ document.querySelector('#refineByPeriod').addEventListener('change', (event) => 
 let orbit_checkBox =  document.getElementById("showOrbits");
 orbit_checkBox.addEventListener('change', function() {
     if(this.checked) {
-        d3.select('#realistic-main-vis').selectAll('ellipse')
-            .style("opacity", 1);
-        d3.select('#realistic-main-vis').selectAll('.orbitLabels')
+        d3.select('#realistic-main-vis').selectAll('ellipse').transition().duration(500)
+            .style("opacity", 0.7);
+        d3.select('#realistic-main-vis').selectAll('.orbitLabels').transition().duration(500)
             .style("opacity", 1);
     } else {
-        d3.select('#realistic-main-vis').selectAll('ellipse')
+        d3.select('#realistic-main-vis').selectAll('ellipse').transition().duration(500)
             .style("opacity", 0);
-        d3.select('#realistic-main-vis').selectAll('.orbitLabels')
+        d3.select('#realistic-main-vis').selectAll('.orbitLabels').transition().duration(500)
             .style("opacity", 0);
         }
 });
@@ -1224,10 +1227,10 @@ orbit_checkBox.addEventListener('change', function() {
 let satellite_checkBox =  document.getElementById("showSatellites");
 satellite_checkBox.addEventListener('change', function(){
     if(this.checked) {
-        d3.select('#realistic-main-vis').selectAll('.satellites')
+        d3.select('#realistic-main-vis').selectAll('.satellites').transition().duration(500)
         .style("opacity", 1);
     } else {
-        d3.select('#realistic-main-vis').selectAll('.satellites')
+        d3.select('#realistic-main-vis').selectAll('.satellites').transition().duration(500)
         .style("opacity", 0);
         }
 });
