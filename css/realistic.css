@@ -112,6 +112,7 @@
 /* font */
 .orbitLabels{
     opacity: 0.8;
+    pointer-events: none;
 }
 
 .x.label{

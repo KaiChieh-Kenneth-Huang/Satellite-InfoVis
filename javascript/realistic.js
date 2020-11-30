@@ -104,6 +104,7 @@ function colorStyle(d) { // Color
 }
 
 function opacityStyle(d) { //Opacity
+    if(!satellite_checkBox.checked) return 0;
     if (+d['new_year'] < 1990) {
         return opacityOfPeriod['before 1990'];
     } else if ((+d['new_year'] >= 1990) && (+d['new_year'] < 2000)) {
@@ -116,7 +117,7 @@ function opacityStyle(d) { //Opacity
 }
 
 function updateOrbitGroupOpacity(orbitClass, opacity) {
-    d3.select('#realistic-main-vis').select('g.' + orbitClass)
+    d3.select(mainVis).select('g.' + orbitClass)
         .attr('opacity', d => {
             return opacity;
         });
@@ -184,11 +185,11 @@ function drawCanvas(virtualDataContainer, satellites, orbits, context, magIsLEO)
         context.translate(orbitGroup.attr('x')*dpi, orbitGroup.attr('y')*dpi);
         context.rotate(orbitGroup.attr('rotation') / 180 * Math.PI);
 
-        let orbitCount = 0;
+        let count = 0;
         // draw satellites and their orbits in the group
         orbits[orbitClass].each(function (d) {
-            if (orbitClass === 'LEO' && orbitCount > 200) return;
-            orbitCount++;
+            if (orbitClass === 'LEO' && count > 200) return;
+            count++;
 
             const node = d3.select(this);
 
@@ -203,8 +204,10 @@ function drawCanvas(virtualDataContainer, satellites, orbits, context, magIsLEO)
             context.stroke();
             context.closePath();
         });
-    
+        
+        count = 0;
         satellites[orbitClass].each(function (d) {
+            if (!magIsLEO && orbitClass === 'LEO' && count > 200) return;
             const node = d3.select(this);
 
             const x = node.attr('cx')*dpi;
@@ -362,7 +365,7 @@ function updateChart_scrolly(controlParams) {
         .style('opacity', d => {
             return controlParams.hideSatellites
             ? 0
-            : opacityStyle(d) * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
+            : 0.7 * controlParams.orbitOpacityCoefficient[d['Class of Orbit']];
         });
     }
 
@@ -392,7 +395,7 @@ function updateChart_scrolly(controlParams) {
     for (const orbitClass of ORBIT_NAMES) {
         // plot orbits
         orbits[orbitClass] = virtualDataContainer.select('g.' + orbitClass).selectAll('ellipse')
-        .data(satByOrbit[orbitClass], function(d){
+        .data(satByOrbit[orbitClass] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
 
@@ -696,6 +699,8 @@ function updateChart(refineParam) {
         satCount[satellite[FN_PURPOSE]]['total'] = satCount[satellite[FN_PURPOSE]]['total'] ? satCount[satellite[FN_PURPOSE]]['total'] + 1 : 1;
         satCount[satellite[FN_PERIOD]]['total'] = satCount[satellite[FN_PERIOD]]['total'] ? satCount[satellite[FN_PERIOD]]['total'] + 1 : 1;
 
+        satCount[satellite[FN_ORBIT]] = satCount[satellite[FN_ORBIT]] ? satCount[satellite[FN_ORBIT]] + 1 : 1;
+
         // Put all data points into different groups based on purpose
         if (satByPurpose[satellite[FN_PURPOSE]]) {
             if (satByPurpose[satellite[FN_PURPOSE]][satellite[FN_ORBIT]]) {
@@ -719,17 +724,18 @@ function updateChart(refineParam) {
     for (const orbitClass of ORBIT_NAMES) {
         // plot orbits
         let orbits = d3.select('#realistic-main-vis').select('g.' + orbitClass).selectAll('ellipse')
-        .data(satByOrbit[orbitClass], function(d){
+        .data(satByOrbit[orbitClass] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
 
         let orbitsEnter = orbits.enter()
             .append('ellipse')
             .attr('class', 'regular-ellipse')
-            .style('opacity', 0.7);
+            .style('opacity', orbit_checkBox.checked ? 0.7 : 0);
 
         // Plot each type of satellites based on their purposes
         // Civil
+        satByPurpose['Civil'] = satByPurpose['Civil'] ? satByPurpose['Civil'] : {};
         var civilSatellites = d3.select('#realistic-main-vis').select('g.' + orbitClass).selectAll('.civil.dataMark')
             .data(satByPurpose['Civil'][orbitClass] || [], function(d){
                 return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
@@ -760,6 +766,7 @@ function updateChart(refineParam) {
             });
 
         // Commercial
+        satByPurpose['Commercial'] = satByPurpose['Commercial'] ? satByPurpose['Commercial'] : {};
         var commercialSatellites = d3.select('#realistic-main-vis').select('g.' + orbitClass).selectAll('.commercial.dataMark')
             .data(satByPurpose['Commercial'][orbitClass] || [], function(d){
                 return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
@@ -793,6 +800,7 @@ function updateChart(refineParam) {
             })
 
         // Government
+        satByPurpose['Government'] = satByPurpose['Government'] ? satByPurpose['Government'] : {};
         var governSatellites = d3.select('#realistic-main-vis').select('g.' + orbitClass).selectAll('.govern.dataMark')
             .data(satByPurpose['Government'][orbitClass] || [], function(d){
                 return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
@@ -814,6 +822,7 @@ function updateChart(refineParam) {
             })
 
         // Military
+        satByPurpose['Military'] = satByPurpose['Military'] ? satByPurpose['Military'] : {};
         var militarySatellites = d3.select('#realistic-main-vis').select('g.' + orbitClass).selectAll('.military.dataMark')
             .data(satByPurpose['Military'][orbitClass] || [], function(d){
                 return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
@@ -887,6 +896,7 @@ function updateChart(refineParam) {
             })
 
         // Multi-purpose
+        satByPurpose['Multi-purpose'] = satByPurpose['Multi-purpose'] ? satByPurpose['Multi-purpose'] : {};
         var multiSatellites = d3.select('#realistic-main-vis').select('g.' + orbitClass).selectAll('.multi.dataMark')
             .data(satByPurpose['Multi-purpose'][orbitClass] || [], function(d){
                 return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
@@ -1000,16 +1010,24 @@ function updateChart(refineParam) {
     }
     
     animationSelector(orbitLabels, shouldAnimate).attr('transform', 'translate(' + [earthCenter[0], earthCenter[1]] + ')');
-    animationSelector(orbitLabels.select('.LEO'), shouldAnimate).attr('y', function(d) {
-        if (zoom.mag == magOfLEO){
-           return -scale(maxLEOApogee) - 15;
-        } else {
-            return -scale(maxLEOApogee) - 6;
-        }
-    });
-    animationSelector(orbitLabels.select('.MEO'), shouldAnimate).attr('y', -scale(maxMEOApogee) - 6);
-    animationSelector(orbitLabels.select('.GEO'), shouldAnimate).attr('y', -scale(maxGEOApogee) - 12);
-    animationSelector(orbitLabels.select('.HEO'), shouldAnimate).attr('x', scale(EARTH_RADIUS) * 7.8);
+    animationSelector(orbitLabels.select('.LEO'), shouldAnimate)
+        .attr('y', function(d) {
+            if (zoom.mag == magOfLEO){
+            return -scale(maxLEOApogee) - 15;
+            } else {
+                return -scale(maxLEOApogee) - 6;
+            }
+        })
+        .style('opacity', satCount['LEO'] ? 1 : 0.2);
+    animationSelector(orbitLabels.select('.MEO'), shouldAnimate)
+        .attr('y', -scale(maxMEOApogee) - 6)
+        .style('opacity', satCount['MEO'] ? 1 : 0.2);
+    animationSelector(orbitLabels.select('.GEO'), shouldAnimate)
+        .attr('y', -scale(maxGEOApogee) - 12)
+        .style('opacity', satCount['GEO'] ? 1 : 0.2);
+    animationSelector(orbitLabels.select('.HEO'), shouldAnimate)
+        .attr('x', scale(EARTH_RADIUS) * 7.8)
+        .style('opacity', satCount['Elliptical'] ? 1 : 0.2);
 
     updateEarth(animationSelector(d3.select('#realistic-main-vis').selectAll('.earth'), shouldAnimate));
 }
@@ -1096,17 +1114,20 @@ $('#realistic-main-vis').mousemove(function(event){
     if(hoveredOrbit === null){
         resetHoverEffects();
     } else {
-        Tooltip // Add tooltip to bars when hovered
-            .style("opacity", 1)
-            .html(hoveredOrbit + "<br>")
-            .attr('class', 'tooltip')
-            .style("left", relX + "px")
-            .style("top", relY+ "px");
+        const hoveredOrbitName = hoveredOrbit === 'HEO' ? 'Elliptical' : hoveredOrbit;
+        if(hoveredOrbitName && satCount[hoveredOrbitName]) {
+            Tooltip // Add tooltip to bars when hovered
+                .style("opacity", 1)
+                .html(hoveredOrbit + "<br>")
+                .attr('class', 'tooltip')
+                .style("left", relX + "px")
+                .style("top", relY+ "px");
+        }
     }
 
     if (hoverChanged) {
         const hoveredOrbitName = hoveredOrbit === 'HEO' ? 'Elliptical' : hoveredOrbit;
-        if(hoveredOrbitName) {
+        if(hoveredOrbitName && satCount[hoveredOrbitName]) {
             setTimeout(() => {
                 updateSatCounts(satCount, hoveredOrbitName || 'total');
             });
@@ -1257,7 +1278,7 @@ document.querySelector('#refineByPeriod').addEventListener('change', (event) => 
 });
 
 // Toggles for More Options
-let orbit_checkBox =  document.getElementById("showOrbits");
+var orbit_checkBox =  document.getElementById("showOrbits");
 orbit_checkBox.addEventListener('change', function() {
     if(this.checked) {
         d3.select('#realistic-main-vis').selectAll('ellipse').transition().duration(500)
@@ -1272,13 +1293,15 @@ orbit_checkBox.addEventListener('change', function() {
         }
 });
 
-let satellite_checkBox =  document.getElementById("showSatellites");
+var satellite_checkBox =  document.getElementById("showSatellites");
 satellite_checkBox.addEventListener('change', function(){
     if(this.checked) {
-        d3.select('#realistic-main-vis').selectAll('.satellites').transition().duration(500)
-        .style("opacity", 1);
+        d3.select('#realistic-main-vis').selectAll('.dataMark').transition().duration(500)
+        .style('opacity', d => {
+            return opacityStyle(d)
+        });
     } else {
-        d3.select('#realistic-main-vis').selectAll('.satellites').transition().duration(500)
+        d3.select('#realistic-main-vis').selectAll('.dataMark').transition().duration(500)
         .style("opacity", 0);
         }
 });
