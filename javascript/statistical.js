@@ -361,6 +361,7 @@ function sta_updateChart(refineParam,radioValue) {
     var Tooltip = d3.select("#div_template")
     .append("div")
     .attr("class", "tooltip")
+    .style("pointer-events", 'none')
     .style("opacity", 0)
     .style("position", "absolute")
     .style("background-color", "white")
