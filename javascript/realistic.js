@@ -461,36 +461,18 @@ function updateChart_scrolly(controlParams) {
     // animate revolving satellites
     function animateSatelliteOrbits() {
         clearInterval(orbitInterval);
-        switch (controlParams.orbitClassToRevolve) {
-            case 'HEO':
-            case 'MEO':
-                const orbitClass = controlParams.orbitClassToRevolve === 'HEO' ? 'Elliptical' : controlParams.orbitClassToRevolve;
-                orbitInterval = setInterval(() => {
-                    satByOrbit[orbitClass].forEach(function(d) {
-                        const p = d['Perigee (km)'];
-                        const a = d['Apogee (km)'];
-                        const nextAngle = d['Angle'] + 200 / (a + EARTH_RADIUS - (a - p) * (Math.abs(d['Angle'])) / Math.PI);
-                        d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
-                    })
-                    updateSatellite(virtualDataContainer.selectAll('.satellites.' + orbitClass + ''));
-                    drawCanvas(virtualDataContainer, scrollyMainVisContext);
-                }, 100);
-                break;
-            case 'GEO':
-            case 'LEO':
-                orbitInterval = setInterval(() => {
-                    virtualDataContainer.select('g.' + controlParams.orbitClassToRevolve)
-                    .attr('rotation', d => {
-                        const orbitSpeed = orbitSpeeds[controlParams.orbitClassToRevolve];
-                        d.rotation += orbitSpeed;
-                        d.rotation = d.rotation >= 360 ? d.rotation - 360 : d.rotation;
-                        return d.rotation;
-                    });
-                    drawCanvas(virtualDataContainer, scrollyMainVisContext);
-                }, 100);
-                break;
-            default:
-                break;
+        if (controlParams.orbitClassToRevolve) {
+            const orbitClass = controlParams.orbitClassToRevolve === 'HEO' ? 'Elliptical' : controlParams.orbitClassToRevolve;
+            orbitInterval = setInterval(() => {
+                satByOrbit[orbitClass].forEach(function(d) {
+                    const p = d['Perigee (km)'];
+                    const a = d['Apogee (km)'];
+                    const nextAngle = d['Angle'] + 200 / (a + EARTH_RADIUS - (a - p) * (Math.abs(d['Angle'])) / Math.PI);
+                    d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
+                })
+                updateSatellite(virtualDataContainer.selectAll('.satellites.' + orbitClass + ''));
+                drawCanvas(virtualDataContainer, scrollyMainVisContext);
+            }, 100);
         }
     }
   }
