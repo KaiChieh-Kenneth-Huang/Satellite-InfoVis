@@ -1059,6 +1059,18 @@ $('#realistic-main-vis').mousemove(function(event){
         }
         hoveredOrbit = null;
     }
+    if(hoveredOrbit == null){
+        Tooltip // Add tooltip to bars when hovered
+        .style("opacity", 0);
+    }
+    else{
+    Tooltip // Add tooltip to bars when hovered
+    .style("opacity", 1)
+    .html(hoveredOrbit+ "<br>")
+    .attr('class', 'tooltip')
+    .style("left", relX + "px")
+    .style("top", relY+ "px");
+    }
 
     if (hoverChanged) {
         const hoveredOrbitName = hoveredOrbit === 'HEO' ? 'Elliptical' : hoveredOrbit;
@@ -1067,18 +1079,7 @@ $('#realistic-main-vis').mousemove(function(event){
             updateOrbitGroupOpacity(orbitName, hoveredOrbitName === orbitName || !hoveredOrbitName ? 1 : 0.2);
         }
         console.log(hoveredOrbit);
-        if(hoveredOrbit == null){
-            Tooltip // Add tooltip to bars when hovered
-            .style("opacity", 0);
-        }
-        else{
-        Tooltip // Add tooltip to bars when hovered
-        .style("opacity", 1)
-        .html(hoveredOrbit+ "<br>")
-        .attr('class', 'tooltip')
-        .style("left", relX + "px")
-        .style("top", relY+ "px");
-        }
+
     }
 });
 
