@@ -118,9 +118,7 @@ function opacityStyle(d) { //Opacity
 
 function updateOrbitGroupOpacity(orbitClass, opacity) {
     d3.select(mainVis).select('g.' + orbitClass)
-        .attr('opacity', d => {
-            return opacity;
-        });
+        .attr('opacity', opacity);
         //.attr('rotation', d => d.rotation);
 }
 
@@ -234,7 +232,7 @@ function drawCanvas(virtualDataContainer, satellites, orbits, context, magIsLEO)
             const node = d3.select(this);
             context.save();
             context.globalAlpha = node.style('opacity');
-            context.font="16px Metropolis_Medium";
+            context.font="24px Metropolis_Medium";
             context.fillStyle = '#FFFFFF';
             context.textAlign = 'center';
             context.fillText(labelName, node.attr('x') * dpi || 0, node.attr('y') * dpi || 0);
@@ -570,50 +568,6 @@ function updateChart(refineParam) {
     function getPosY(d) {
         return getPointOnEllipse(+d['Apogee (km)'], +d['Perigee (km)'], +d['Angle']).y;
     }
-
-        //for hover
-        var real_Tooltip = d3.select("#div_template_real")
-        .append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0)
-        .style("position", "absolute")
-        .style("background-color", "white")
-        .style("color","black")
-        .style("border", "solid")
-        .style("border-width", "2px")
-        .style("border-radius", "5px")
-        .style("padding", "5px")
-    
-        var real_mouseover = function(d) {
-            // console.log("Into mouseover");
-            real_Tooltip
-              .style("opacity", 1)
-            d3.select(this)
-              .style("stroke", "black")
-              .style("opacity", 1)
-          }
-        var real_mousemove = function(d) {
-            // console.log("Into mousemove");
-            //console.log("The country is: " + d['new_country']);
-            real_Tooltip
-              .html("Name: " + d['Name of Satellite  Alternate Names']  + "<br>"
-              + "Country: " + d['new_country']  + "<br>" 
-              + "Purpose: " + d['new_purpose']  + "<br>"
-              + "Peroid: " + d['Period (minutes)']  + "mins"+ "<br>"
-              + "Mass: " + d['Launch Mass (kg.)']  + "kg"+ "<br>"
-              + "Average Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
-              .style("left", (d3.mouse(this)[0]+70 + real_width/2) + "px")
-              .style("top", (d3.mouse(this)[1]+70 + real_height/2) + "px")
-          }
-    
-        var real_mouseleave = function(d) {
-            // console.log("Into mouseleave");
-            real_Tooltip
-              .style("opacity", 0)
-            d3.select(this)
-              .style("stroke", "none")
-              .style("opacity", 1)
-          }
 
     // Satellite attributes to update
     function resizeSatellites() { //Resize datamarks
