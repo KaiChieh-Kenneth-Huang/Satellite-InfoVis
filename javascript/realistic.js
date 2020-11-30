@@ -999,6 +999,17 @@ function updateChart(refineParam) {
     updateEarth(animationSelector(d3.select('#realistic-main-vis').selectAll('.earth'), shouldAnimate));
 }
 
+var Tooltip = d3.select("#div_template_real")
+.append("div")
+.attr("class", "tooltip")
+.style("pointer-events", 'none')
+.style("opacity", 0)
+.style("position", "absolute")
+.style("background-color", "white")
+.style("color","black")
+.style("border-radius", "5px")
+.style("padding", "12px")
+
 var hoveredOrbit;
 const hoverEffectTransition = 200;
 $('#realistic-main-vis').mousemove(function(event){            
@@ -1054,6 +1065,19 @@ $('#realistic-main-vis').mousemove(function(event){
         for (const orbitName of ORBIT_NAMES) {
             const mainVis = d3.select('#realistic-main-vis');
             updateOrbitGroupOpacity(orbitName, hoveredOrbitName === orbitName || !hoveredOrbitName ? 1 : 0.2);
+        }
+        console.log(hoveredOrbit);
+        if(hoveredOrbit == null){
+            Tooltip // Add tooltip to bars when hovered
+            .style("opacity", 0);
+        }
+        else{
+        Tooltip // Add tooltip to bars when hovered
+        .style("opacity", 1)
+        .html(hoveredOrbit+ "<br>")
+        .attr('class', 'tooltip')
+        .style("left", relX + "px")
+        .style("top", relY+ "px");
         }
     }
 });
