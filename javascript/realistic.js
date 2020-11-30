@@ -1051,13 +1051,20 @@ $('#realistic-main-vis').mousemove(function(event){
 
     if (hoverChanged) {
         const hoveredOrbitName = hoveredOrbit === 'HEO' ? 'Elliptical' : hoveredOrbit;
+        console.log(hoveredOrbitName)
         for (const orbitName of ORBIT_NAMES) {
             const mainVis = d3.select('#realistic-main-vis');
             mainVis.selectAll('.dataMark.' + orbitName).transition().duration(500).style('opacity', d => {
-                return hoveredOrbitName === orbitName || !hoveredOrbitName ? opacityStyle(d) : 0.1;
+                return hoveredOrbitName === orbitName || !hoveredOrbitName
+                ? opacityStyle(d)
+                : orbitName === 'LEO' ? 0.01 : 0.1;
             })
             mainVis.selectAll('ellipse.' + orbitName).transition().duration(500).style('opacity', d => {
-                return hoveredOrbitName === orbitName || !hoveredOrbitName ? 0.7 : 0.1;
+                return hoveredOrbitName === orbitName || !hoveredOrbitName
+                    ? 0.7
+                    : orbitName === 'LEO'
+                        ? 0.01
+                        : orbitName === 'Elliptical' ? 0.1 : 0.05;
             })
         }
     }
