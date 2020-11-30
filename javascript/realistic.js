@@ -184,8 +184,12 @@ function drawCanvas(virtualDataContainer, satellites, orbits, context, magIsLEO)
         context.translate(orbitGroup.attr('x')*dpi, orbitGroup.attr('y')*dpi);
         context.rotate(orbitGroup.attr('rotation') / 180 * Math.PI);
 
+        let orbitCount = 0;
         // draw satellites and their orbits in the group
         orbits[orbitClass].each(function (d) {
+            if (orbitClass === 'LEO' && orbitCount > 200) return;
+            orbitCount++;
+
             const node = d3.select(this);
 
             const x = node.attr('cx')*dpi;
@@ -227,7 +231,7 @@ function drawCanvas(virtualDataContainer, satellites, orbits, context, magIsLEO)
             const node = d3.select(this);
             context.save();
             context.globalAlpha = node.style('opacity');
-            context.font="18px Metropolis_Medium";
+            context.font="16px Metropolis_Medium";
             context.fillStyle = '#FFFFFF';
             context.textAlign = 'center';
             context.fillText(labelName, node.attr('x') * dpi || 0, node.attr('y') * dpi || 0);
@@ -329,7 +333,7 @@ function updateChart_scrolly(controlParams) {
             const orbitOpacity = controlParams.zoom.orbitOpacity * controlParams.orbitOpacityCoefficient[orbitClass];
             switch (orbitClass) {
                 case 'LEO': {
-                    return 'rgba(68, 68, 68,' + orbitOpacity +')';
+                    return 'rgba(100, 100, 100,' + orbitOpacity +')';
                 }
                 case 'MEO': {
                     return 'rgba(100, 100, 100,' + orbitOpacity +')';
@@ -726,7 +730,6 @@ function updateChart(refineParam) {
 
         // Plot each type of satellites based on their purposes
         // Civil
-        console.log(orbitClass)
         var civilSatellites = d3.select('#realistic-main-vis').select('g.' + orbitClass).selectAll('.civil.dataMark')
             .data(satByPurpose['Civil'][orbitClass] || [], function(d){
                 return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
