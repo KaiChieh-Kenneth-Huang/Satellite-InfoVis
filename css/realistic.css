@@ -18,6 +18,10 @@
     right:40px;
 }
 
+.right-panel.realistic > section{
+    width: 200px;
+}
+
 /* Legend */
 .legend { 
     list-style: none; 

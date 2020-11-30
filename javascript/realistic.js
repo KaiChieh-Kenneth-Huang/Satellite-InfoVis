@@ -65,6 +65,7 @@ var maxApogee, maxPerigee, maxLEOApogee, maxMEOApogee, maxGEOApogee;
 
 // hover event variables
 var earthCenterForHover;
+var satCount = {};
 
 // animation variables
 var orbitInterval;
@@ -122,6 +123,25 @@ function updateOrbitGroupOpacity(orbitClass, opacity) {
         //.attr('rotation', d => d.rotation);
 }
 
+function updateSatCounts(satCount, orbitName) {
+    document.getElementById('NumOfChina').innerText =  satCount['China'] ? satCount['China'][orbitName] || 0 || 0 : 0;
+    document.getElementById('NumOfRussia').innerText =  satCount['Russia'] ? satCount['Russia'][orbitName] || 0  : 0;
+    document.getElementById('NumOfUSA').innerText =  satCount['USA'] ? satCount['USA'][orbitName] || 0  : 0;
+    document.getElementById('NumOfUK').innerText =  satCount['UK'] ? satCount['UK'][orbitName] || 0  : 0;
+    document.getElementById('NumOfOthers').innerText =  satCount['Others'] ? satCount['Others'][orbitName] || 0  : 0;
+
+    document.getElementById('NumOfCivil').innerText =  satCount['Civil'] ? satCount['Civil'][orbitName] || 0  : 0;
+    document.getElementById('NumOfCommercial').innerText =  satCount['Commercial'] ? satCount['Commercial'][orbitName] || 0  : 0;
+    document.getElementById('NumOfGovern').innerText =  satCount['Government'] ? satCount['Government'][orbitName] || 0  : 0;
+    document.getElementById('NumOfMilitary').innerText =  satCount['Military'] ? satCount['Military'][orbitName] || 0  : 0;
+    document.getElementById('NumOfMulti').innerText =  satCount['Multi-purpose'] ? satCount['Multi-purpose'][orbitName] || 0  : 0;
+
+    document.getElementById('NumOf2010s').innerText =  satCount['2010 - 2020'] ? satCount['2010 - 2020'][orbitName] || 0  : 0;
+    document.getElementById('NumOf2000s').innerText =  satCount['2000 - 2009'] ? satCount['2000 - 2009'][orbitName] || 0  : 0;
+    document.getElementById('NumOf1990s').innerText =  satCount['1990 - 1999'] ? satCount['1990 - 1999'][orbitName] || 0  : 0;
+    document.getElementById('NumOfBefore90').innerText =  satCount['Before 1990'] ? satCount['Before 1990'][orbitName] || 0  : 0;
+}
+
 // function for animated transition
 function animationSelector(selection, shouldAnimate) {
     return shouldAnimate ? selection.transition().duration(TRANSITION_DURATION) : selection;
@@ -138,7 +158,7 @@ var earthImg = new Image();
 // earthImg.onload = function (){}
 earthImg.src = "../data/Flat Earth Map.png";
 
-function drawCanvas(virtualDataContainer, context) {
+function drawCanvas(virtualDataContainer, satellites, orbits, context, magIsLEO) {
     // clear canvas
     context.clearRect(0,0,mainVis_scrolly.clientWidth*dpi,mainVis_scrolly.clientHeight*dpi);
 
@@ -156,25 +176,22 @@ function drawCanvas(virtualDataContainer, context) {
     context.restore();
 
     const orbitLabels = virtualDataContainer.select('.orbitLabels_scrolly');
-    // draw satellites
+    // draw satellites and orbits
     for (const orbitClass of ORBIT_NAMES) {
+        if (magIsLEO && orbitClass !== 'LEO') continue;
         // handle translation and rotation
         const orbitGroup = virtualDataContainer.select('g.' + orbitClass);
         context.translate(orbitGroup.attr('x')*dpi, orbitGroup.attr('y')*dpi);
         context.rotate(orbitGroup.attr('rotation') / 180 * Math.PI);
 
         // draw satellites and their orbits in the group
-        const satellites = virtualDataContainer.select('g.' + orbitClass).selectAll('.satellites');
-        const orbits = virtualDataContainer.select('g.' + orbitClass).selectAll('ellipse');
-
-        orbits.each(function (d) {
+        orbits[orbitClass].each(function (d) {
             const node = d3.select(this);
 
             const x = node.attr('cx')*dpi;
             const y = node.attr('cy')*dpi;
             const radiusX = node.attr('rx')*dpi;
             const radiusY = node.attr('ry')*dpi;
-            const angle = node.attr('angle');
 
             context.beginPath();
             context.strokeStyle = node.style("stroke");
@@ -183,7 +200,7 @@ function drawCanvas(virtualDataContainer, context) {
             context.closePath();
         });
     
-        satellites.each(function (d) {
+        satellites[orbitClass].each(function (d) {
             const node = d3.select(this);
 
             const x = node.attr('cx')*dpi;
@@ -210,7 +227,7 @@ function drawCanvas(virtualDataContainer, context) {
             const node = d3.select(this);
             context.save();
             context.globalAlpha = node.style('opacity');
-            context.font="26px Metropolis_Medium";
+            context.font="18px Metropolis_Medium";
             context.fillStyle = '#FFFFFF';
             context.textAlign = 'center';
             context.fillText(labelName, node.attr('x') * dpi || 0, node.attr('y') * dpi || 0);
@@ -365,32 +382,34 @@ function updateChart_scrolly(controlParams) {
         .style('stroke', 'white')
         .style('stroke-width', 2)
         .style('opacity', 0.75);
-  
+
+    let orbits = {};
+    let satellites = {};
     for (const orbitClass of ORBIT_NAMES) {
         // plot orbits
-        let orbit = virtualDataContainer.select('g.' + orbitClass).selectAll('ellipse')
+        orbits[orbitClass] = virtualDataContainer.select('g.' + orbitClass).selectAll('ellipse')
         .data(satByOrbit[orbitClass], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
 
-        let orbitEnter = orbit.enter()
+        let orbitEnter = orbits[orbitClass].enter()
             .append('ellipse')
             .attr('class', 'regular-ellipse')
             .style('opacity', 0.7);
             
         // orbit.merge(orbitEnter)
         //     .transition();
-        orbit.exit().remove();
+        orbits[orbitClass].exit().remove();
 
-        updateOrbits(animationSelector(orbit, controlParams.shouldAnimate));
+        updateOrbits(animationSelector(orbits[orbitClass], controlParams.shouldAnimate));
 
         // Plot satellites
-        let satellites = virtualDataContainer.select('g.' + orbitClass).selectAll('.satellites')
+        satellites[orbitClass] = virtualDataContainer.select('g.' + orbitClass).selectAll('.satellites')
         .data(satByOrbit[orbitClass] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
 
-        let satellitesEnter = satellites.enter()
+        let satellitesEnter = satellites[orbitClass].enter()
             .append('circle')
             .attr('class', d => {
                 return 'satellites ' + d['Class of Orbit'];
@@ -399,8 +418,8 @@ function updateChart_scrolly(controlParams) {
         
         // satellites.merge(satellitesEnter)
         //     .transition();
-        satellites.exit().remove();
-        updateSatellite(animationSelector(satellites, controlParams.shouldAnimate));
+        satellites[orbitClass].exit().remove();
+        updateSatellite(animationSelector(satellites[orbitClass], controlParams.shouldAnimate));
 
         updateOrbitGroup(orbitClass);
     }
@@ -432,7 +451,7 @@ function updateChart_scrolly(controlParams) {
     animationSelector(orbitLabels, controlParams.shouldAnimate).attr('transform', 'translate(' + [earthCenter[0], earthCenter[1]] + ')');
     animationSelector(orbitLabels.select('.LEO'), controlParams.shouldAnimate)
         .attr('y', function(d) {
-            if (controlParams.zoom.mag == magOfLEO){
+            if (controlParams.zoom.mag === magOfLEO){
             return -scale_scrolly(maxLEOApogee) - 15;
             } else {
                 return -scale_scrolly(maxLEOApogee) - 3;
@@ -443,7 +462,7 @@ function updateChart_scrolly(controlParams) {
         .attr('y', -scale_scrolly(maxMEOApogee) - 6)
         .style('opacity', controlParams.orbitOpacityCoefficient.MEO === 1 ? 1 : 0.2);
     animationSelector(orbitLabels.select('.GEO'), controlParams.shouldAnimate)
-        .attr('y', -scale_scrolly(maxGEOApogee) - 12)
+        .attr('y', -scale_scrolly(maxGEOApogee) - 17)
         .style('opacity', controlParams.orbitOpacityCoefficient.GEO === 1 ? 1 : 0.2);
     animationSelector(orbitLabels.select('.HEO'), controlParams.shouldAnimate)
         .attr('x', scale_scrolly(EARTH_RADIUS) * 8.5)
@@ -451,12 +470,12 @@ function updateChart_scrolly(controlParams) {
   
     updateEarth(animationSelector(virtualDataContainer.selectAll('.earth'), controlParams.shouldAnimate));
     
-    drawCanvas(virtualDataContainer, scrollyMainVisContext);
+    drawCanvas(virtualDataContainer, satellites, orbits, scrollyMainVisContext);
 
     clearInterval(orbitInterval);
     if(controlParams.shouldAnimate) {
         const transitionAnimation = setInterval(()=> {
-            drawCanvas(virtualDataContainer, scrollyMainVisContext);
+            drawCanvas(virtualDataContainer, satellites, orbits, scrollyMainVisContext);
         }, 100);
         setTimeout(() => {
             clearInterval(transitionAnimation);
@@ -479,7 +498,7 @@ function updateChart_scrolly(controlParams) {
                     d['Angle'] = nextAngle >= Math.PI ? nextAngle - 2 * Math.PI : nextAngle;
                 })
                 updateSatellite(virtualDataContainer.selectAll('.satellites.' + orbitClass + ''));
-                drawCanvas(virtualDataContainer, scrollyMainVisContext);
+                drawCanvas(virtualDataContainer, satellites, orbits, scrollyMainVisContext, controlParams.zoom.mag === magOfLEO);
             }, 100);
         }
     }
@@ -657,13 +676,21 @@ function updateChart(refineParam) {
         .style('stroke-width', 2)
         .style('opacity', 0.75);
     
-    let satCount = {}; // How to use: element.innerText =  satCount['1990 - 1996'] ? satCount['1990 - 1996'] : 0;
+    satCount = {};
     let satByPurpose = {};
     let satByOrbit = {};
     for (const satellite of filteredSatellites) {
-        satCount[satellite[FN_COUNTRY]] = satCount[satellite[FN_COUNTRY]] ? satCount[satellite[FN_COUNTRY]] + 1 : 1;
-        satCount[satellite[FN_PURPOSE]] = satCount[satellite[FN_PURPOSE]] ? satCount[satellite[FN_PURPOSE]] + 1 : 1;
-        satCount[satellite[FN_PERIOD]] = satCount[satellite[FN_PERIOD]] ? satCount[satellite[FN_PERIOD]] + 1 : 1;
+        satCount[satellite[FN_COUNTRY]] = satCount[satellite[FN_COUNTRY]] ? satCount[satellite[FN_COUNTRY]] : {};
+        satCount[satellite[FN_PURPOSE]] = satCount[satellite[FN_PURPOSE]] ? satCount[satellite[FN_PURPOSE]] : {};
+        satCount[satellite[FN_PERIOD]] = satCount[satellite[FN_PERIOD]] ? satCount[satellite[FN_PERIOD]] : {};
+
+        satCount[satellite[FN_COUNTRY]][satellite[FN_ORBIT]] = satCount[satellite[FN_COUNTRY]][satellite[FN_ORBIT]] ? satCount[satellite[FN_COUNTRY]][satellite[FN_ORBIT]] + 1 : 1;
+        satCount[satellite[FN_PURPOSE]][satellite[FN_ORBIT]] = satCount[satellite[FN_PURPOSE]][satellite[FN_ORBIT]] ? satCount[satellite[FN_PURPOSE]][satellite[FN_ORBIT]] + 1 : 1;
+        satCount[satellite[FN_PERIOD]][satellite[FN_ORBIT]] = satCount[satellite[FN_PERIOD]][satellite[FN_ORBIT]] ? satCount[satellite[FN_PERIOD]][satellite[FN_ORBIT]] + 1 : 1;
+
+        satCount[satellite[FN_COUNTRY]]['total'] = satCount[satellite[FN_COUNTRY]]['total'] ? satCount[satellite[FN_COUNTRY]]['total'] + 1 : 1;
+        satCount[satellite[FN_PURPOSE]]['total'] = satCount[satellite[FN_PURPOSE]]['total'] ? satCount[satellite[FN_PURPOSE]]['total'] + 1 : 1;
+        satCount[satellite[FN_PERIOD]]['total'] = satCount[satellite[FN_PERIOD]]['total'] ? satCount[satellite[FN_PERIOD]]['total'] + 1 : 1;
 
         // Put all data points into different groups based on purpose
         if (satByPurpose[satellite[FN_PURPOSE]]) {
@@ -915,22 +942,7 @@ function updateChart(refineParam) {
         updateOrbitGroupOpacity(orbitClass, 1);
     }
 
-    document.getElementById('NumOfChina').innerText =  satCount['China'] ? satCount['China'] : 0;
-    document.getElementById('NumOfRussia').innerText =  satCount['Russia'] ? satCount['Russia'] : 0;
-    document.getElementById('NumOfUSA').innerText =  satCount['USA'] ? satCount['USA'] : 0;
-    document.getElementById('NumOfUK').innerText =  satCount['UK'] ? satCount['UK'] : 0;
-    document.getElementById('NumOfOthers').innerText =  satCount['Others'] ? satCount['Others'] : 0;
-
-    document.getElementById('NumOfCivil').innerText =  satCount['Civil'] ? satCount['Civil'] : 0;
-    document.getElementById('NumOfCommercial').innerText =  satCount['Commercial'] ? satCount['Commercial'] : 0;
-    document.getElementById('NumOfGovern').innerText =  satCount['Government'] ? satCount['Government'] : 0;
-    document.getElementById('NumOfMilitary').innerText =  satCount['Military'] ? satCount['Military'] : 0;
-    document.getElementById('NumOfMulti').innerText =  satCount['Multi-purpose'] ? satCount['Multi-purpose'] : 0;
-
-    document.getElementById('NumOf2010s').innerText =  satCount['2010 - 2020'] ? satCount['2010 - 2020'] : 0;
-    document.getElementById('NumOf2000s').innerText =  satCount['2000 - 2009'] ? satCount['2000 - 2009'] : 0;
-    document.getElementById('NumOf1990s').innerText =  satCount['1990 - 1999'] ? satCount['1990 - 1999'] : 0;
-    document.getElementById('NumOfBefore90').innerText =  satCount['Before 1990'] ? satCount['Before 1990'] : 0;
+    updateSatCounts(satCount, 'total');
 
 
    // Plot scale axis
@@ -1029,7 +1041,7 @@ $('#realistic-main-vis').mousemove(function(event){
             hoveredOrbit = 'LEO';
             hoverChanged = true;
         }
-    } else if (zoom.mag == magOfLEO) {
+    } else if (zoom.mag === magOfLEO) {
         // do nothing to prevent activation of other orbits when zoomed in to LEO
         hoveredOrbit = null;
         hoverChanged = true;
@@ -1059,27 +1071,29 @@ $('#realistic-main-vis').mousemove(function(event){
         }
         hoveredOrbit = null;
     }
-    if(hoveredOrbit == null){
+
+    if(hoveredOrbit === null){
         Tooltip // Add tooltip to bars when hovered
-        .style("opacity", 0);
-    }
-    else{
-    Tooltip // Add tooltip to bars when hovered
-    .style("opacity", 1)
-    .html(hoveredOrbit+ "<br>")
-    .attr('class', 'tooltip')
-    .style("left", relX + "px")
-    .style("top", relY+ "px");
+            .style("opacity", 0);
+    } else {
+        Tooltip // Add tooltip to bars when hovered
+            .style("opacity", 1)
+            .html(hoveredOrbit + "<br>")
+            .attr('class', 'tooltip')
+            .style("left", relX + "px")
+            .style("top", relY+ "px");
     }
 
     if (hoverChanged) {
         const hoveredOrbitName = hoveredOrbit === 'HEO' ? 'Elliptical' : hoveredOrbit;
+        setTimeout(() => {
+            updateSatCounts(satCount, hoveredOrbitName || 'total');
+        });
         for (const orbitName of ORBIT_NAMES) {
-            const mainVis = d3.select('#realistic-main-vis');
-            updateOrbitGroupOpacity(orbitName, hoveredOrbitName === orbitName || !hoveredOrbitName ? 1 : 0.2);
+            setTimeout(() => {
+                updateOrbitGroupOpacity(orbitName, hoveredOrbitName === orbitName || !hoveredOrbitName ? 1 : 0.2);
+            });
         }
-        console.log(hoveredOrbit);
-
     }
 });
 
