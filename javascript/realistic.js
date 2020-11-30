@@ -1027,6 +1027,24 @@ var Tooltip = d3.select("#div_template_real")
 
 var hoveredOrbit;
 const hoverEffectTransition = 200;
+
+function resetHoverEffects() {
+    Tooltip // Add tooltip to bars when hovered
+    .style("opacity", 0);
+    
+    setTimeout(() => {
+        updateSatCounts(satCount, 'total');
+    });
+    for (const orbitName of ORBIT_NAMES) {
+        setTimeout(() => {
+            updateOrbitGroupOpacity(orbitName, 1);
+        });
+    }
+}
+
+$('#realistic-main-vis').mouseleave(function(){
+    resetHoverEffects();
+});
 $('#realistic-main-vis').mousemove(function(event){            
     var relX = event.pageX - $(this).offset().left;
     var relY = event.pageY - $(this).offset().top;
@@ -1076,8 +1094,7 @@ $('#realistic-main-vis').mousemove(function(event){
     }
 
     if(hoveredOrbit === null){
-        Tooltip // Add tooltip to bars when hovered
-            .style("opacity", 0);
+        resetHoverEffects();
     } else {
         Tooltip // Add tooltip to bars when hovered
             .style("opacity", 1)
@@ -1089,13 +1106,17 @@ $('#realistic-main-vis').mousemove(function(event){
 
     if (hoverChanged) {
         const hoveredOrbitName = hoveredOrbit === 'HEO' ? 'Elliptical' : hoveredOrbit;
-        setTimeout(() => {
-            updateSatCounts(satCount, hoveredOrbitName || 'total');
-        });
-        for (const orbitName of ORBIT_NAMES) {
+        if(hoveredOrbitName) {
             setTimeout(() => {
-                updateOrbitGroupOpacity(orbitName, hoveredOrbitName === orbitName || !hoveredOrbitName ? 1 : 0.2);
+                updateSatCounts(satCount, hoveredOrbitName || 'total');
             });
+            for (const orbitName of ORBIT_NAMES) {
+                setTimeout(() => {
+                    updateOrbitGroupOpacity(orbitName, hoveredOrbitName === orbitName || !hoveredOrbitName ? 1 : 0.2);
+                });
+            }
+        } else {
+            resetHoverEffects();
         }
     }
 });
