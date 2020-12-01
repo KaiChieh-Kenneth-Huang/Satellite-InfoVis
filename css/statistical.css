@@ -123,3 +123,8 @@ h3 {
     font-family: Metropolis, sans-serif;
     font-size: 7px;
 }
+
+/* */
+.g_caption {
+    pointer-events: none;
+}

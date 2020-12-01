@@ -74,7 +74,7 @@ const orbitSpeeds = {LEO: 1.2, MEO: 0.5, GEO: 0.3}
 // Functions to style satellite points
 function sizeStyle(d) { // Initial Size
     const orbitClass = d['Class of Orbit'];
-    const size = ZOOM_GEO.satelliteSize * mainVis.clientWidth / 1425;
+    const size = ZOOM_GEO.satelliteSize * real_width / 1425;
     switch (orbitClass) {
         case 'LEO':
             return size;
@@ -677,9 +677,8 @@ function updateChart(refineParam) {
 
     for (const orbitClass of ORBIT_NAMES) {
         // plot orbits
-        satByOrbit[orbitClass] = satByOrbit[orbitClass] ? satByOrbit[orbitClass] : [];
         let orbits = d3.select('#realistic-main-vis').select('g.' + orbitClass).selectAll('ellipse')
-        .data(satByOrbit[orbitClass].slice(0,150) || [], function(d){
+        .data(satByOrbit[orbitClass] || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
         });
 
@@ -987,6 +986,7 @@ function updateChart(refineParam) {
     updateEarth(animationSelector(d3.select('#realistic-main-vis').selectAll('.earth'), shouldAnimate));
 }
 
+// *** Add tooltip when hovering over orbits ***
 var Tooltip = d3.select("#div_template_real")
 .append("div")
 .attr("class", "tooltip")
@@ -999,6 +999,8 @@ var Tooltip = d3.select("#div_template_real")
 .style("padding", "12px")
 
 var hoveredOrbit;
+var hoveredOrbitFullName;
+var hoveredOrbitIntro;
 const hoverEffectTransition = 200;
 
 function resetHoverEffects() {
@@ -1018,7 +1020,9 @@ function resetHoverEffects() {
 $('#realistic-main-vis').mouseleave(function(){
     resetHoverEffects();
 });
-$('#realistic-main-vis').mousemove(function(event){            
+$('#realistic-main-vis').mousemove(function(event){
+    const tooltipXOffset = 25; 
+    const tooltipYOffset = -10;                       
     var relX = event.pageX - $(this).offset().left;
     var relY = event.pageY - $(this).offset().top;
 
@@ -1029,8 +1033,8 @@ $('#realistic-main-vis').mousemove(function(event){
     const HEODist = +orbitLabels.select('.HEO').attr('x');
     const cursorDistFromEarthCenterSq = (relX - earthCenterForHover[0]) ** 2 + (relY - earthCenterForHover[1]) ** 2;
 
-    let hoverChanged = false;
-    if (cursorDistFromEarthCenterSq < LEODist ** 2) {
+    let hoverChanged = false; //Set the distance scope of hovering effect for each orbit
+    if (cursorDistFromEarthCenterSq < (LEODist * 1.08) ** 2) {
         if (hoveredOrbit !== 'LEO'){
             hoveredOrbit = 'LEO';
             hoverChanged = true;
@@ -1039,20 +1043,21 @@ $('#realistic-main-vis').mousemove(function(event){
         // do nothing to prevent activation of other orbits when zoomed in to LEO
         hoveredOrbit = null;
         hoverChanged = true;
-    } else if (cursorDistFromEarthCenterSq < ((GEODist + MEODist) / 2) ** 2) {
+    } else if (((cursorDistFromEarthCenterSq > (LEODist * 1.5) ** 2) && (cursorDistFromEarthCenterSq < (LEODist * 1.7) ** 2)) || ((cursorDistFromEarthCenterSq > ((LEODist * 2.8) ** 2) && (cursorDistFromEarthCenterSq < (LEODist * 3.4) ** 2)))) {
         if (hoveredOrbit !== 'MEO'){
             hoveredOrbit = 'MEO';
             hoverChanged = true;
         }
-    } else if (cursorDistFromEarthCenterSq > ((GEODist + MEODist) / 2) ** 2 && cursorDistFromEarthCenterSq < GEODist ** 2) {
+    } else if (cursorDistFromEarthCenterSq > (LEODist * 4.6) ** 2 && cursorDistFromEarthCenterSq < GEODist ** 2) {
         if (hoveredOrbit !== 'GEO'){
             hoveredOrbit = 'GEO';
             hoverChanged = true;
         }
     } else if (
         relX > earthCenterForHover[0]
-        && relY > earthCenterForHover[1] + GEODist + LEODist
-        && relY < earthCenterForHover[1] - (GEODist + LEODist)
+        && relX < earthCenterForHover[0] + HEODist
+        && relY > earthCenterForHover[1] + LEODist * 2
+        && relY < earthCenterForHover[1] - LEODist * 2
         && cursorDistFromEarthCenterSq > HEODist
     ) {
         if (hoveredOrbit !== 'HEO'){
@@ -1071,12 +1076,32 @@ $('#realistic-main-vis').mousemove(function(event){
     } else {
         const hoveredOrbitName = hoveredOrbit === 'HEO' ? 'Elliptical' : hoveredOrbit;
         if(hoveredOrbitName && satCount[hoveredOrbitName]) {
+            switch (hoveredOrbit) {
+                case "LEO" :
+                    hoveredOrbitFullName = "Low Earth Orbit (LEO)";
+                    hoveredOrbitIntro = "A Low Earth Orbit has an altitude of 2,000 km (1,200 mi.) or less. <br>Most of the satellites in outer space are in such an orbit." ;
+                    break;
+                case "MEO" :
+                    hoveredOrbitFullName = "Medium Earth Orbit (MEO)";
+                    hoveredOrbitIntro = "A Medium Earth Orbit has an altitude between 2,000 km (1,243 mi.) <br>and 35,786 km (22,236 mi.)." ;
+                    break;
+                case "GEO" :
+                    hoveredOrbitFullName = "Geostationary Orbit (GEO)";
+                    hoveredOrbitIntro = "A Geostationary Orbit has an altitude of 35,786 km (22,236 mi.). <br>To ground observers, objects in such an orbit appear motionless in the sky.";
+                    break;
+                case "HEO" :
+                    hoveredOrbitFullName = "Highly Elliptical Orbit (HEO)";
+                    hoveredOrbitIntro = "A Highly Elliptical Orbit is an elongated elliptical orbit around Earth. <br>These orbits are very useful for communications satellites.";
+                    break;
+            }
             Tooltip // Add tooltip to bars when hovered
                 .style("opacity", 1)
-                .html(hoveredOrbit + "<br>")
+                .html("Orbit Type: " + hoveredOrbitFullName + "<br>"
+                + "Number of Satellites: " + satCount[hoveredOrbitName] + "<br>" + "<br>"
+                + hoveredOrbitIntro)
                 .attr('class', 'tooltip')
-                .style("left", relX + "px")
-                .style("top", relY+ "px");
+                .style("left", relX + tooltipXOffset + "px")
+                .style("top", relY + tooltipYOffset + "px");
         }
     }
 
@@ -1088,7 +1113,7 @@ $('#realistic-main-vis').mousemove(function(event){
             });
             for (const orbitName of ORBIT_NAMES) {
                 setTimeout(() => {
-                    updateOrbitGroupOpacity(orbitName, hoveredOrbitName === orbitName || !hoveredOrbitName ? 1 : 0.2);
+                    updateOrbitGroupOpacity(orbitName, hoveredOrbitName === orbitName || !hoveredOrbitName ? 1 : 0.35); //Opacity of non-hovered orbits 
                 });
             }
         } else {

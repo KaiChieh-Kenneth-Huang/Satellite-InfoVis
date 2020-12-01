@@ -122,7 +122,8 @@ function colorOfPurposeStyle (d, name) {
 }
 
 // Tooltip variables
-const tooltipOffset = 15;
+const tooltipXOffset = 5;
+const tooltipYOffset = 20;
 
 Math.degrees = function(radians) {
 	return radians * 180 / Math.PI;
@@ -134,6 +135,7 @@ function sta_updateChart(refineParam,radioValue) {
         let match = true;
         for (let key in refineParam) {
             if (refineParam[key] == 'All (5)'){
+
                 continue;
             }
             else if (d[key] !== refineParam[key]) {
@@ -390,8 +392,8 @@ function sta_updateChart(refineParam,radioValue) {
           + "Mass: " + d['Launch Mass (kg.)']  + "kg"+ "<br>"
           + "Distance to Earth: " + d['avgDis']  + "km"+ "<br>")
           .attr('class', 'tooltip')
-          .style("left", (d3.mouse(svg.node())[0]+ tooltipOffset + width/2) + "px")
-          .style("top", (d3.mouse(svg.node())[1]+ tooltipOffset + height/2) + "px");
+          .style("left", (d3.mouse(svg.node())[0]+ tooltipXOffset + width/2) + "px")
+          .style("top", (d3.mouse(svg.node())[1]+ tooltipYOffset + height/2) + "px");
 
           d3.selectAll("rect")
           .style("opacity", fadeOpacity);
@@ -436,16 +438,16 @@ function sta_updateChart(refineParam,radioValue) {
         Tooltip
         .html("Country: " + d['country'] + "<br>"
         + "Number of satellites: " + country_tooltip[d['country']])
-        .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
-        .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
+        .style("left", (d3.mouse(this)[0]+ tooltipXOffset + width/2) + "px")
+        .style("top", (d3.mouse(this)[1]+ tooltipYOffset + height/2) + "px")
     }
 
     var purpose_mousemove = function(d){
         Tooltip
         .html("Purpose: " + d['purpose'] + "<br>"
         + "Number of satellites: " + purpose_tooltip[d['purpose']])
-        .style("left", (d3.mouse(this)[0]+ tooltipOffset + width/2) + "px")
-        .style("top", (d3.mouse(this)[1]+ tooltipOffset + height/2) + "px")
+        .style("left", (d3.mouse(this)[0]+ tooltipXOffset + width/2) + "px")
+        .style("top", (d3.mouse(this)[1]+ tooltipYOffset + height/2) + "px")
     }
 
     var mouseleave = function(d) {
@@ -792,9 +794,9 @@ if (radioValue == 'Country'){
     let disArray = sta_dataset.map(d => parseFloat(d['avgDis']));
     let periodArray = sta_dataset.map(d => parseFloat(d['Period (minutes)']));
     let massArray = sta_dataset.map(d => parseFloat(d['Launch Mass (kg.)']));
-    let bin_dis = 6;
-    let bin_period = 6;
-    let bin_mass = 6;
+    let bin_dis = 5;
+    let bin_period = 5;
+    let bin_mass = 5;
     let y_tick = 4;
 
     var svgWidth = mainVis.clientWidth;
