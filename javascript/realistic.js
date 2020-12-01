@@ -677,6 +677,7 @@ function updateChart(refineParam) {
 
     for (const orbitClass of ORBIT_NAMES) {
         // plot orbits
+        satByOrbit[orbitClass] = satByOrbit[orbitClass] ? satByOrbit[orbitClass] : [];
         let orbits = d3.select('#realistic-main-vis').select('g.' + orbitClass).selectAll('ellipse')
         .data(satByOrbit[orbitClass].slice(0,150) || [], function(d){
             return d['Name of Satellite  Alternate Names']; // Use a key-function to maintain object constancy
