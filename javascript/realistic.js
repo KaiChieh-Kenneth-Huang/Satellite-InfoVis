@@ -149,7 +149,7 @@ function animationSelector(selection, shouldAnimate) {
 // handling canvas
 var scrollyMainVisContext = mainVis_scrolly.getContext('2d');
 var virtualDataContainer = d3.select(document.createElement("custom")); // Create an in memory only element of type 'custom'
-const dpi = window.devicePixelRatio;
+var dpi = window.devicePixelRatio;
 mainVis_scrolly.setAttribute('height', mainVis_scrolly.clientHeight * dpi);
 mainVis_scrolly.setAttribute('width', mainVis_scrolly.clientWidth * dpi);
 
@@ -259,7 +259,7 @@ function drawCanvas(virtualDataContainer, satellites, orbits, context, magIsLEO)
 //   orbitClassToRevolve: <string>
 // }
 function updateChart_scrolly(controlParams) {
-    const scrollyMainVisD3 = d3.select('#scrolly-main-vis');
+    scrollyControlParams = controlParams;
     // patch controlParams
     controlParams = controlParams || {};
     controlParams.zoom = controlParams.zoom === undefined ? ZOOM_OVERVIEW : controlParams.zoom;
@@ -269,6 +269,7 @@ function updateChart_scrolly(controlParams) {
     controlParams.hideSatellites = controlParams.hideSatellites === undefined ? false : controlParams.hideSatellites;
     controlParams.shouldAnimate = controlParams.shouldAnimate === undefined ? false : controlParams.shouldAnimate;
   
+    kmToWidth_scrolly = mainVis_scrolly.clientWidth / (maxApogee + maxPerigee);
     // Update the scale based on Zoom Level
     scale_scrolly = d3.scaleLinear()
         .domain([0, maxApogee / controlParams.zoom.mag])
@@ -1217,7 +1218,6 @@ d3.csv('../data/new_data_with_date.csv').then(function(dataset) {
         }
     });
 
-    kmToWidth_scrolly = mainVis_scrolly.clientWidth / (maxApogee + maxPerigee);
 
     // create groups for holding satellites of different orbits
     for (const mainVis of [d3.select('#realistic-main-vis')]) {
@@ -1307,5 +1307,16 @@ zoomLevel_OVERVIEW.addEventListener('change', function(){
     updateChart(refineByParamsRealistic);
 });
 
+var scrollyControlParams;
 // setup resize event
-window.addEventListener("resize", () => {updateChart(refineByParamsRealistic)});
+window.addEventListener("resize", () => {
+    updateChart(refineByParamsRealistic);
+
+    // update canvas params
+    dpi = window.devicePixelRatio;
+    mainVis_scrolly.setAttribute('height', mainVis_scrolly.clientHeight * dpi);
+    mainVis_scrolly.setAttribute('width', mainVis_scrolly.clientWidth * dpi);
+    if (scrollyControlParams) {
+        updateChart_scrolly(scrollyControlParams);
+    }
+});
