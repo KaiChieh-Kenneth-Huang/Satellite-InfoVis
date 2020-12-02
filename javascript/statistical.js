@@ -5,32 +5,34 @@
 const sta_mainVis = document.getElementById('statistical-main-vis');
 const radius_range = 1.8 * Math.PI;
 
-var width = sta_mainVis.clientWidth;
-var height = sta_mainVis.clientHeight;
-const responsiveWidth = width / 1425;
-const responsiveHeight = height / 750;
+var width;
+var height;
+var responsiveWidth;
+var responsiveHeight;
 
-var scaleup = width / 800;
+var scaleup;
 const thinknessTweak = 1.5;
 
-var outerRadius_Country = 170 * scaleup;
-var innerRadius_Country = (155 - thinknessTweak) * scaleup;
+var outerRadius_Country;
+var innerRadius_Country;
 
-var outerRadius_Purpose = 150 * scaleup;
-var innerRadius_Purpose = (135 - thinknessTweak) * scaleup;
+var outerRadius_Purpose;
+var innerRadius_Purpose;
 
-var outerRadius_Period = 130 * scaleup;
-var innerRadius_Period = (100 - thinknessTweak) * scaleup;
+var outerRadius_Period;
+var innerRadius_Period;
 
-var outerRadius_Mass = 95 * scaleup;
-var innerRadius_Mass = (65 - thinknessTweak) * scaleup;
+var outerRadius_Mass;
+var innerRadius_Mass;
 
-var outerRadius_Dis = 60 * scaleup;
-var innerRadius_Dis = (30 - thinknessTweak) * scaleup;
+var outerRadius_Dis;
+var innerRadius_Dis;
 
-var radius_central_circle = 25 * scaleup;
+var radius_central_circle;
 
-var padAngle = 0.003;
+var padAngle;
+
+setDimensionVars();
 
 var disBins;
 var massBins;
@@ -82,6 +84,34 @@ const backgroundOpacity = 0.85;
 const colorOpacity = 0.9;
 const fadeOpacity = 0.3;
 
+function setDimensionVars() {
+    width = sta_mainVis.clientWidth;
+    height = sta_mainVis.clientHeight;
+    responsiveWidth = width / 1425;
+    responsiveHeight = height / 750;
+
+    scaleup = width / 800;
+
+    outerRadius_Country = 170 * scaleup;
+    innerRadius_Country = (155 - thinknessTweak) * scaleup;
+
+    outerRadius_Purpose = 150 * scaleup;
+    innerRadius_Purpose = (135 - thinknessTweak) * scaleup;
+
+    outerRadius_Period = 130 * scaleup;
+    innerRadius_Period = (100 - thinknessTweak) * scaleup;
+
+    outerRadius_Mass = 95 * scaleup;
+    innerRadius_Mass = (65 - thinknessTweak) * scaleup;
+
+    outerRadius_Dis = 60 * scaleup;
+    innerRadius_Dis = (30 - thinknessTweak) * scaleup;
+
+    radius_central_circle = 25 * scaleup;
+
+    padAngle = 0.003;
+}
+
 function colorOfCountryStyle (d, name) {
     if (d[name] == 'USA'){
         return colorOfChart.USA;
@@ -131,6 +161,7 @@ Math.degrees = function(radians) {
 
 // TODO: sizing code needs to be inside resize listener
 function sta_updateChart(refineParam,radioValue) {
+    updateChartArgs = arguments;
     var sta_filteredSatellites = sta_satelliteData.filter(function(d){
         let match = true;
         for (let key in refineParam) {
@@ -1143,4 +1174,10 @@ document.querySelector('#radioMass').addEventListener('change', (event) => {
 document.querySelector('#radioDis').addEventListener('change', (event) => {
     radioValue = 'Dis';
     sta_updateChart(refineByParams,radioValue)
+});
+
+var updateChartArgs;
+window.addEventListener("resize", () => {
+    setDimensionVars();
+    sta_updateChart(...updateChartArgs);
 });
